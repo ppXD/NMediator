@@ -6,11 +6,13 @@ namespace NMediator
 {
     public class Mediator : IMediator
     {
-        private readonly MessageDelegate _messageDelegate;
+        private readonly MessageDelegate _messagePipeline;
 
-        public Mediator(MessageDelegate messageDelegate)
+        public Mediator(MediatorConfiguration configuration)
         {
-            _messageDelegate = messageDelegate;
+            Configuration = configuration;
+            
+            _messagePipeline = configuration.BuildPipeline();
         }
 
         public Task SendAsync<TMessage>(TMessage command, CancellationToken cancellationToken = default) where TMessage : ICommand
@@ -18,14 +20,11 @@ namespace NMediator
             if (command == null)
                 throw new ArgumentNullException();
 
-            _messageDelegate(command);
+            _messagePipeline(command);
             
             return Task.CompletedTask;
         }
-    }
-
-    public class TestMessage : IMessage
-    {
         
+        public MediatorConfiguration Configuration { get; }
     }
 }

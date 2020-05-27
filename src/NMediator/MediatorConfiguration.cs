@@ -12,10 +12,16 @@ namespace NMediator
         private bool _mediatorCreated;
 
         private IServiceRegistration _serviceRegistration;
+        private IServiceResolver _serviceResolver;
         
         private readonly IList<Func<MessageDelegate, MessageDelegate>> _middlewares = new List<Func<MessageDelegate, MessageDelegate>>();
 
-        public IServiceResolver Resolver => _serviceRegistration?.CreateResolver();
+        public IServiceResolver Resolver => _serviceResolver ?? (_serviceResolver = _serviceRegistration.CreateResolver());
+
+        public MediatorConfiguration()
+        {
+            UseServiceRegistration(new DefaultServiceRegistration());
+        }
         
         public MediatorConfiguration UseServiceRegistration(IServiceRegistration serviceRegistration)
         {
@@ -23,31 +29,65 @@ namespace NMediator
             
             return this;
         }
+
+        public MediatorConfiguration RegisterHandler(Type handlerType)
+        {
+            return this.RegisterHandlers(new[] {handlerType});
+        }
+
+        public MediatorConfiguration RegisterHandler<THandler>()
+        {
+            return this.RegisterHandlers(new[] {typeof(THandler)});
+        }
+
+        public MediatorConfiguration RegisterServices(Action<IServiceRegistration> register)
+        {
+            register(_serviceRegistration);
+            
+            return this;
+        }
         
         public MediatorConfiguration RegisterHandlers(params Assembly[] assemblies)
         {
-            return this;
+            return this.RegisterHandlers(assemblies.SelectMany(assembly => assembly.GetTypes()));
         }
-
+        
         public MediatorConfiguration UseMiddleware(Func<MessageDelegate, MessageDelegate> middleware)
         {
             _middlewares.Add(middleware);
             
             return this;
         }
+
+        public MediatorConfiguration UseMiddleware<TMiddleware>()
+            where TMiddleware : IMiddleware
+        {
+            return UseMiddleware(next =>
+            {
+                return async message =>
+                {
+                    var middleware = Resolver.Resolve(typeof(TMiddleware));
+
+                    await ((IMiddleware) middleware).InvokeAsync(message, next);
+                };
+            });
+        }
         
-        public Mediator CreateMediator()
+        internal MessageDelegate BuildPipeline()
+        {
+            Task Seed(object message) => Task.CompletedTask;
+
+            return _middlewares.Reverse().Aggregate((MessageDelegate) Seed, (next, current) => current(next));
+        }
+        
+        public IMediator CreateMediator()
         {
             if (_mediatorCreated)  
                 throw new InvalidOperationException("CreateMediator() was previously called and can only be called once.");
 
             _mediatorCreated = true;
-
-            MessageDelegate seed = message => Task.CompletedTask;
-
-            seed = _middlewares.Reverse().Aggregate(seed, (next, current) => current(next));
-
-            return new Mediator(seed);
+            
+            return new Mediator(this);
         }
     }
 }

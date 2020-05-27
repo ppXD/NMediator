@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -10,6 +11,9 @@ namespace NMediator.Test
         public async Task Test()
         {
             var mediator = new MediatorConfiguration()
+                //.RegisterHandler(typeof(TestCommandHandler))
+                //.RegisterHandler<TestCommandHandler1>()
+                .RegisterHandlers(typeof(UnitTest).Assembly)
                 .UseMiddleware<TestMiddleware>()
                 .UseMiddleware(next =>
                 {
@@ -25,7 +29,6 @@ namespace NMediator.Test
                         await next(message);
                     };
                 })
-                .RegisterHandlers()
                 .CreateMediator();
 
             await mediator.SendAsync(new TestCommand());
@@ -48,5 +51,31 @@ namespace NMediator.Test
     public class TestCommand : ICommand
     {
         public Guid Id { get; set; }
+    }
+    
+    public class TestCommand1 : ICommand
+    {
+        public Guid Id { get; set; }
+    }
+    
+    public class TestCommandHandler : ICommandHandler<TestCommand>
+    {
+        public Task Handle(TestCommand message, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    
+    public class TestCommandHandler1 : ICommandHandler<TestCommand>, ICommandHandler<TestCommand1>
+    {
+        public Task Handle(TestCommand message, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Handle(TestCommand1 command, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
