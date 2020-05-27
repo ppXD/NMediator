@@ -18,6 +18,8 @@ namespace NMediator
 
         public IServiceResolver Resolver => _serviceResolver ?? (_serviceResolver = _serviceRegistration.CreateResolver());
 
+        public readonly Dictionary<Type, List<Type>> MessageBindings = new Dictionary<Type, List<Type>>();
+        
         public MediatorConfiguration()
         {
             UseServiceRegistration(new DefaultServiceRegistration());

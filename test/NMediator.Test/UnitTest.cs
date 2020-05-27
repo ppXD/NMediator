@@ -32,6 +32,7 @@ namespace NMediator.Test
                 .CreateMediator();
 
             await mediator.SendAsync(new TestCommand());
+            await mediator.SendAsync(new TestCommand1());
         }
     }
 
@@ -62,20 +63,15 @@ namespace NMediator.Test
     {
         public Task Handle(TestCommand message, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
     
-    public class TestCommandHandler1 : ICommandHandler<TestCommand>, ICommandHandler<TestCommand1>
+    public class TestCommandHandler1 : ICommandHandler<TestCommand1>
     {
-        public Task Handle(TestCommand message, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task Handle(TestCommand1 command, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

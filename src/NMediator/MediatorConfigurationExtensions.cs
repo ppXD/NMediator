@@ -19,13 +19,21 @@ namespace NMediator
             {
                 foreach (var implementedInterface in handlerType.GetTypeInfo().ImplementedInterfaces)
                 {
-                    if (IsHandlerInterface(implementedInterface, typeof(ICommandHandler<>)) ||
-                        IsHandlerInterface(implementedInterface, typeof(IEventHandler<>)))
+                    if (!IsHandlerInterface(implementedInterface, typeof(ICommandHandler<>)) &&
+                        !IsHandlerInterface(implementedInterface, typeof(IEventHandler<>))) continue;
+                    
+                    mediatorConfiguration.RegisterServices(sr =>
                     {
-                        mediatorConfiguration.RegisterServices(sr =>
-                        {
-                            sr.Register(implementedInterface.GenericTypeArguments[0], handlerType);
-                        });
+                        sr.Register(implementedInterface.GenericTypeArguments[0], handlerType);
+                    });
+                        
+                    if (mediatorConfiguration.MessageBindings.ContainsKey(implementedInterface.GenericTypeArguments[0]))
+                    {
+                        mediatorConfiguration.MessageBindings[implementedInterface.GenericTypeArguments[0]].Add(handlerType);
+                    }
+                    else
+                    {
+                        mediatorConfiguration.MessageBindings.Add(implementedInterface.GenericTypeArguments[0], new List<Type> {handlerType});
                     }
                 }
             }
