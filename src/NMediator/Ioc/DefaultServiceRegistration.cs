@@ -26,6 +26,11 @@ namespace NMediator.Ioc
             }
         }
 
+        public void Register(Type serviceType, Lifetime lifetime = Lifetime.AlwaysUnique)
+        {
+            
+        }
+
         public IServiceResolver CreateResolver()
         {
             return new DefaultServiceResolver(_registrations);

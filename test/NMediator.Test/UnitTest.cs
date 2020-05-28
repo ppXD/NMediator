@@ -15,6 +15,7 @@ namespace NMediator.Test
                 //.RegisterHandler<TestCommandHandler1>()
                 .RegisterHandlers(typeof(UnitTest).Assembly)
                 .UseMiddleware<TestMiddleware>()
+                .UseMiddleware<TestMiddleware>()
                 .UseMiddleware(next =>
                 {
                     return async message =>
@@ -31,6 +32,7 @@ namespace NMediator.Test
                 })
                 .CreateMediator();
 
+            await mediator.SendAsync(new TestCommand());
             await mediator.SendAsync(new TestCommand());
             await mediator.SendAsync(new TestCommand1());
         }

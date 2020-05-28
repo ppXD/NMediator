@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ namespace NMediator
     {
         private readonly MessageDelegate _messagePipeline;
 
+        private static readonly ConcurrentDictionary<Type, object> CommandHandlers = new ConcurrentDictionary<Type, object>();
+        
         public Mediator(MediatorConfiguration mediatorConfiguration)
         {
             Configuration = mediatorConfiguration ?? throw new ArgumentNullException(nameof(mediatorConfiguration));
@@ -16,25 +19,31 @@ namespace NMediator
             _messagePipeline = mediatorConfiguration.BuildPipeline();
         }
 
-        public Task SendAsync<TMessage>(TMessage command, CancellationToken cancellationToken = default) where TMessage : ICommand
+        public Task SendAsync<TMessage>(TMessage command, CancellationToken cancellationToken = default) 
+            where TMessage : ICommand
         {
             if (command == null)
                 throw new ArgumentNullException();
 
-            Configuration.MessageBindings.TryGetValue(command.GetType(), out var commandHandlerTypes);
+            var commandType = command.GetType();
 
-            if (commandHandlerTypes == null || !commandHandlerTypes.Any())
-                throw new NoHandlerFoundException(command.GetType());
-            
-            if (commandHandlerTypes.Count > 1)
+            var handler = (ICommandHandler<TMessage>) CommandHandlers.GetOrAdd(commandType, type =>
             {
-                throw new MoreThanOneHandlerException(command.GetType());
-            }
+                Configuration.MessageBindings.TryGetValue(commandType, out var commandHandlerTypes);
 
-            var handlerType = commandHandlerTypes.Single();
+                if (commandHandlerTypes == null || !commandHandlerTypes.Any())
+                    throw new NoHandlerFoundException(commandType);
+            
+                if (commandHandlerTypes.Count > 1)
+                {
+                    throw new MoreThanOneHandlerException(commandType);
+                }
 
-            var handler = (ICommandHandler<TMessage>) Configuration.Resolver.Resolve(handlerType) ;
+                var handlerType = commandHandlerTypes.Single();
 
+                return Configuration.Resolver.Resolve(handlerType);
+            });
+            
             _messagePipeline(command);
             
             return handler.Handle(command, cancellationToken);

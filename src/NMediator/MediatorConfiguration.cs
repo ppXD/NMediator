@@ -18,6 +18,7 @@ namespace NMediator
 
         public IServiceResolver Resolver => _serviceResolver ?? (_serviceResolver = _serviceRegistration.CreateResolver());
 
+        public readonly List<Type> MiddlewareTypes = new List<Type>();
         public readonly Dictionary<Type, List<Type>> MessageBindings = new Dictionary<Type, List<Type>>();
         
         public MediatorConfiguration()
@@ -64,11 +65,20 @@ namespace NMediator
         public MediatorConfiguration UseMiddleware<TMiddleware>()
             where TMiddleware : IMiddleware
         {
+            var middlewareType = typeof(TMiddleware);
+            
+            if (!MiddlewareTypes.Contains(middlewareType))
+            {
+                MiddlewareTypes.Add(middlewareType);
+            
+                _serviceRegistration.Register(middlewareType);
+            }
+            
             return UseMiddleware(next =>
             {
                 return async message =>
                 {
-                    var middleware = Resolver.Resolve(typeof(TMiddleware));
+                    var middleware = Resolver.Resolve(middlewareType);
 
                     await ((IMiddleware) middleware).InvokeAsync(message, next);
                 };

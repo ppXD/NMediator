@@ -14,6 +14,10 @@ namespace NMediator.Ioc
             Type implementationType,
             Lifetime lifetime = Lifetime.AlwaysUnique);
         
+        void Register(
+            Type serviceType,
+            Lifetime lifetime = Lifetime.AlwaysUnique);
+        
         IServiceResolver CreateResolver();
     }
 }
