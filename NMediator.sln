@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Test", "test\NMed
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{215CC333-808C-463D-839C-93C67618F6B7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{33739362-59E2-499B-A95D-F7F3072B189D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCore", "examples\NMediator.Examples.AspNetCore\NMediator.Examples.AspNetCore.csproj", "{14F3A88D-E458-47E2-A7A0-470A2DA2A755}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,6 +20,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{96C10437-8DC7-4A1C-A61F-9988ED6FF236} = {3348D76E-7BAC-4CA7-A2C3-6A5586C8498A}
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71} = {215CC333-808C-463D-839C-93C67618F6B7}
+		{14F3A88D-E458-47E2-A7A0-470A2DA2A755} = {33739362-59E2-499B-A95D-F7F3072B189D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{96C10437-8DC7-4A1C-A61F-9988ED6FF236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -26,5 +31,9 @@ Global
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

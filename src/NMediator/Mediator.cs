@@ -35,9 +35,7 @@ namespace NMediator
                     throw new NoHandlerFoundException(commandType);
             
                 if (commandHandlerTypes.Count > 1)
-                {
                     throw new MoreThanOneHandlerException(commandType);
-                }
 
                 var handlerType = commandHandlerTypes.Single();
 
