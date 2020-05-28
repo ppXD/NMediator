@@ -5,11 +5,13 @@ namespace NMediator.Ioc
 {
     public class DefaultServiceResolver : IServiceResolver
     {
-        private readonly Dictionary<Type, List<Type>> _registrations;
+        private readonly List<Type> _middlewareRegistrations;
+        private readonly Dictionary<Type, List<Type>> _handlerRegistrations;
 
-        public DefaultServiceResolver(Dictionary<Type, List<Type>> registrations)
+        public DefaultServiceResolver(List<Type> middlewareRegistrations, Dictionary<Type, List<Type>> handlerRegistrations)
         {
-            _registrations = registrations;
+            _middlewareRegistrations = middlewareRegistrations;
+            _handlerRegistrations = handlerRegistrations;
         }
 
         public T Resolve<T>()

@@ -31,7 +31,7 @@ namespace NMediator.Test
                     };
                 })
                 .CreateMediator();
-
+            
             await mediator.SendAsync(new TestCommand());
             await mediator.SendAsync(new TestCommand());
             await mediator.SendAsync(new TestCommand1());

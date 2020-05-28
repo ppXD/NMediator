@@ -5,7 +5,8 @@ namespace NMediator.Ioc
 {
     public class DefaultServiceRegistration : IServiceRegistration
     {
-        private readonly Dictionary<Type, List<Type>> _registrations = new Dictionary<Type, List<Type>>();
+        private readonly List<Type> _middlewareRegistrations = new List<Type>();
+        private readonly Dictionary<Type, List<Type>> _handlerRegistrations = new Dictionary<Type, List<Type>>();
         
         public void Register<TService, TImplementation>(Lifetime lifetime = Lifetime.AlwaysUnique) 
             where TService : class 
@@ -16,24 +17,24 @@ namespace NMediator.Ioc
 
         public void Register(Type serviceType, Type implementationType, Lifetime lifetime = Lifetime.AlwaysUnique)
         {
-            if (_registrations.ContainsKey(serviceType))
+            if (_handlerRegistrations.ContainsKey(serviceType))
             {
-                _registrations[serviceType].Add(implementationType);
+                _handlerRegistrations[serviceType].Add(implementationType);
             }
             else
             {
-                _registrations.Add(serviceType, new List<Type> {implementationType});
+                _handlerRegistrations.Add(serviceType, new List<Type> {implementationType});
             }
         }
 
         public void Register(Type serviceType, Lifetime lifetime = Lifetime.AlwaysUnique)
         {
-            
+            _middlewareRegistrations.Add(serviceType);
         }
 
         public IServiceResolver CreateResolver()
         {
-            return new DefaultServiceResolver(_registrations);
+            return new DefaultServiceResolver(_middlewareRegistrations, _handlerRegistrations);
         }
     }
 }

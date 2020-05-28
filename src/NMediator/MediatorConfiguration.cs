@@ -78,9 +78,7 @@ namespace NMediator
             {
                 return async message =>
                 {
-                    var middleware = Resolver.Resolve(middlewareType);
-
-                    await ((IMiddleware) middleware).InvokeAsync(message, next);
+                    await ((IMiddleware) Resolver.Resolve(middlewareType)).InvokeAsync(message, next);
                 };
             });
         }
