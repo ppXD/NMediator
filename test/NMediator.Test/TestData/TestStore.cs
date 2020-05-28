@@ -1,0 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+
+namespace NMediator.Test.TestData
+{
+    public static class TestStore
+    {
+        public static readonly IList<ICommand> CommandStore = new List<ICommand>();
+    }
+}
