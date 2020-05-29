@@ -12,11 +12,10 @@ namespace NMediator
         private bool _mediatorCreated;
 
         private IServiceRegistration _serviceRegistration;
-        private IServiceResolver _serviceResolver;
         
         private readonly IList<Func<MessageDelegate, MessageDelegate>> _middlewares = new List<Func<MessageDelegate, MessageDelegate>>();
 
-        public IServiceResolver Resolver => _serviceResolver ?? (_serviceResolver = _serviceRegistration.CreateResolver());
+        public IServiceResolver Resolver { get; private set; }
 
         public readonly List<Type> MiddlewareTypes = new List<Type>();
         public readonly Dictionary<Type, List<Type>> MessageBindings = new Dictionary<Type, List<Type>>();
@@ -95,6 +94,8 @@ namespace NMediator
             if (_mediatorCreated)  
                 throw new InvalidOperationException("CreateMediator() was previously called and can only be called once.");
 
+            Resolver = _serviceRegistration.CreateResolver();
+            
             _mediatorCreated = true;
             
             return new Mediator(this);
