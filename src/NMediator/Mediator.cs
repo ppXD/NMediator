@@ -1,8 +1,9 @@
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace NMediator
 {
@@ -10,7 +11,7 @@ namespace NMediator
     {
         private readonly MessageDelegate _messagePipeline;
 
-        private static readonly ConcurrentDictionary<Type, object> CommandHandlers = new ConcurrentDictionary<Type, object>();
+        private static readonly ConcurrentDictionary<Type, List<object>> Handlers = new ConcurrentDictionary<Type, List<object>>();
         
         public Mediator(MediatorConfiguration mediatorConfiguration)
         {
@@ -23,28 +24,71 @@ namespace NMediator
             where TMessage : ICommand
         {
             if (command == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(command));
 
             var commandType = command.GetType();
 
-            var handler = (ICommandHandler<TMessage>) CommandHandlers.GetOrAdd(commandType, type =>
-            {
-                Configuration.MessageBindings.TryGetValue(commandType, out var commandHandlerTypes);
-
-                if (commandHandlerTypes == null || !commandHandlerTypes.Any())
-                    throw new NoHandlerFoundException(commandType);
+            var handlers = FindHandlers(commandType);
             
-                if (commandHandlerTypes.Count > 1)
-                    throw new MoreThanOneHandlerException(commandType);
+            if (handlers.Count > 1)
+                throw new MoreThanOneHandlerException(commandType);
 
-                var handlerType = commandHandlerTypes.Single();
-
-                return Configuration.Resolver.Resolve(handlerType);
-            });
+            var handler = (ICommandHandler<TMessage>) handlers.Single();
             
             _messagePipeline(command);
             
             return handler.Handle(command, cancellationToken);
+        }
+
+        public Task PublishAsync<TMessage>(TMessage @event, CancellationToken cancellationToken = default)
+            where TMessage : IEvent
+        {
+            if (@event == null)
+                throw new ArgumentNullException(nameof(@event));
+            
+            var eventType = @event.GetType();
+
+            var handlers = FindHandlers(eventType);
+            
+            _messagePipeline(@event);
+
+            var tasks = handlers.Select(h => ((IEventHandler<TMessage>) h).Handle(@event, cancellationToken)).ToList();
+
+            return Task.WhenAll(tasks);
+        }
+
+        public Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+            where TRequest : class, IRequest
+            where TResponse : class, IResponse
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+            
+            var requestType = request.GetType();
+            
+            var handlers = FindHandlers(requestType);
+            
+            if (handlers.Count > 1)
+                throw new MoreThanOneHandlerException(requestType);
+
+            var handler = (IRequestHandler<TRequest, TResponse>) handlers.Single();
+            
+            _messagePipeline(requestType);
+            
+            return handler.Handle(request, cancellationToken);
+        }
+
+        private List<object> FindHandlers(Type messageType)
+        {
+            return Handlers.GetOrAdd(messageType, type =>
+            {
+                Configuration.MessageBindings.TryGetValue(messageType, out var handlerTypes);
+
+                if (handlerTypes == null || !handlerTypes.Any())
+                    throw new NoHandlerFoundException(messageType);
+
+                return handlerTypes.Select(t => Configuration.Resolver.Resolve(t)).ToList();
+            });
         }
         
         public MediatorConfiguration Configuration { get; }

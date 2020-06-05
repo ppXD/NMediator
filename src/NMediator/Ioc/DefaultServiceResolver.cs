@@ -23,7 +23,7 @@ namespace NMediator.Ioc
         {
             return Activator.CreateInstance(serviceType);
         }
-        
+
         public void Dispose()
         {
         }

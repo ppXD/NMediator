@@ -12,7 +12,8 @@ namespace NMediator
             handlerTypes = handlerTypes
                 .Where(x => !x.IsAbstract)
                 .Where(t => t.GetTypeInfo().GetInterfaces().Any(type => type.IsHandlerInterface(typeof(ICommandHandler<>))) ||
-                                  t.GetTypeInfo().GetInterfaces().Any(type => type.IsHandlerInterface(typeof(IEventHandler<>))))
+                                  t.GetTypeInfo().GetInterfaces().Any(type => type.IsHandlerInterface(typeof(IEventHandler<>))) || 
+                                  t.GetTypeInfo().GetInterfaces().Any(type => type.IsHandlerInterface(typeof(IRequestHandler<,>))))
                 .ToList();
 
             foreach (var handlerType in handlerTypes)
@@ -20,7 +21,8 @@ namespace NMediator
                 foreach (var implementedInterface in handlerType.GetTypeInfo().ImplementedInterfaces)
                 {
                     if (!IsHandlerInterface(implementedInterface, typeof(ICommandHandler<>)) &&
-                        !IsHandlerInterface(implementedInterface, typeof(IEventHandler<>))) continue;
+                        !IsHandlerInterface(implementedInterface, typeof(IEventHandler<>)) && 
+                        !IsHandlerInterface(implementedInterface, typeof(IRequestHandler<,>))) continue;
                     
                     mediatorConfiguration.RegisterServices(sr =>
                     {
