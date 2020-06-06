@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NMediator.Test.TestRequestHandlers
 {
-    public class BasicRequestHandlerShouldBeWork
+    public class BasicRequestHandlerShouldBeWork : TestBase
     {
         [Fact]
         public async Task Test()

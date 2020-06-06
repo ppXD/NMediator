@@ -9,7 +9,7 @@ using Shouldly;
 
 namespace NMediator.Test.TestCommandHandlers
 {
-    public class BasicCommandHandlerShouldBeWork
+    public class BasicCommandHandlerShouldBeWork : TestBase
     {
         [Fact]
         public async Task Test()
