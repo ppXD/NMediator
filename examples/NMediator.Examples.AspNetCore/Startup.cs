@@ -22,14 +22,14 @@ namespace NMediator.Examples.AspNetCore
             
             var mediator = new MediatorConfiguration()
                 .RegisterHandler<TestCommandHandlers>()
-                .UseMiddleware<TestMiddleware>()
-                .UseMiddleware(next =>
-                {
-                    return async message =>
-                    {
-                        await next(message);
-                    };
-                })
+                // .UseMiddleware<TestMiddleware>()
+                // .UseMiddleware(next =>
+                // {
+                //     return async message =>
+                //     {
+                //         await next(message);
+                //     };
+                // })
                 .CreateMediator();
 
             services.AddScoped(x => mediator);

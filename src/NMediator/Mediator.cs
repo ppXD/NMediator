@@ -9,15 +9,11 @@ namespace NMediator
 {
     public class Mediator : IMediator
     {
-        private readonly MessageDelegate _messagePipeline;
-
         private static readonly ConcurrentDictionary<Type, List<object>> Handlers = new ConcurrentDictionary<Type, List<object>>();
         
         public Mediator(MediatorConfiguration mediatorConfiguration)
         {
             Configuration = mediatorConfiguration ?? throw new ArgumentNullException(nameof(mediatorConfiguration));
-            
-            _messagePipeline = mediatorConfiguration.BuildPipeline();
         }
 
         public Task SendAsync<TMessage>(TMessage command, CancellationToken cancellationToken = default) 
@@ -35,8 +31,6 @@ namespace NMediator
 
             var handler = (ICommandHandler<TMessage>) handlers.Single();
             
-            _messagePipeline(command);
-            
             return handler.Handle(command, cancellationToken);
         }
 
@@ -50,8 +44,6 @@ namespace NMediator
 
             var handlers = FindHandlers(eventType);
             
-            _messagePipeline(@event);
-
             var tasks = handlers.Select(h => ((IEventHandler<TMessage>) h).Handle(@event, cancellationToken)).ToList();
 
             return Task.WhenAll(tasks);
@@ -72,8 +64,6 @@ namespace NMediator
                 throw new MoreThanOneHandlerException(requestType);
 
             var handler = (IRequestHandler<TRequest, TResponse>) handlers.Single();
-            
-            _messagePipeline(requestType);
             
             return handler.Handle(request, cancellationToken);
         }

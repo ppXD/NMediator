@@ -34,7 +34,7 @@ namespace NMediator.Ioc
 
         public IServiceResolver CreateResolver()
         {
-            return new DefaultServiceResolver(_middlewareRegistrations, _handlerRegistrations);
+            return new DefaultServiceResolver();
         }
     }
 }
