@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
@@ -7,7 +6,7 @@ using System.Collections.Generic;
 
 namespace NMediator
 {
-    public class Mediator : IMediator
+    public sealed partial class Mediator : IMediator
     {
         private static readonly ConcurrentDictionary<Type, List<object>> Handlers = new ConcurrentDictionary<Type, List<object>>();
         
@@ -16,69 +15,49 @@ namespace NMediator
             Configuration = mediatorConfiguration ?? throw new ArgumentNullException(nameof(mediatorConfiguration));
         }
 
-        public Task SendAsync<TMessage>(TMessage command, CancellationToken cancellationToken = default) 
-            where TMessage : ICommand
+        public Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) 
+            where TCommand : class, ICommand
         {
-            if (command == null)
-                throw new ArgumentNullException(nameof(command));
-
-            var commandType = command.GetType();
-
-            var handlers = FindHandlers(commandType);
-            
-            if (handlers.Count > 1)
-                throw new MoreThanOneHandlerException(commandType);
-
-            var handler = (ICommandHandler<TMessage>) handlers.Single();
-            
-            return handler.Handle(command, cancellationToken);
+            return SendMessageAsync(command, cancellationToken);
         }
 
-        public Task PublishAsync<TMessage>(TMessage @event, CancellationToken cancellationToken = default)
-            where TMessage : IEvent
+        public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+            where TEvent : class, IEvent
         {
-            if (@event == null)
-                throw new ArgumentNullException(nameof(@event));
-            
-            var eventType = @event.GetType();
-
-            var handlers = FindHandlers(eventType);
-            
-            var tasks = handlers.Select(h => ((IEventHandler<TMessage>) h).Handle(@event, cancellationToken)).ToList();
-
-            return Task.WhenAll(tasks);
+            return SendMessageAsync(@event, cancellationToken);
         }
 
         public Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
             where TRequest : class, IRequest
             where TResponse : class, IResponse
         {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-            
-            var requestType = request.GetType();
-            
-            var handlers = FindHandlers(requestType);
-            
-            if (handlers.Count > 1)
-                throw new MoreThanOneHandlerException(requestType);
-
-            var handler = (IRequestHandler<TRequest, TResponse>) handlers.Single();
-            
-            return handler.Handle(request, cancellationToken);
+            return SendMessageAsync<TRequest, TResponse>(request, cancellationToken);
         }
 
-        private List<object> FindHandlers(Type messageType)
+        private Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+            where TMessage : class, IMessage
         {
-            return Handlers.GetOrAdd(messageType, type =>
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
+            var handlers = FindHandlerTypes(typeof(TMessage));
+
+            using (var scope = Configuration.Resolver.BeginScope())
             {
-                Configuration.MessageBindings.TryGetValue(messageType, out var handlerTypes);
+                foreach (var handler in handlers)
+                {
+                    ((IHandler<TMessage>)scope.Resolve(handler)).Handle(message, cancellationToken);
+                }
+            }
+            
+            return Task.CompletedTask;
+        }
 
-                if (handlerTypes == null || !handlerTypes.Any())
-                    throw new NoHandlerFoundException(messageType);
-
-                return handlerTypes.Select(t => Configuration.Resolver.Resolve(t)).ToList();
-            });
+        private Task<TResponse> SendMessageAsync<TMessage, TResponse>(TMessage message, CancellationToken cancellationToken = default)
+            where TMessage : class, IMessage
+            where TResponse : class, IResponse
+        {
+            return Task.FromResult((TResponse)default);
         }
         
         public MediatorConfiguration Configuration { get; }

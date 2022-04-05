@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 
 namespace NMediator.Ioc
 {
-    public class DefaultServiceResolver : IServiceResolver
+    public class DefaultDependencyScope : IDependencyScope
     {
         public T Resolve<T>()
         {
@@ -13,6 +12,11 @@ namespace NMediator.Ioc
         public object Resolve(Type serviceType)
         {
             return Activator.CreateInstance(serviceType);
+        }
+
+        public IDependencyScope BeginScope()
+        {
+            return new DefaultDependencyScope();
         }
 
         public void Dispose()

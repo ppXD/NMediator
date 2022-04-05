@@ -1,11 +1,10 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NMediator
 {
-    public delegate Task MessageDelegate(object message);
-    
     public interface IMiddleware
     {
-        Task InvokeAsync(object message, MessageDelegate next);
+        Task InvokeAsync(object message, CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
@@ -8,22 +9,12 @@ namespace NMediator
 {
     public class MediatorConfiguration
     {
-        private IServiceRegistration _serviceRegistration;
-        
-        public IServiceResolver Resolver { get; private set; }
+        public IDependencyScope Resolver { get; private set; }
 
-        public readonly Dictionary<Type, List<Type>> MessageBindings = new Dictionary<Type, List<Type>>();
+        public readonly ConcurrentDictionary<Type, List<Type>> MessageBindings = new ConcurrentDictionary<Type, List<Type>>();
         
         public MediatorConfiguration()
         {
-            UseServiceRegistration(new DefaultServiceRegistration());
-        }
-        
-        public MediatorConfiguration UseServiceRegistration(IServiceRegistration serviceRegistration)
-        {
-            _serviceRegistration = serviceRegistration;
-            
-            return this;
         }
 
         public MediatorConfiguration RegisterHandler(Type handlerType)
@@ -41,17 +32,8 @@ namespace NMediator
             return this.RegisterHandlers(assemblies.SelectMany(assembly => assembly.GetTypes()));
         }
         
-        public MediatorConfiguration RegisterServices(Action<IServiceRegistration> register)
-        {
-            register(_serviceRegistration);
-            
-            return this;
-        }
-        
         public IMediator CreateMediator()
         {
-            Resolver = _serviceRegistration.CreateResolver();
-            
             return new Mediator(this);
         }
     }

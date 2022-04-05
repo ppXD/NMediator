@@ -9,38 +9,36 @@ namespace NMediator
     {
         public static MediatorConfiguration RegisterHandlers(this MediatorConfiguration mediatorConfiguration, IEnumerable<Type> handlerTypes)
         {
-            handlerTypes = handlerTypes
-                .Where(x => !x.IsAbstract)
-                .Where(t => t.GetTypeInfo().GetInterfaces().Any(type => type.IsHandlerInterface(typeof(ICommandHandler<>))) ||
-                                  t.GetTypeInfo().GetInterfaces().Any(type => type.IsHandlerInterface(typeof(IEventHandler<>))) || 
-                                  t.GetTypeInfo().GetInterfaces().Any(type => type.IsHandlerInterface(typeof(IRequestHandler<,>))))
-                .ToList();
+            RegisterHandlers(mediatorConfiguration, handlerTypes, typeof(ICommandHandler<>));
+            RegisterHandlers(mediatorConfiguration, handlerTypes, typeof(IRequestHandler<,>));
+            RegisterHandlers(mediatorConfiguration, handlerTypes, typeof(IEventHandler<>));
+            
+            return mediatorConfiguration;
+        }
 
-            foreach (var handlerType in handlerTypes)
+        private static void RegisterHandlers(MediatorConfiguration mediatorConfiguration, IEnumerable<Type> handlerTypes, Type targetHandlerType)
+        {
+            var handlers = handlerTypes
+                .Where(x => !x.IsAbstract)
+                .Where(x => x.IsClass && x.GetInterfaces()
+                .Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == targetHandlerType)).ToList();
+            
+            foreach (var handlerType in handlers)
             {
                 foreach (var implementedInterface in handlerType.GetTypeInfo().ImplementedInterfaces)
                 {
-                    if (!IsHandlerInterface(implementedInterface, typeof(ICommandHandler<>)) &&
-                        !IsHandlerInterface(implementedInterface, typeof(IEventHandler<>)) && 
-                        !IsHandlerInterface(implementedInterface, typeof(IRequestHandler<,>))) continue;
+                    if (!IsHandlerInterface(implementedInterface, targetHandlerType)) continue;
                     
-                    mediatorConfiguration.RegisterServices(sr =>
-                    {
-                        sr.Register(implementedInterface.GenericTypeArguments[0], handlerType);
-                    });
-                        
                     if (mediatorConfiguration.MessageBindings.ContainsKey(implementedInterface.GenericTypeArguments[0]))
                     {
                         mediatorConfiguration.MessageBindings[implementedInterface.GenericTypeArguments[0]].Add(handlerType);
                     }
                     else
                     {
-                        mediatorConfiguration.MessageBindings.Add(implementedInterface.GenericTypeArguments[0], new List<Type> {handlerType});
+                        mediatorConfiguration.MessageBindings.TryAdd(implementedInterface.GenericTypeArguments[0], new List<Type> {handlerType});
                     }
                 }
             }
-            
-            return mediatorConfiguration;
         }
         
         private static bool IsHandlerInterface(this Type type, Type handleType)

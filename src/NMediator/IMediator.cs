@@ -5,11 +5,11 @@ namespace NMediator
 {
     public interface IMediator
     {
-        Task SendAsync<TMessage>(TMessage command, CancellationToken cancellationToken = default)
-            where TMessage : ICommand;
+        Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
+            where TCommand : class, ICommand;
 
-        Task PublishAsync<TMessage>(TMessage @event, CancellationToken cancellationToken = default)
-            where TMessage : IEvent;
+        Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+            where TEvent : class, IEvent;
         
         Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest request,
             CancellationToken cancellationToken = default)
