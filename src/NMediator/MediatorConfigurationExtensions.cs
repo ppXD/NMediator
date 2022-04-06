@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using NMediator.Middleware;
 
 namespace NMediator
 {
@@ -29,16 +30,28 @@ namespace NMediator
                 {
                     if (!IsHandlerInterface(implementedInterface, targetHandlerType)) continue;
                     
-                    if (mediatorConfiguration.MessageBindings.ContainsKey(implementedInterface.GenericTypeArguments[0]))
+                    if (mediatorConfiguration.MessageHandlerBindings.ContainsKey(implementedInterface.GenericTypeArguments[0]))
                     {
-                        mediatorConfiguration.MessageBindings[implementedInterface.GenericTypeArguments[0]].Add(handlerType);
+                        mediatorConfiguration.MessageHandlerBindings[implementedInterface.GenericTypeArguments[0]].Add(handlerType);
                     }
                     else
                     {
-                        mediatorConfiguration.MessageBindings.TryAdd(implementedInterface.GenericTypeArguments[0], new List<Type> {handlerType});
+                        mediatorConfiguration.MessageHandlerBindings.TryAdd(implementedInterface.GenericTypeArguments[0], new List<Type> {handlerType});
                     }
                 }
             }
+        }
+
+        public static MediatorConfiguration RegisterMiddleware<TMiddleware>(this MediatorConfiguration mediatorConfiguration)
+            where TMiddleware : class, IMiddleware
+        {
+            var processors = new MiddlewareProcessor(typeof(TMiddleware));
+
+            if (mediatorConfiguration.MiddlewareProcessors.Any())
+                mediatorConfiguration.MiddlewareProcessors.Last().Next = processors;
+            mediatorConfiguration.MiddlewareProcessors.Add(processors);
+
+            return mediatorConfiguration;
         }
         
         private static bool IsHandlerInterface(this Type type, Type handleType)

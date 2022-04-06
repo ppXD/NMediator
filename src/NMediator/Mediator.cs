@@ -1,18 +1,24 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using NMediator.Ioc;
+using NMediator.Middleware;
 
 namespace NMediator
 {
     public sealed partial class Mediator : IMediator
     {
-        private static readonly ConcurrentDictionary<Type, List<object>> Handlers = new ConcurrentDictionary<Type, List<object>>();
+        private readonly IDependencyScope _resolver;
+        private readonly MiddlewareProcessor _pipeline;
+        private readonly ConcurrentDictionary<Type, List<Type>> _messageHandlerBindings;
         
-        public Mediator(MediatorConfiguration mediatorConfiguration)
+        public Mediator(IDependencyScope resolver, MiddlewareProcessor pipeline, ConcurrentDictionary<Type, List<Type>> messageHandlerBindings)
         {
-            Configuration = mediatorConfiguration ?? throw new ArgumentNullException(nameof(mediatorConfiguration));
+            _resolver = resolver;
+            _pipeline = pipeline;
+            _messageHandlerBindings = messageHandlerBindings;
         }
 
         public Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) 
@@ -37,29 +43,35 @@ namespace NMediator
         private Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
             where TMessage : class, IMessage
         {
-            if (message == null)
-                throw new ArgumentNullException(nameof(message));
-
-            var handlers = FindHandlerTypes(typeof(TMessage));
-
-            using (var scope = Configuration.Resolver.BeginScope())
-            {
-                foreach (var handler in handlers)
-                {
-                    ((IHandler<TMessage>)scope.Resolve(handler)).Handle(message, cancellationToken);
-                }
-            }
-            
-            return Task.CompletedTask;
+            return ProcessMessage(message, cancellationToken);
         }
 
         private Task<TResponse> SendMessageAsync<TMessage, TResponse>(TMessage message, CancellationToken cancellationToken = default)
             where TMessage : class, IMessage
             where TResponse : class, IResponse
         {
-            return Task.FromResult((TResponse)default);
+            return Task.FromResult((TResponse) ProcessMessage(message, cancellationToken).Result);
         }
-        
-        public MediatorConfiguration Configuration { get; }
+
+        private async Task<object> ProcessMessage<TMessage>(TMessage message,
+            CancellationToken cancellationToken = default)
+            where TMessage : class, IMessage
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
+            var handlers = FindHandlerTypes(typeof(TMessage));
+
+            using var scope = _resolver.BeginScope();
+            
+            await _pipeline.Process(scope, cancellationToken).ConfigureAwait(false);
+            
+            foreach (var handler in handlers)
+            {
+                await ((IHandler<TMessage>)scope.Resolve(handler)).Handle(message, cancellationToken);
+            }
+
+            return null;
+        }
     }
 }

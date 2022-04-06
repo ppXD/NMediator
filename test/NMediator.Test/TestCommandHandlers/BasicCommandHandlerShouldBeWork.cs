@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using NMediator.Middleware;
 using NMediator.Test.TestData;
 using Xunit;
 using NMediator.Test.TestData.CommandHandlers;
@@ -16,6 +18,8 @@ namespace NMediator.Test.TestCommandHandlers
         {
             var mediator = new MediatorConfiguration()
                 .RegisterHandler<TestCommandHandler>()
+                .UseMiddleware<TestMiddleware>()
+                .UseMiddleware<TestMiddleware2>()
                 .CreateMediator();
 
             var command = new TestCommand(Guid.NewGuid());
@@ -24,6 +28,31 @@ namespace NMediator.Test.TestCommandHandlers
             
             TestStore.CommandStore.Count.ShouldBe(1);
             TestStore.CommandStore.Single().ShouldBe(command);
+        }
+    }
+    
+    public class TestMiddleware : IMiddleware
+    {
+        public Task OnExecuting(object message, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task OnExecuted(object message, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+    }
+    public class TestMiddleware2 : IMiddleware
+    {
+        public Task OnExecuting(object message, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task OnExecuted(object message, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
         }
     }
 }

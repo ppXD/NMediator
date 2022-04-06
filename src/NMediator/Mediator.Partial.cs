@@ -8,7 +8,7 @@ namespace NMediator
     {
         private List<Type> FindHandlerTypes(Type messageType)
         {
-            Configuration.MessageBindings.TryGetValue(messageType, out var handlerTypes);
+            _messageHandlerBindings.TryGetValue(messageType, out var handlerTypes);
 
             if (handlerTypes == null || !handlerTypes.Any())
                 throw new NoHandlerFoundException(messageType);
