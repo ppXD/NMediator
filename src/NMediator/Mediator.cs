@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using NMediator.Context;
 using NMediator.Ioc;
 using NMediator.Middleware;
 
@@ -21,36 +22,43 @@ namespace NMediator
             _messageHandlerBindings = messageHandlerBindings;
         }
 
-        public Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) 
+        public async Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) 
             where TCommand : class, ICommand
         {
-            return SendMessageAsync(command, cancellationToken);
+            await SendMessageAsync(command, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+        public async Task<TResponse> SendAsync<TCommand, TResponse>(TCommand command, CancellationToken cancellationToken = default) 
+            where TCommand : class, ICommand
+            where TResponse : class, IResponse
+        {
+            return await SendMessageAsync<TCommand, TResponse>(command, cancellationToken).ConfigureAwait(false);
+        }
+        
+        public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
             where TEvent : class, IEvent
         {
-            return SendMessageAsync(@event, cancellationToken);
+            await SendMessageAsync(@event, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+        public async Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
             where TRequest : class, IRequest
             where TResponse : class, IResponse
         {
-            return SendMessageAsync<TRequest, TResponse>(request, cancellationToken);
+            return await SendMessageAsync<TRequest, TResponse>(request, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+        private async Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
             where TMessage : class, IMessage
         {
-            return ProcessMessage(message, cancellationToken);
+            await ProcessMessage(message, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task<TResponse> SendMessageAsync<TMessage, TResponse>(TMessage message, CancellationToken cancellationToken = default)
+        private async Task<TResponse> SendMessageAsync<TMessage, TResponse>(TMessage message, CancellationToken cancellationToken = default)
             where TMessage : class, IMessage
             where TResponse : class, IResponse
         {
-            return Task.FromResult((TResponse) ProcessMessage(message, cancellationToken).Result);
+            return (TResponse) await ProcessMessage(message, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<object> ProcessMessage<TMessage>(TMessage message,
@@ -60,18 +68,13 @@ namespace NMediator
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
-            var handlers = FindHandlerTypes(typeof(TMessage));
-
             using var scope = _resolver.BeginScope();
-            
-            await _pipeline.Process(scope, cancellationToken).ConfigureAwait(false);
-            
-            foreach (var handler in handlers)
-            {
-                await ((IHandler<TMessage>)scope.Resolve(handler)).Handle(message, cancellationToken);
-            }
 
-            return null;
+            var context = new MessageContext<TMessage>(message, scope, FindHandlerTypes(typeof(TMessage)));
+            
+            await _pipeline.Process(context, cancellationToken).ConfigureAwait(false);
+
+            return context.Result;
         }
     }
 }

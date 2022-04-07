@@ -8,6 +8,10 @@ namespace NMediator
         Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
             where TCommand : class, ICommand;
 
+        Task<TResponse> SendAsync<TCommand, TResponse>(TCommand command, CancellationToken cancellationToken = default)
+            where TCommand : class, ICommand
+            where TResponse : class, IResponse;
+        
         Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
             where TEvent : class, IEvent;
         

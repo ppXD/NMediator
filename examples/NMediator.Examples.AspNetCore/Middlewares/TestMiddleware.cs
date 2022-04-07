@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
+using NMediator.Context;
 using NMediator.Examples.AspNetCore.Commands;
 using IMiddleware = NMediator.Middleware.IMiddleware;
 
@@ -10,15 +11,15 @@ namespace NMediator.Examples.AspNetCore.Middlewares
 {
     public class TestMiddleware : IMiddleware
     {
-        public async Task OnExecuting(object message, CancellationToken cancellationToken)
+        public async Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken)
         {
-            if (message is TestCommand command)
+            if (context.Message is TestCommand command)
             {
                 command.Message = "Invoked middleware";
             }
         }
 
-        public Task OnExecuted(object message, CancellationToken cancellationToken = default)
+        public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }

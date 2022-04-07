@@ -6,6 +6,8 @@ namespace NMediator.Test.TestData.Commands
     {
         public Guid Id { get; set; }
 
+        public string Name { get; set; }
+        
         public TestCommand(Guid id)
         {
             Id = id;

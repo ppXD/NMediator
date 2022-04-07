@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NMediator.Context;
 using NMediator.Middleware;
 using NMediator.Test.TestData;
 using Xunit;
@@ -33,25 +34,45 @@ namespace NMediator.Test.TestCommandHandlers
     
     public class TestMiddleware : IMiddleware
     {
-        public Task OnExecuting(object message, CancellationToken cancellationToken = default)
+        public Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
         {
+            if (context.Message is TestCommand command)
+            {
+                command.Name = "1";
+            }
+            
             return Task.CompletedTask;
         }
 
-        public Task OnExecuted(object message, CancellationToken cancellationToken = default)
+        public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
         {
+            if (context.Message is TestCommand command)
+            {
+                command.Name = "2";
+            }
+            
             return Task.CompletedTask;
         }
     }
     public class TestMiddleware2 : IMiddleware
     {
-        public Task OnExecuting(object message, CancellationToken cancellationToken = default)
+        public Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
         {
+            if (context.Message is TestCommand command)
+            {
+                command.Name = "3";
+            }
+            
             return Task.CompletedTask;
         }
 
-        public Task OnExecuted(object message, CancellationToken cancellationToken = default)
+        public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
         {
+            if (context.Message is TestCommand command)
+            {
+                command.Name = "4";
+            }
+            
             return Task.CompletedTask;
         }
     }

@@ -11,6 +11,7 @@ namespace NMediator
         public static MediatorConfiguration RegisterHandlers(this MediatorConfiguration mediatorConfiguration, IEnumerable<Type> handlerTypes)
         {
             RegisterHandlers(mediatorConfiguration, handlerTypes, typeof(ICommandHandler<>));
+            RegisterHandlers(mediatorConfiguration, handlerTypes, typeof(ICommandHandler<,>));
             RegisterHandlers(mediatorConfiguration, handlerTypes, typeof(IRequestHandler<,>));
             RegisterHandlers(mediatorConfiguration, handlerTypes, typeof(IEventHandler<>));
             
