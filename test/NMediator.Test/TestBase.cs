@@ -1,14 +1,14 @@
 using System;
 using NMediator.Test.TestData;
 
-namespace NMediator.Test
+namespace NMediator.Test;
+
+public class TestBase : IDisposable
 {
-    public class TestBase : IDisposable
+    public void Dispose()
     {
-        public void Dispose()
-        {
-            TestStore.CommandStore.Clear();
-            TestStore.EventStore.Clear();
-        }
+        TestStore.CommandStore.Clear();
+        TestStore.EventStore.Clear();
+        TestStore.RequestStore.Clear();
     }
 }

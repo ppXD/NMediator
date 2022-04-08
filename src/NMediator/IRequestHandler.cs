@@ -1,8 +1,7 @@
-namespace NMediator
+namespace NMediator;
+
+public interface IRequestHandler<in TRequest, TResponse> : IHandler<TRequest, TResponse>
+    where TRequest : class, IRequest
+    where TResponse : class, IResponse
 {
-    public interface IRequestHandler<in TRequest, TResponse> : IHandler<TRequest, TResponse>
-        where TRequest : class, IRequest
-        where TResponse : class, IResponse
-    {
-    }
 }

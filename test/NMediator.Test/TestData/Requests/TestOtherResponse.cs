@@ -1,6 +1,6 @@
-namespace NMediator.Test.TestData.Requests
+namespace NMediator.Test.TestData.Requests;
+
+public class TestOtherResponse : IResponse
 {
-    public class TestOtherResponse : IResponse
-    {
-    }
+    public string Result { get; set; }
 }

@@ -1,7 +1,6 @@
-namespace NMediator.Test
+namespace NMediator.Test;
+
+public class EventFixture
 {
-    public class EventFixture
-    {
         
-    }
 }

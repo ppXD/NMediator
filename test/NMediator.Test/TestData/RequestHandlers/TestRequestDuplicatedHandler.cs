@@ -5,7 +5,7 @@ using NMediator.Test.TestData.Requests;
 
 namespace NMediator.Test.TestData.RequestHandlers;
 
-public class TestRequestHandler : IRequestHandler<TestRequest, TestResponse>
+public class TestRequestDuplicatedHandler : IRequestHandler<TestRequest, TestResponse>
 {
     public Task<TestResponse> Handle(IMessageContext<TestRequest> context, CancellationToken cancellationToken = default)
     {

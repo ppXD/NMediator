@@ -1,7 +1,6 @@
-namespace NMediator.Test.TestData.Commands
+namespace NMediator.Test.TestData.Commands;
+
+public class TestOtherCommand : ICommand
 {
-    public class TestOtherCommand : ICommand
-    {
         
-    }
 }

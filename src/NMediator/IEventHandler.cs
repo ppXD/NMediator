@@ -1,7 +1,6 @@
-namespace NMediator
+namespace NMediator;
+
+public interface IEventHandler<in TEvent> : IHandler<TEvent>
+    where TEvent : class, IEvent
 {
-    public interface IEventHandler<in TEvent> : IHandler<TEvent>
-        where TEvent : class, IEvent
-    {
-    }
 }

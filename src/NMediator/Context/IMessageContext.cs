@@ -8,9 +8,11 @@ public interface IMessageContext<out TMessage> where TMessage : IMessage
 {
     TMessage Message { get; }
     
-    IEnumerable<Type>? MessageBindingHandlers { get; }
+    Type ResponseType { get; }
+    
+    IEnumerable<Type> MessageBindingHandlers { get; }
     
     IDependencyScope Scope { get; }
     
-    object? Result { get; set; }
+    object Result { get; set; }
 }

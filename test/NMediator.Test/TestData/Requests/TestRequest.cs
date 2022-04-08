@@ -1,7 +1,6 @@
-namespace NMediator.Test.TestData.Requests
+namespace NMediator.Test.TestData.Requests;
+
+public class TestRequest : IRequest
 {
-    public class TestRequest : IRequest
-    {
-        public string Message { get; set; }
-    }
+    public string Message { get; set; }
 }

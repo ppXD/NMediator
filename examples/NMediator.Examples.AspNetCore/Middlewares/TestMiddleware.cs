@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using NMediator.Context;
 using NMediator.Examples.AspNetCore.Commands;
-using IMiddleware = NMediator.Middleware.IMiddleware;
+using IMiddleware = NMediator.Middlewares.IMiddleware;
 
 namespace NMediator.Examples.AspNetCore.Middlewares
 {

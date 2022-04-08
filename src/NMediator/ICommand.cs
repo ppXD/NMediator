@@ -1,7 +1,6 @@
-namespace NMediator
+namespace NMediator;
+
+public interface ICommand : IMessage
 {
-    public interface ICommand : IMessage
-    {
         
-    }
 }
