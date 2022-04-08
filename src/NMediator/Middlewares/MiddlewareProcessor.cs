@@ -23,12 +23,12 @@ public class MiddlewareProcessor
         var current = (IMiddleware)context.Scope.Resolve(_middlewareType);
 
         await current.OnExecuting(context, cancellationToken).ConfigureAwait(false);
-            
+        
         if (Next != null)
             await Next.Process(context, cancellationToken).ConfigureAwait(false);
             
         await current.OnExecuted(context, cancellationToken).ConfigureAwait(false);
     }
 
-    public MiddlewareProcessor? Next { get; set; }
+    public MiddlewareProcessor Next { get; set; }
 }

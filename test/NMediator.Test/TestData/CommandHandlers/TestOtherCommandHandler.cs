@@ -7,7 +7,7 @@ namespace NMediator.Test.TestData.CommandHandlers;
 
 public class TestOtherCommandHandler : ICommandHandler<TestOtherCommand>
 {
-    public Task Handle(IMessageContext<TestOtherCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(ICommandContext<TestOtherCommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.CommandStore.Add(context.Message);
         return Task.CompletedTask;

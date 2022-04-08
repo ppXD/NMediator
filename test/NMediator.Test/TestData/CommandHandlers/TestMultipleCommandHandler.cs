@@ -10,13 +10,13 @@ public class TestMultipleCommandHandler :
     ICommandHandler<TestCommand>,
     ICommandHandler<TestOtherCommand, TestResponse>
 {
-    public Task Handle(IMessageContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.CommandStore.Add(context.Message);
         return Task.CompletedTask;
     }
 
-    public Task<TestResponse> Handle(IMessageContext<TestOtherCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestResponse> Handle(ICommandContext<TestOtherCommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.CommandStore.Add(context.Message);
         return Task.FromResult(new TestResponse());

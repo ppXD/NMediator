@@ -7,7 +7,7 @@ namespace NMediator.Test.TestData.EventHandlers;
 
 public class TestEventHandler : IEventHandler<TestEvent>
 {
-    public Task Handle(IMessageContext<TestEvent> context, CancellationToken cancellationToken = default)
+    public Task Handle(IEventContext<TestEvent> context, CancellationToken cancellationToken = default)
     {
         TestStore.EventStore.Add(context.Message);
 
@@ -17,7 +17,7 @@ public class TestEventHandler : IEventHandler<TestEvent>
     
 public class TestEventHandler1 : IEventHandler<TestEvent>
 {
-    public Task Handle(IMessageContext<TestEvent> context, CancellationToken cancellationToken = default)
+    public Task Handle(IEventContext<TestEvent> context, CancellationToken cancellationToken = default)
     {
         TestStore.EventStore.Add(context.Message);
 

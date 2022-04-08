@@ -7,7 +7,7 @@ namespace NMediator.Examples.AspNetCore.CommandHandlers
 {
     public class TestCommandHandlers : ICommandHandler<TestCommand>
     {
-        public Task Handle(IMessageContext<TestCommand> context, CancellationToken cancellationToken = default)
+        public Task Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }

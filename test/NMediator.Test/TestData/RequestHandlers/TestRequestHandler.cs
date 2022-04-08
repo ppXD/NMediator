@@ -7,7 +7,7 @@ namespace NMediator.Test.TestData.RequestHandlers;
 
 public class TestRequestHandler : IRequestHandler<TestRequest, TestResponse>
 {
-    public Task<TestResponse> Handle(IMessageContext<TestRequest> context, CancellationToken cancellationToken = default)
+    public Task<TestResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
         TestStore.RequestStore.Add(context.Message);
         return Task.FromResult(new TestResponse

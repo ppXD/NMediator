@@ -9,7 +9,7 @@ public class TestRequestAllInOneHandler :
     IRequestHandler<TestRequest, TestResponse>,
     IRequestHandler<TestOtherRequest, TestResponse>
 {
-    public Task<TestResponse> Handle(IMessageContext<TestRequest> context, CancellationToken cancellationToken = default)
+    public Task<TestResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
         TestStore.RequestStore.Add(context.Message);
         return Task.FromResult(new TestResponse
@@ -18,7 +18,7 @@ public class TestRequestAllInOneHandler :
         });
     }
     
-    public Task<TestResponse> Handle(IMessageContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
+    public Task<TestResponse> Handle(IRequestContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
     {
         TestStore.RequestStore.Add(context.Message);
         return Task.FromResult(new TestResponse
@@ -32,7 +32,7 @@ public class TestOtherRequestAllInOneHandler :
     IRequestHandler<TestRequest, TestOtherResponse>,
     IRequestHandler<TestOtherRequest, TestOtherResponse>
 {
-    public Task<TestOtherResponse> Handle(IMessageContext<TestRequest> context, CancellationToken cancellationToken = default)
+    public Task<TestOtherResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
         TestStore.RequestStore.Add(context.Message);
         return Task.FromResult(new TestOtherResponse
@@ -41,7 +41,7 @@ public class TestOtherRequestAllInOneHandler :
         });
     }
 
-    public Task<TestOtherResponse> Handle(IMessageContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
+    public Task<TestOtherResponse> Handle(IRequestContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
     {
         TestStore.RequestStore.Add(context.Message);
         return Task.FromResult(new TestOtherResponse
