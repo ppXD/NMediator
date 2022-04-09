@@ -4,7 +4,7 @@ using NMediator.Ioc;
 
 namespace NMediator.Context;
 
-public class EventContext<TEvent> : MessageContext<TEvent>, IRequestContext<TEvent> where TEvent : IMessage
+public class EventContext<TEvent> : MessageContext<TEvent>, IEventContext<TEvent> where TEvent : IMessage
 {
     public EventContext(IMessageContext<TEvent> context) : base(context.Message, context.Scope, context.ResponseType, context.MessageBindingHandlers)
     {
