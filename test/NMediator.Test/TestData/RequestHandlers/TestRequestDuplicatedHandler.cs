@@ -9,7 +9,7 @@ public class TestRequestDuplicatedHandler : IRequestHandler<TestRequest, TestRes
 {
     public Task<TestResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.RequestStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestResponse
         {
             Result = "Test response"

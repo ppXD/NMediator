@@ -20,12 +20,9 @@ public class HandlerInvokerMiddleware : IMiddleware
         foreach (var handlerType in context.MessageBindingHandlers)
         {
             var handleMethod = GetHandleMethod(handlerType, context.Message.GetType(), context.ResponseType);
-            var handleMethodContextType = GetHandleMethodContextType(handleMethod, context.Message.GetType());
             var handler = context.Scope.Resolve(handlerType);
 
-            var handleContext = Activator.CreateInstance(handleMethodContextType, context);
-            
-            var handleTask = (Task) handleMethod.Invoke(handler, new[] { handleContext, cancellationToken });
+            var handleTask = (Task) handleMethod.Invoke(handler, new object[] { context, cancellationToken });
 
             await handleTask.ConfigureAwait(false);
 
@@ -68,19 +65,6 @@ public class HandlerInvokerMiddleware : IMiddleware
                    .IsAssignableFrom(messageType.GetTypeInfo()));
     }
 
-    private static Type GetHandleMethodContextType(MethodBase m, Type messageType)
-    {
-        var parameterType = m.GetParameters()[0].ParameterType;
-
-        if (typeof(ICommandContext<>).MakeGenericType(messageType) == parameterType)
-            return typeof(CommandContext<>).MakeGenericType(messageType);
-        if (typeof(IRequestContext<>).MakeGenericType(messageType) == parameterType)
-            return typeof(RequestContext<>).MakeGenericType(messageType);
-        if (typeof(IEventContext<>).MakeGenericType(messageType) == parameterType)
-            return typeof(EventContext<>).MakeGenericType(messageType);
-        return typeof(MessageContext<>).MakeGenericType(messageType);
-    }
-    
     private static object GetResultFromTask(Task task)
     {
         if (!task.GetType().GetTypeInfo().IsGenericType)

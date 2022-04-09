@@ -9,8 +9,7 @@ public class TestEventHandler : IEventHandler<TestEvent>
 {
     public Task Handle(IEventContext<TestEvent> context, CancellationToken cancellationToken = default)
     {
-        TestStore.EventStore.Add(context.Message);
-
+        TestStore.Stores.Add(context.Message);
         return Task.CompletedTask;
     }
 }
@@ -19,8 +18,7 @@ public class TestEventHandler1 : IEventHandler<TestEvent>
 {
     public Task Handle(IEventContext<TestEvent> context, CancellationToken cancellationToken = default)
     {
-        TestStore.EventStore.Add(context.Message);
-
+        TestStore.Stores.Add(context.Message);
         return Task.CompletedTask;
     }
 }

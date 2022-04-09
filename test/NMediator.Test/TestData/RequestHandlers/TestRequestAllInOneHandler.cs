@@ -11,7 +11,7 @@ public class TestRequestAllInOneHandler :
 {
     public Task<TestResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.RequestStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestResponse
         {
             Result = "Test response for test request"
@@ -20,7 +20,7 @@ public class TestRequestAllInOneHandler :
     
     public Task<TestResponse> Handle(IRequestContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.RequestStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestResponse
         {
             Result = "Test response for test other request"
@@ -34,7 +34,7 @@ public class TestOtherRequestAllInOneHandler :
 {
     public Task<TestOtherResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.RequestStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestOtherResponse
         {
             Result = "Test other response for test request"
@@ -43,7 +43,7 @@ public class TestOtherRequestAllInOneHandler :
 
     public Task<TestOtherResponse> Handle(IRequestContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.RequestStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestOtherResponse
         {
             Result = "Test other response for test other request"

@@ -23,8 +23,8 @@ public class RequestFixture : TestBase
             
         response.ShouldNotBeNull();
             
-        TestStore.RequestStore.Count.ShouldBe(1);
-        TestStore.RequestStore.Single().ShouldBe(request);
+        TestStore.Stores.Count.ShouldBe(1);
+        TestStore.Stores.Single().ShouldBe(request);
     }
         
     [Fact]
@@ -46,7 +46,7 @@ public class RequestFixture : TestBase
         response1.Result.ShouldBe("Test response");
         response2.Result.ShouldBe("Test request but other response");
 
-        TestStore.RequestStore.Count.ShouldBe(2);
+        TestStore.Stores.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class RequestFixture : TestBase
         response3.Result.ShouldBe("Test response for test other request");
         response4.Result.ShouldBe("Test other response for test other request");
 
-        TestStore.RequestStore.Count.ShouldBe(4);
+        TestStore.Stores.Count.ShouldBe(4);
     }
     
     [Fact]

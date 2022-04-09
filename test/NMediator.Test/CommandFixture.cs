@@ -23,8 +23,8 @@ public class CommandFixture : TestBase
             
         await mediator.SendAsync(command);
             
-        TestStore.CommandStore.Count.ShouldBe(1);
-        TestStore.CommandStore.Single().ShouldBe(command);
+        TestStore.Stores.Count.ShouldBe(1);
+        TestStore.Stores.Single().ShouldBe(command);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class CommandFixture : TestBase
         var response = await mediator.SendAsync<TestCommand, TestResponse>(new TestCommand(Guid.NewGuid()));
             
         response.ShouldNotBeNull();
-        TestStore.CommandStore.Count.ShouldBe(2);
+        TestStore.Stores.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public class CommandFixture : TestBase
             
         await mediator.SendAsync(command);
             
-        TestStore.CommandStore.Count.ShouldBe(1);
-        TestStore.CommandStore.Single().ShouldBe(command);
+        TestStore.Stores.Count.ShouldBe(1);
+        TestStore.Stores.Single().ShouldBe(command);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class CommandFixture : TestBase
         await mediator.SendAsync(command1);
         await mediator.SendAsync(command2);
             
-        TestStore.CommandStore.Count.ShouldBe(2);
+        TestStore.Stores.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class CommandFixture : TestBase
         var response = await mediator.SendAsync<TestOtherCommand, TestResponse>(command2);
             
         response.ShouldNotBeNull();
-        TestStore.CommandStore.Count.ShouldBe(3);
+        TestStore.Stores.Count.ShouldBe(3);
     }
         
     [Fact]
@@ -107,7 +107,7 @@ public class CommandFixture : TestBase
 
         sendTask.ShouldThrow<NoHandlerFoundException>();
     }
-        
+    
     [Fact]
     public void CannotMoreThanOneCommandHandler()
     {

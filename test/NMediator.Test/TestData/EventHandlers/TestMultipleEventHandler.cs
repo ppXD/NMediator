@@ -9,14 +9,14 @@ public class TestMultipleEventHandler : IEventHandler<TestMultipleEvent1>, IEven
 {
     public Task Handle(IEventContext<TestMultipleEvent1> context, CancellationToken cancellationToken = default)
     {
-        TestStore.EventStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
             
         return Task.CompletedTask;
     }
 
     public Task Handle(IEventContext<TestMultipleEvent2> context, CancellationToken cancellationToken = default)
     {
-        TestStore.EventStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
             
         return Task.CompletedTask;
     }

@@ -9,7 +9,7 @@ public class TestOtherRequestHandler : IRequestHandler<TestOtherRequest, TestOth
 {
     public Task<TestOtherResponse> Handle(IRequestContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.RequestStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestOtherResponse());
     }
 }

@@ -10,7 +10,7 @@ public class TestCommandHasResponseHandler : ICommandHandler<TestCommand, TestRe
 {
     public Task<TestResponse> Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
-        TestStore.CommandStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestResponse());
     }
 }

@@ -9,7 +9,7 @@ public class TestCommandHandler : ICommandHandler<TestCommand>
 {
     public Task Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
-        TestStore.CommandStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.CompletedTask;
     }
 }

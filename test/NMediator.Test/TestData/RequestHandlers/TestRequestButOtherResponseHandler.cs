@@ -9,7 +9,7 @@ public class TestRequestButOtherResponseHandler : IRequestHandler<TestRequest, T
 {
     public Task<TestOtherResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.RequestStore.Add(context.Message);
+        TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestOtherResponse
         {
             Result = "Test request but other response"
