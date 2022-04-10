@@ -11,6 +11,9 @@ public class TestCommandHasResponseHandler : ICommandHandler<TestCommand, TestRe
     public Task<TestResponse> Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add(context.Message);
-        return Task.FromResult(new TestResponse());
+        return Task.FromResult(new TestResponse
+        {
+            Result = "Test command response"
+        });
     }
 }

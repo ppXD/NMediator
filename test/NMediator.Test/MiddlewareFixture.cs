@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.CommandHandlers;
 using NMediator.Test.TestData.Commands;
+using NMediator.Test.TestData.EventHandlers;
+using NMediator.Test.TestData.Events;
 using NMediator.Test.TestData.Middlewares;
 using NMediator.Test.TestData.RequestHandlers;
 using NMediator.Test.TestData.Requests;
@@ -60,13 +62,19 @@ public class MiddlewareFixture : TestBase
     {
         var mediator = new MediatorConfiguration()
             .RegisterHandler<TestRequestHandler>()
+            .RegisterHandler<TestEventHandler>()
+            .RegisterHandler<TestCommandHasResponseHandler>()
             .UseMiddleware<TestFirstMiddleware>()
             .UseMiddleware<TestSecondMiddleware>()
             .UseMiddleware<TestThirdMiddleware>()
             .CreateMediator();
 
-        var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+        await mediator.PublishAsync(new TestEvent());
         
-        response.Result.ShouldBe("Test response");
+        var requestResponse = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+        var commandResponse = await mediator.SendAsync<TestCommand, TestResponse>(new TestCommand(Guid.NewGuid()));
+        
+        requestResponse.Result.ShouldBe("Test response");
+        commandResponse.Result.ShouldBe("Test command response");
     }
 }
