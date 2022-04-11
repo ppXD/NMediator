@@ -77,4 +77,13 @@ public class MiddlewareFixture : TestBase
         requestResponse.Result.ShouldBe("Test response");
         commandResponse.Result.ShouldBe("Test command response");
     }
+
+    [Fact]
+    public void CannotUseNotAssignableFromIMiddlewareInterface()
+    {
+        var func = () => new MediatorConfiguration()
+            .UseMiddleware(typeof(TestCommandHandler));
+
+        func.ShouldThrow<NotSupportedException>();
+    }
 }
