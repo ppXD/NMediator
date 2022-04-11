@@ -47,8 +47,7 @@ public class CommandFixture : TestBase
     public async Task ShouldCommandSendToItsHandler()
     {
         var mediator = new MediatorConfiguration()
-            .RegisterHandler<TestCommandHandler>()
-            .RegisterHandler<TestOtherCommandHandler>()
+            .RegisterHandlers(typeof(TestCommandHandler), typeof(TestOtherCommandHandler))
             .CreateMediator();
 
         var command = new TestOtherCommand();

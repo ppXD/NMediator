@@ -8,7 +8,7 @@ using NMediator.Middlewares;
 
 namespace NMediator;
 
-public class MediatorConfiguration
+public partial class MediatorConfiguration
 {
     private IDependencyScope _resolver;
         
@@ -29,30 +29,37 @@ public class MediatorConfiguration
         
     public MediatorConfiguration RegisterHandler(Type handlerType)
     {
-        return this.RegisterHandlers(new[] {handlerType});
+        return RegisterHandlers(handlerType);
     }
 
     public MediatorConfiguration RegisterHandler<THandler>()
     {
-        return this.RegisterHandlers(new[] {typeof(THandler)});
+        return RegisterHandlers(typeof(THandler));
     }
 
     public MediatorConfiguration RegisterHandlers(params Assembly[] assemblies)
     {
-        return this.RegisterHandlers(assemblies.SelectMany(assembly => assembly.GetTypes()));
+        return RegisterHandlers(assemblies.SelectMany(assembly => assembly.GetTypes()).ToArray());
+    }
+    
+    public MediatorConfiguration RegisterHandlers(params Type[] handlerTypes)
+    {
+        RegisterHandlersInternal(handlerTypes);
+        return this;
     }
 
     public MediatorConfiguration UseMiddleware<TMiddleware>()
         where TMiddleware : class, IMiddleware
     {
-        return this.RegisterMiddleware<TMiddleware>();
+        RegisterMiddleware<TMiddleware>();
+        return this;
     }
 
     private MiddlewareProcessor BuildPipeline()
     {
         return MiddlewareProcessors.First();
     }
-        
+    
     public IMediator CreateMediator()
     {
         UseMiddleware<HandlerInvokerMiddleware>();
