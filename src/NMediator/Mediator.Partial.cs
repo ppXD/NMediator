@@ -6,7 +6,7 @@ namespace NMediator;
 
 public partial class Mediator
 {
-    private List<Type> FindHandlerTypes<TMessage>(IEnumerable<Type> matchedHandlerTypes) where TMessage : IMessage
+    private IEnumerable<Type> FindHandlerTypes<TMessage>(IEnumerable<Type> matchedHandlerTypes) where TMessage : IMessage
     {
         var messageType = typeof(TMessage);
         

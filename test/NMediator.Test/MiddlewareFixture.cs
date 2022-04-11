@@ -65,8 +65,8 @@ public class MiddlewareFixture : TestBase
             .RegisterHandler<TestEventHandler>()
             .RegisterHandler<TestCommandHasResponseHandler>()
             .UseMiddleware<TestFirstMiddleware>()
-            .UseMiddleware<TestSecondMiddleware>()
-            .UseMiddleware<TestThirdMiddleware>()
+            .UseMiddleware(typeof(TestSecondMiddleware))
+            .UseMiddlewares(typeof(TestThirdMiddleware))
             .CreateMediator();
 
         await mediator.PublishAsync(new TestEvent());

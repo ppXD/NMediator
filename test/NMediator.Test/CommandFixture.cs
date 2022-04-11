@@ -92,7 +92,22 @@ public class CommandFixture : TestBase
         response.ShouldNotBeNull();
         TestStore.Stores.Count.ShouldBe(3);
     }
+
+    [Fact]
+    public async Task ShouldNotDuplicatedHandlersWhenRegisterSameHandlers()
+    {
+        var mediator = new MediatorConfiguration()
+            .RegisterHandler<TestCommandHandler>()
+            .RegisterHandler<TestCommandHandler>()
+            .CreateMediator();
+
+        var command1 = new TestCommand(Guid.NewGuid());
+            
+        await mediator.SendAsync(command1);
         
+        TestStore.Stores.Count.ShouldBe(1);
+    }
+    
     [Fact]
     public void ShouldNotHandleUnMatchedResponse()
     {

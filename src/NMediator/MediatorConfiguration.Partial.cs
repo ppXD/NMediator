@@ -8,7 +8,7 @@ namespace NMediator;
 
 public partial class MediatorConfiguration
 {
-    private void RegisterHandlersInternal(IEnumerable<Type> handlerTypes)
+    private void RegisterHandlersInternal(IReadOnlyCollection<Type> handlerTypes)
     {
         RegisterHandlers(handlerTypes, typeof(ICommandHandler<>));
         RegisterHandlers(handlerTypes, typeof(ICommandHandler<,>));
@@ -31,27 +31,37 @@ public partial class MediatorConfiguration
 
                 var messageType = implementedInterface.GenericTypeArguments[0];
                 
-                if (MessageHandlerBindings.ContainsKey(messageType))
+                if (_messageHandlerBindings.ContainsKey(messageType))
                 {
-                    if (!MessageHandlerBindings[messageType].Contains(handlerType))
-                        MessageHandlerBindings[messageType].Add(handlerType);
+                    if (!_messageHandlerBindings[messageType].Contains(handlerType))
+                        _messageHandlerBindings[messageType].Add(handlerType);
                 }
                 else
                 {
-                    MessageHandlerBindings.TryAdd(messageType, new List<Type> {handlerType});
+                    _messageHandlerBindings.TryAdd(messageType, new List<Type> {handlerType});
                 }
             }
         }
     }
 
-    private void RegisterMiddleware<TMiddleware>()
-        where TMiddleware : class, IMiddleware
+    private void RegisterMiddlewaresInternal(params Type[] middlewares)
     {
-        var processors = new MiddlewareProcessor(typeof(TMiddleware));
+        foreach (var middleware in middlewares)
+        {
+            RegisterMiddleware(middleware);
+        }
+    }
 
-        if (MiddlewareProcessors.Any())
-            MiddlewareProcessors.Last().Next = processors;
-        MiddlewareProcessors.Add(processors);
+    private void RegisterMiddleware(Type middleware)
+    {
+        if (!typeof(IMiddleware).IsAssignableFrom(middleware))
+            throw new NotSupportedException(nameof(middleware));
+        
+        var processors = new MiddlewareProcessor(middleware);
+
+        if (_middlewareProcessors.Any())
+            _middlewareProcessors.Last().Next = processors;
+        _middlewareProcessors.Add(processors);
     }
     
     private bool IsHandlerInterface(Type type, Type handleType)
