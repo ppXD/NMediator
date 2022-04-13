@@ -10,6 +10,7 @@ using NMediator.Test.TestData.Filters.CommandFilters;
 using NMediator.Test.TestData.Filters.EventFilters;
 using NMediator.Test.TestData.Filters.MessageFilters;
 using NMediator.Test.TestData.Filters.RequestFilters;
+using NMediator.Test.TestData.Middlewares;
 using NMediator.Test.TestData.RequestHandlers;
 using NMediator.Test.TestData.Requests;
 using Shouldly;
@@ -82,30 +83,39 @@ public class FilterFixture : TestBase
     }
     
     [Fact]
-    public async Task ShouldMultipleFiltersInvokedExpectOrder()
+    public async Task ShouldMultipleMiddlewaresAndFiltersInvokedExpectOrder()
     {
         var mediator = new MediatorConfiguration()
             .RegisterHandler<TestCommandHandler>()
+            .UseMiddleware<TestFirstMiddleware>()
             .UseFilter<AllMessagesFilter2>()
+            .UseMiddleware<TestSecondMiddleware>()
             .UseFilter<AllCommandsFilter1>()
             .UseFilter<AllMessagesFilter1>()
             .UseFilter<AllCommandsFilter2>()
+            .UseMiddleware<TestThirdMiddleware>()
             .CreateMediator();
 
         var command = new TestCommand(Guid.NewGuid());
         
         await mediator.SendAsync(command);
         
-        TestStore.Stores.Count.ShouldBe(9);
-        TestStore.Stores[0].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuting)}");
-        TestStore.Stores[1].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
-        TestStore.Stores[2].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuting)}");
-        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnExecuting)}");
-        TestStore.Stores[4].ShouldBe(command);
-        TestStore.Stores[5].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnExecuted)}");
-        TestStore.Stores[6].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuted)}");
-        TestStore.Stores[7].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
-        TestStore.Stores[8].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuted)}");
+        TestStore.Stores.Count.ShouldBe(15);
+        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestSecondMiddleware)} {nameof(TestSecondMiddleware.OnExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestThirdMiddleware)} {nameof(TestThirdMiddleware.OnExecuting)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuting)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuting)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnExecuting)}");
+        TestStore.Stores[7].ShouldBe(command);
+        TestStore.Stores[8].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnExecuted)}");
+        TestStore.Stores[9].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuted)}");
+        TestStore.Stores[10].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
+        TestStore.Stores[11].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuted)}");
+        TestStore.Stores[12].ShouldBe($"{nameof(TestThirdMiddleware)} {nameof(TestThirdMiddleware.OnExecuted)}");
+        TestStore.Stores[13].ShouldBe($"{nameof(TestSecondMiddleware)} {nameof(TestSecondMiddleware.OnExecuted)}");
+        TestStore.Stores[14].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuted)}");
     }
     
     [Fact]
