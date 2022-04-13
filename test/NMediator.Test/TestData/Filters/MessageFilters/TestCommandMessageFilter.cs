@@ -4,7 +4,7 @@ using NMediator.Context;
 using NMediator.Filters;
 using NMediator.Test.TestData.Commands;
 
-namespace NMediator.Test.TestData.Filters;
+namespace NMediator.Test.TestData.Filters.MessageFilters;
 
 public class TestCommandMessageFilter : IMessageFilter<TestCommand>
 {

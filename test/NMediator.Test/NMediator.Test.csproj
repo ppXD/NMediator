@@ -23,10 +23,4 @@
       <ProjectReference Include="..\..\src\NMediator\NMediator.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="TestData\Filters\CommandFilters" />
-      <Folder Include="TestData\Filters\EventFilters" />
-      <Folder Include="TestData\Filters\RequestFilters" />
-    </ItemGroup>
-
 </Project>
