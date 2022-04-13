@@ -10,6 +10,8 @@ public interface IMessageContext<out TMessage> where TMessage : IMessage
     
     Type ResponseType { get; }
     
+    IEnumerable<Type> Filters { get; }
+    
     IEnumerable<Type> MessageBindingHandlers { get; }
     
     IDependencyScope Scope { get; }

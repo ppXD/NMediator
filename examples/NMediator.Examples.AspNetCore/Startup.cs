@@ -33,7 +33,12 @@ namespace NMediator.Examples.AspNetCore
                 .CreateMediator();
 
             services.AddScoped(x => mediator);
-            services.AddMvc(opt => opt.Filters.Add<TestFilter>());
+            services.AddMvc(opt =>
+            {
+                opt.Filters.Add<TestFilter1>();
+                opt.Filters.Add<TestFilter2>();
+                opt.Filters.Add<ExceptionFilter>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

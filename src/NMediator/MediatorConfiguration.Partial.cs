@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using NMediator.Filters;
 using NMediator.Middlewares;
 
 namespace NMediator;
@@ -62,6 +63,22 @@ public partial class MediatorConfiguration
         if (_middlewareProcessors.Any())
             _middlewareProcessors.Last().Next = processors;
         _middlewareProcessors.Add(processors);
+    }
+
+    private void RegisterFiltersInternal(params Type[] filters)
+    {
+        foreach (var filter in filters)
+        {
+            RegisterFilter(filter);
+        }
+    }
+
+    private void RegisterFilter(Type filter)
+    {
+        if (!typeof(IFilter).IsAssignableFrom(filter))
+            throw new NotSupportedException(nameof(filter));
+        
+        _filters.Add(filter);
     }
     
     private bool IsHandlerInterface(Type type, Type handleType)

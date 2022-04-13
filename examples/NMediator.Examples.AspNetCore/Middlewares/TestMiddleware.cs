@@ -42,16 +42,37 @@ namespace NMediator.Examples.AspNetCore.Middlewares
         }
     }
     
-    public class TestFilter : IActionFilter
+    public class TestFilter1 : IActionFilter
     {
+        public void OnActionExecuting(ActionExecutingContext context)
+        {
+            Console.Out.Write("start");
+        }
+        
         public void OnActionExecuted(ActionExecutedContext context)
         {
             Console.Out.Write("end");
         }
-
+    }
+    
+    public class TestFilter2 : IActionFilter
+    {
         public void OnActionExecuting(ActionExecutingContext context)
         {
             Console.Out.Write("start");
+        }
+        
+        public void OnActionExecuted(ActionExecutedContext context)
+        {
+            Console.Out.Write("end");
+        }
+    }
+    
+    public class ExceptionFilter : IExceptionFilter
+    {
+        public void OnException(ExceptionContext context)
+        {
+            Console.Out.Write("exception");
         }
     }
 }

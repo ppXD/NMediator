@@ -7,11 +7,12 @@ namespace NMediator.Context;
 public class MessageContext<TMessage> : IMessageContext<TMessage>
     where TMessage : IMessage
 {
-    public MessageContext(TMessage message, IDependencyScope scope, Type responseType = null, IEnumerable<Type> messageBindingHandlers = null)
+    public MessageContext(TMessage message, IDependencyScope scope, Type responseType = null, IEnumerable<Type> filters = null, IEnumerable<Type> messageBindingHandlers = null)
     {
         Scope = scope;
         Message = message;
         ResponseType = responseType;
+        Filters = filters;
         MessageBindingHandlers = messageBindingHandlers;
     }
     
@@ -19,6 +20,8 @@ public class MessageContext<TMessage> : IMessageContext<TMessage>
     
     public Type ResponseType { get; }
 
+    public IEnumerable<Type> Filters { get; }
+    
     public IEnumerable<Type> MessageBindingHandlers { get; }
 
     public IDependencyScope Scope { get; }

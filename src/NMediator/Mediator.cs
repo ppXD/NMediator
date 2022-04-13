@@ -12,13 +12,18 @@ namespace NMediator;
 public sealed partial class Mediator : IMediator
 {
     private readonly IDependencyScope _resolver;
+    
     private readonly MiddlewareProcessor _pipeline;
+    
+    private readonly List<Type> _filters;
+    
     private readonly ConcurrentDictionary<Type, List<Type>> _messageHandlerBindings;
     
-    public Mediator(IDependencyScope resolver, MiddlewareProcessor pipeline, ConcurrentDictionary<Type, List<Type>> messageHandlerBindings)
+    public Mediator(IDependencyScope resolver, MiddlewareProcessor pipeline, List<Type> filters, ConcurrentDictionary<Type, List<Type>> messageHandlerBindings)
     {
         _resolver = resolver;
         _pipeline = pipeline;
+        _filters = filters;
         _messageHandlerBindings = messageHandlerBindings;
     }
 
@@ -77,13 +82,14 @@ public sealed partial class Mediator : IMediator
 
         using var scope = _resolver.BeginScope();
 
-        var baseContext = new MessageContext<TMessage>(message, scope, responseType, FindHandlerTypes<TMessage>(matchedHandlerTypes));
+        var baseContext = new MessageContext<TMessage>(message, scope, responseType, 
+            FindFilterTypes<TMessage>(), FindHandlerTypes<TMessage>(matchedHandlerTypes));
 
         var context =
             (IMessageContext<TMessage>) Activator.CreateInstance(typeof(TContext), baseContext);
         
         await _pipeline.Process(context, cancellationToken).ConfigureAwait(false);
 
-        return context.Result;
+        return context?.Result;
     }
 }

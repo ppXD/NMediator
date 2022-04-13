@@ -3,8 +3,8 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using NMediator.Ioc;
 using NMediator.Filters;
+using NMediator.Ioc;
 using NMediator.Middlewares;
 
 namespace NMediator;
@@ -13,7 +13,7 @@ public partial class MediatorConfiguration
 {
     private IDependencyScope _resolver;
 
-    private readonly List<IFilter> _filters = new();
+    private readonly List<Type> _filters = new();
 
     private readonly List<MiddlewareProcessor> _middlewareProcessors = new();
 
@@ -75,20 +75,31 @@ public partial class MediatorConfiguration
     public MediatorConfiguration UseFilter<TFilter>()
         where TFilter : class, IFilter
     {
+        UseFilters(typeof(TFilter));
+        return this;
+    }
+
+    public MediatorConfiguration UseFilter(Type filter)
+    {
+        UseFilters(filter);
+        return this;
+    }
+    
+    public MediatorConfiguration UseFilters(params Type[] filters)
+    {
+        RegisterFiltersInternal(filters);
         return this;
     }
     
     private MiddlewareProcessor BuildPipeline()
     {
+        UseMiddleware<InvokeFilterPipelineMiddleware>();
+        
         return _middlewareProcessors.First();
     }
     
     public IMediator CreateMediator()
     {
-        UseMiddleware<HandlerInvokerMiddleware>();
-            
-        var pipeline = BuildPipeline();
-            
-        return new Mediator(_resolver, pipeline, _messageHandlerBindings);
+        return new Mediator(_resolver, BuildPipeline(), _filters, _messageHandlerBindings);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NMediator.Examples.AspNetCore.Commands;
@@ -22,7 +23,7 @@ namespace NMediator.Examples.AspNetCore.Controllers
             {
                 Message = "Hello world"
             });
-            
+            throw new Exception();
             return Ok();
         }
     }
