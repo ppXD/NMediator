@@ -1,16 +1,12 @@
 using System;
 using NMediator.Test.TestData;
-using Xunit;
 
-namespace NMediator.Test
+namespace NMediator.Test;
+
+public class TestBase : IDisposable
 {
-    [Collection("Mediator test")]
-    public class TestBase
+    public void Dispose()
     {
-        protected TestBase()
-        {
-            TestStore.CommandStore.Clear();
-            TestStore.EventStore.Clear();
-        }
+        TestStore.Stores.Clear();
     }
 }

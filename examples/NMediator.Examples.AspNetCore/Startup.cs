@@ -22,17 +22,25 @@ namespace NMediator.Examples.AspNetCore
             
             var mediator = new MediatorConfiguration()
                 .RegisterHandler<TestCommandHandlers>()
-                .UseMiddleware<TestMiddleware>()
-                .UseMiddleware(next =>
-                {
-                    return async message =>
-                    {
-                        await next(message);
-                    };
-                })
+                // .UseMiddleware<TestMiddleware>()
+                // .UseMiddleware(next =>
+                // {
+                //     return async message =>
+                //     {
+                //         await next(message);
+                //     };
+                // })
                 .CreateMediator();
 
             services.AddScoped(x => mediator);
+            services.AddMvc(opt =>
+            {
+                opt.Filters.Add<TestFilter1>();
+                opt.Filters.Add<TestFilter2>();
+                opt.Filters.Add<TestFilter3>();
+                opt.Filters.Add<ExceptionFilter1>();
+                opt.Filters.Add<ExceptionFilter2>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +51,8 @@ namespace NMediator.Examples.AspNetCore
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<TestMiddleware1>();
+            app.UseMiddleware<TestMiddleware2>();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

@@ -1,7 +1,6 @@
-namespace NMediator
+namespace NMediator;
+
+public interface IRequest : IMessage
 {
-    public interface IRequest : IMessage
-    {
         
-    }
 }

@@ -1,96 +1,95 @@
 using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using NMediator.Context;
+using NMediator.Ioc;
+using NMediator.Middlewares;
 
-namespace NMediator
+namespace NMediator;
+
+public sealed partial class Mediator : IMediator
 {
-    public class Mediator : IMediator
+    private readonly IDependencyScope _resolver;
+    
+    private readonly MiddlewareProcessor _pipeline;
+    
+    private readonly List<Type> _filters;
+    
+    private readonly ConcurrentDictionary<Type, List<Type>> _messageHandlerBindings;
+    
+    public Mediator(IDependencyScope resolver, MiddlewareProcessor pipeline, List<Type> filters, ConcurrentDictionary<Type, List<Type>> messageHandlerBindings)
     {
-        private readonly MessageDelegate _messagePipeline;
+        _resolver = resolver;
+        _pipeline = pipeline;
+        _filters = filters;
+        _messageHandlerBindings = messageHandlerBindings;
+    }
 
-        private static readonly ConcurrentDictionary<Type, List<object>> Handlers = new ConcurrentDictionary<Type, List<object>>();
+    public async Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) 
+        where TCommand : class, ICommand
+    {
+        await SendMessageAsync<TCommand, CommandContext<TCommand>>(command, 
+            new[] { typeof(ICommandHandler<TCommand>), typeof(ICommandHandler<,>) }, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<TResponse> SendAsync<TCommand, TResponse>(TCommand command, CancellationToken cancellationToken = default) 
+        where TCommand : class, ICommand
+        where TResponse : class, IResponse
+    {
+        return await SendMessageAsync<TCommand, TResponse, CommandContext<TCommand>>(command,
+            new[] { typeof(ICommandHandler<TCommand, TResponse>) }, cancellationToken).ConfigureAwait(false);
+    }
+    
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+        where TEvent : class, IEvent
+    {
+        await SendMessageAsync<TEvent, EventContext<TEvent>>(@event, 
+                new[] { typeof(IEventHandler<TEvent>) }, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+        where TRequest : class, IRequest
+        where TResponse : class, IResponse
+    {
+        return await SendMessageAsync<TRequest, TResponse, RequestContext<TRequest>>(request,
+            new[] { typeof(IRequestHandler<TRequest, TResponse>) }, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task SendMessageAsync<TMessage, TContext>(TMessage message, IEnumerable<Type> matchedHandlerTypes, CancellationToken cancellationToken = default)
+        where TMessage : class, IMessage
+        where TContext : IMessageContext<TMessage>
+    {
+        await ProcessMessage<TMessage, TContext>(message, null, matchedHandlerTypes, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<TResponse> SendMessageAsync<TMessage, TResponse, TContext>(TMessage message, IEnumerable<Type> matchedHandlerTypes, CancellationToken cancellationToken = default)
+        where TMessage : class, IMessage
+        where TResponse : class, IResponse
+        where TContext : IMessageContext<TMessage>
+    {
+        return (TResponse) await ProcessMessage<TMessage, TContext>(message, typeof(TResponse), matchedHandlerTypes, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<object> ProcessMessage<TMessage, TContext>(TMessage message, Type responseType, IEnumerable<Type> matchedHandlerTypes,
+        CancellationToken cancellationToken = default)
+        where TMessage : class, IMessage
+        where TContext : IMessageContext<TMessage>
+    {
+        if (message == null)
+            throw new ArgumentNullException(nameof(message));
+
+        using var scope = _resolver.BeginScope();
+
+        var baseContext = new MessageContext<TMessage>(message, scope, responseType, 
+            FindFilterTypes<TMessage>(), FindHandlerTypes<TMessage>(matchedHandlerTypes));
+
+        var context =
+            (IMessageContext<TMessage>) Activator.CreateInstance(typeof(TContext), baseContext);
         
-        public Mediator(MediatorConfiguration mediatorConfiguration)
-        {
-            Configuration = mediatorConfiguration ?? throw new ArgumentNullException(nameof(mediatorConfiguration));
-            
-            _messagePipeline = mediatorConfiguration.BuildPipeline();
-        }
+        await _pipeline.Process(context, cancellationToken).ConfigureAwait(false);
 
-        public Task SendAsync<TMessage>(TMessage command, CancellationToken cancellationToken = default) 
-            where TMessage : ICommand
-        {
-            if (command == null)
-                throw new ArgumentNullException(nameof(command));
-
-            var commandType = command.GetType();
-
-            var handlers = FindHandlers(commandType);
-            
-            if (handlers.Count > 1)
-                throw new MoreThanOneHandlerException(commandType);
-
-            var handler = (ICommandHandler<TMessage>) handlers.Single();
-            
-            _messagePipeline(command);
-            
-            return handler.Handle(command, cancellationToken);
-        }
-
-        public Task PublishAsync<TMessage>(TMessage @event, CancellationToken cancellationToken = default)
-            where TMessage : IEvent
-        {
-            if (@event == null)
-                throw new ArgumentNullException(nameof(@event));
-            
-            var eventType = @event.GetType();
-
-            var handlers = FindHandlers(eventType);
-            
-            _messagePipeline(@event);
-
-            var tasks = handlers.Select(h => ((IEventHandler<TMessage>) h).Handle(@event, cancellationToken)).ToList();
-
-            return Task.WhenAll(tasks);
-        }
-
-        public Task<TResponse> RequestAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
-            where TRequest : class, IRequest
-            where TResponse : class, IResponse
-        {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request));
-            
-            var requestType = request.GetType();
-            
-            var handlers = FindHandlers(requestType);
-            
-            if (handlers.Count > 1)
-                throw new MoreThanOneHandlerException(requestType);
-
-            var handler = (IRequestHandler<TRequest, TResponse>) handlers.Single();
-            
-            _messagePipeline(requestType);
-            
-            return handler.Handle(request, cancellationToken);
-        }
-
-        private List<object> FindHandlers(Type messageType)
-        {
-            return Handlers.GetOrAdd(messageType, type =>
-            {
-                Configuration.MessageBindings.TryGetValue(messageType, out var handlerTypes);
-
-                if (handlerTypes == null || !handlerTypes.Any())
-                    throw new NoHandlerFoundException(messageType);
-
-                return handlerTypes.Select(t => Configuration.Resolver.Resolve(t)).ToList();
-            });
-        }
-        
-        public MediatorConfiguration Configuration { get; }
+        return context?.Result;
     }
 }

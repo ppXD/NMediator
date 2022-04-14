@@ -1,7 +1,6 @@
-namespace NMediator.Test.TestData.Events
+namespace NMediator.Test.TestData.Events;
+
+public class TestEvent : IEvent
 {
-    public class TestEvent : IEvent
-    {
-        public string Message { get; set; }
-    }
+    public string Message { get; set; }
 }

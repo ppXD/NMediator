@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NMediator.Examples.AspNetCore.Commands;
@@ -18,11 +19,12 @@ namespace NMediator.Examples.AspNetCore.Controllers
         [HttpGet("send")]
         public async Task<IActionResult> Send()
         {
+            throw new Exception();
+
             await _mediator.SendAsync(new TestCommand
             {
                 Message = "Hello world"
             });
-            
             return Ok();
         }
     }

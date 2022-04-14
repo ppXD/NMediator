@@ -1,12 +1,9 @@
-using System.Threading;
-using System.Threading.Tasks;
+using NMediator.Context;
 
-namespace NMediator
+namespace NMediator;
+
+public interface IRequestHandler<in TRequest, TResponse> : IHandler<TRequest, TResponse, IRequestContext<TRequest>>
+    where TRequest : class, IRequest
+    where TResponse : class, IResponse
 {
-    public interface IRequestHandler<in TRequest, TResponse>
-        where TRequest : class, IRequest
-        where TResponse : class, IResponse
-    {
-        Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
-    }
 }

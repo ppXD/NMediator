@@ -1,7 +1,6 @@
-namespace NMediator.Test.TestData.Events
+namespace NMediator.Test.TestData.Events;
+
+public class TestMultipleEvent1 : IEvent
 {
-    public class TestMultipleEvent1 : IEvent
-    {
         
-    }
 }

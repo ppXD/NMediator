@@ -1,104 +1,105 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using NMediator.Filters;
 using NMediator.Ioc;
+using NMediator.Middlewares;
 
-namespace NMediator
+namespace NMediator;
+
+public partial class MediatorConfiguration
 {
-    public class MediatorConfiguration
+    private IDependencyScope _resolver;
+
+    private readonly List<Type> _filters = new();
+
+    private readonly List<MiddlewareProcessor> _middlewareProcessors = new();
+
+    private readonly ConcurrentDictionary<Type, List<Type>> _messageHandlerBindings = new();
+
+    public MediatorConfiguration()
     {
-        private bool _mediatorCreated;
+        _resolver = new DefaultDependencyScope();
+    }
 
-        private IServiceRegistration _serviceRegistration;
+    public MediatorConfiguration UseDependencyScope(IDependencyScope scope)
+    {
+        _resolver = scope;
+        return this;
+    }
         
-        private readonly IList<Func<MessageDelegate, MessageDelegate>> _middlewares = new List<Func<MessageDelegate, MessageDelegate>>();
+    public MediatorConfiguration RegisterHandler(Type handlerType)
+    {
+        return RegisterHandlers(handlerType);
+    }
 
-        public IServiceResolver Resolver { get; private set; }
+    public MediatorConfiguration RegisterHandler<THandler>()
+    {
+        return RegisterHandlers(typeof(THandler));
+    }
 
-        public readonly List<Type> MiddlewareTypes = new List<Type>();
-        public readonly Dictionary<Type, List<Type>> MessageBindings = new Dictionary<Type, List<Type>>();
+    public MediatorConfiguration RegisterHandlers(params Assembly[] assemblies)
+    {
+        return RegisterHandlers(assemblies.SelectMany(assembly => assembly.GetTypes()).ToArray());
+    }
+    
+    public MediatorConfiguration RegisterHandlers(params Type[] handlerTypes)
+    {
+        if (handlerTypes == null || !handlerTypes.Any())
+            throw new ArgumentNullException(nameof(handlerTypes));
+        RegisterHandlersInternal(handlerTypes);
+        return this;
+    }
+
+    public MediatorConfiguration UseMiddleware<TMiddleware>()
+        where TMiddleware : class, IMiddleware
+    {
+        UseMiddlewares(typeof(TMiddleware));
+        return this;
+    }
+
+    public MediatorConfiguration UseMiddleware(Type middleware)
+    {
+        UseMiddlewares(middleware);
+        return this;
+    }
+    
+    public MediatorConfiguration UseMiddlewares(params Type[] middlewares)
+    {
+        RegisterMiddlewaresInternal(middlewares);
+        return this;
+    }
+    
+    public MediatorConfiguration UseFilter<TFilter>()
+        where TFilter : class, IFilter
+    {
+        UseFilters(typeof(TFilter));
+        return this;
+    }
+
+    public MediatorConfiguration UseFilter(Type filter)
+    {
+        UseFilters(filter);
+        return this;
+    }
+    
+    public MediatorConfiguration UseFilters(params Type[] filters)
+    {
+        RegisterFiltersInternal(filters);
+        return this;
+    }
+    
+    private MiddlewareProcessor BuildPipeline()
+    {
+        UseMiddleware<InvokeFilterPipelineMiddleware>();
         
-        public MediatorConfiguration()
-        {
-            UseServiceRegistration(new DefaultServiceRegistration());
-        }
-        
-        public MediatorConfiguration UseServiceRegistration(IServiceRegistration serviceRegistration)
-        {
-            _serviceRegistration = serviceRegistration;
-            
-            return this;
-        }
-
-        public MediatorConfiguration RegisterHandler(Type handlerType)
-        {
-            return this.RegisterHandlers(new[] {handlerType});
-        }
-
-        public MediatorConfiguration RegisterHandler<THandler>()
-        {
-            return this.RegisterHandlers(new[] {typeof(THandler)});
-        }
-
-        public MediatorConfiguration RegisterServices(Action<IServiceRegistration> register)
-        {
-            register(_serviceRegistration);
-            
-            return this;
-        }
-        
-        public MediatorConfiguration RegisterHandlers(params Assembly[] assemblies)
-        {
-            return this.RegisterHandlers(assemblies.SelectMany(assembly => assembly.GetTypes()));
-        }
-        
-        public MediatorConfiguration UseMiddleware(Func<MessageDelegate, MessageDelegate> middleware)
-        {
-            _middlewares.Add(middleware);
-            
-            return this;
-        }
-
-        public MediatorConfiguration UseMiddleware<TMiddleware>()
-            where TMiddleware : IMiddleware
-        {
-            var middlewareType = typeof(TMiddleware);
-            
-            if (!MiddlewareTypes.Contains(middlewareType))
-            {
-                MiddlewareTypes.Add(middlewareType);
-            
-                _serviceRegistration.Register(middlewareType);
-            }
-            
-            return UseMiddleware(next =>
-            {
-                return async message =>
-                {
-                    await ((IMiddleware) Resolver.Resolve(middlewareType)).InvokeAsync(message, next);
-                };
-            });
-        }
-        
-        internal MessageDelegate BuildPipeline()
-        {
-            Task Seed(object message) => Task.CompletedTask;
-
-            return _middlewares.Reverse().Aggregate((MessageDelegate) Seed, (next, current) => current(next));
-        }
-        
-        public IMediator CreateMediator()
-        {
-            if (_mediatorCreated)  
-                throw new InvalidOperationException("CreateMediator() was previously called and can only be called once.");
-
-            Resolver = _serviceRegistration.CreateResolver();
-            
-            _mediatorCreated = true;
-            
-            return new Mediator(this);
-        }
+        return _middlewareProcessors.First();
+    }
+    
+    public IMediator CreateMediator()
+    {
+        return new Mediator(_resolver, BuildPipeline(), _filters, _messageHandlerBindings);
     }
 }
