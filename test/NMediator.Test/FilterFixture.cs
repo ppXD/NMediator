@@ -196,6 +196,63 @@ public class FilterFixture : TestBase
         TestStore.Stores[6].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuted)}");
         TestStore.Stores[7].ShouldBe($"{nameof(ExceptionUnHandledFilter1)} {nameof(ExceptionUnHandledFilter1.OnException)}");
     }
+
+    [Fact]
+    public async Task ShouldFilterThrowExceptionExpectOrder()
+    {
+        var command = new TestCommand(Guid.NewGuid());
+
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<TestCommandHandler>()
+            .UseMiddleware<TestFirstMiddleware>()
+            .UseFilter<AllMessagesFilter1>()
+            .UseFilter<AllCommandsFilter1>()
+            .UseFilter<TestCommandOnExecutingThrowExceptionFilter>()
+            .UseFilter<ExceptionHandledFilter1>()
+            .CreateMediator();
+        
+        await mediator1.SendAsync(command);
+        
+        TestStore.Stores.Count.ShouldBe(8);
+        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestCommandOnExecutingThrowExceptionFilter)} {nameof(TestCommandOnExecutingThrowExceptionFilter.OnExecuting)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuted)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(ExceptionHandledFilter1)} {nameof(ExceptionHandledFilter1.OnException)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuted)}");
+        TestStore.Stores.Clear();
+        
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<TestCommandHandler>()
+            .UseMiddleware<TestFirstMiddleware>()
+            .UseFilter<AllMessagesFilter1>()
+            .UseFilter<AllCommandsFilter1>()
+            .UseFilter<TestCommandOnExecutedThrowExceptionFilter>()
+            .UseFilter<ExceptionUnHandledFilter1>()
+            .CreateMediator();
+        
+        try
+        {
+            await mediator2.SendAsync(command);
+        }
+        catch
+        {
+            // ignored
+        }
+        
+        TestStore.Stores.Count.ShouldBe(9);
+        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestCommandOnExecutedThrowExceptionFilter)} {nameof(TestCommandOnExecutedThrowExceptionFilter.OnExecuting)}");
+        TestStore.Stores[4].ShouldBe(command);
+        TestStore.Stores[5].ShouldBe($"{nameof(TestCommandOnExecutedThrowExceptionFilter)} {nameof(TestCommandOnExecutedThrowExceptionFilter.OnExecuted)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuted)}");
+        TestStore.Stores[8].ShouldBe($"{nameof(ExceptionUnHandledFilter1)} {nameof(ExceptionUnHandledFilter1.OnException)}");
+    }
     
     [Fact]
     public async Task ShouldCorrectResponseAcrossManyFilters()
