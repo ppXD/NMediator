@@ -37,7 +37,9 @@ namespace NMediator.Examples.AspNetCore
             {
                 opt.Filters.Add<TestFilter1>();
                 opt.Filters.Add<TestFilter2>();
-                opt.Filters.Add<ExceptionFilter>();
+                opt.Filters.Add<TestFilter3>();
+                opt.Filters.Add<ExceptionFilter1>();
+                opt.Filters.Add<ExceptionFilter2>();
             });
         }
 
@@ -50,6 +52,7 @@ namespace NMediator.Examples.AspNetCore
             }
 
             app.UseMiddleware<TestMiddleware1>();
+            app.UseMiddleware<TestMiddleware2>();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

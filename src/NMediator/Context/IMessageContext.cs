@@ -17,4 +17,8 @@ public interface IMessageContext<out TMessage> where TMessage : IMessage
     IDependencyScope Scope { get; }
     
     object Result { get; set; }
+    
+    Exception Exception { get; set; }
+    
+    bool ExceptionHandled { get; set; }
 }

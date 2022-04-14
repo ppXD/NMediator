@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using NMediator.Context;
+using NMediator.Filters;
 
 namespace NMediator.Infrastructure;
 
@@ -19,24 +20,41 @@ public class FilterInvoker
         _context = context;
     }
     
-    public async Task Invoke(Type filterType, Func<Task> continuation, CancellationToken cancellationToken)
+    public async Task InvokeExecutionFilter(Type filterType, Func<Task> continuation, CancellationToken cancellationToken)
     {
         var filter = _context.Scope.Resolve(filterType);
 
         await InvokeFilterMethod(filter, FilterOnExecutingMethod, _context, cancellationToken).ConfigureAwait(false);
         
+        var wasError = false;
         try
         {
             await continuation().ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            wasError = true;
+            _context.Exception = ex is TargetInvocationException ? ex.InnerException : ex;
+            
+            await InvokeFilterMethod(filter, FilterOnExecutedMethod, _context, cancellationToken).ConfigureAwait(false);
+            
+            if (!_context.ExceptionHandled)
+                throw;
         }
 
-        await InvokeFilterMethod(filter, FilterOnExecutedMethod, _context, cancellationToken).ConfigureAwait(false);
+        if (!wasError)
+            await InvokeFilterMethod(filter, FilterOnExecutedMethod, _context, cancellationToken).ConfigureAwait(false);
     }
 
+    public async Task InvokeExceptionFilter(Type exceptionFilterType, CancellationToken cancellationToken)
+    {
+        if (_context.ExceptionHandled) return;
+        
+        var filter = (IExceptionFilter)_context.Scope.Resolve(exceptionFilterType);
+
+        await filter.OnException(_context, cancellationToken).ConfigureAwait(false);
+    }
+    
     private static async Task InvokeFilterMethod(object filter, string method, IMessageContext<IMessage> context, CancellationToken cancellationToken)
     {
         var executeMethod = GetFilterMethod(filter, method, context.Message.GetType());

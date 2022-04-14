@@ -19,11 +19,12 @@ namespace NMediator.Examples.AspNetCore.Controllers
         [HttpGet("send")]
         public async Task<IActionResult> Send()
         {
+            throw new Exception();
+
             await _mediator.SendAsync(new TestCommand
             {
                 Message = "Hello world"
             });
-            throw new Exception();
             return Ok();
         }
     }

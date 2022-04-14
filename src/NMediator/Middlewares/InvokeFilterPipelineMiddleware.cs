@@ -21,12 +21,27 @@ public class InvokeFilterPipelineMiddleware : IMiddleware
         var thunk = executionFilters.Reverse()
             .Aggregate((Func<Task>)Continuation,
                 (next, filter) => async () =>
-                    await filterInvoker.Invoke(filter, next, cancellationToken).ConfigureAwait(false));
+                    await filterInvoker.InvokeExecutionFilter(filter, next, cancellationToken).ConfigureAwait(false));
 
         async Task Continuation() =>
             context.Result = await handlerInvoker.Invoke(cancellationToken).ConfigureAwait(false);
-        
-        await thunk().ConfigureAwait(false);
+
+        try
+        {
+            await thunk().ConfigureAwait(false);
+        }
+        catch
+        {
+            var exceptionFilters = GetFilters(context.Filters, typeof(IExceptionFilter));
+
+            foreach (var exceptionFilter in exceptionFilters)
+            {
+                await filterInvoker.InvokeExceptionFilter(exceptionFilter, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Consider when context.Result not null should throw?
+            if (!context.ExceptionHandled) throw;
+        }
     }
     
     public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
@@ -37,6 +52,6 @@ public class InvokeFilterPipelineMiddleware : IMiddleware
     private static IEnumerable<Type> GetFilters(IEnumerable<Type> filters, Type filterType)
     {
         return filters.Where(f =>
-            f.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == filterType));
+            f.GetInterfaces().Any(i => i == filterType || i.IsGenericType && i.GetGenericTypeDefinition() == filterType));
     }
 }

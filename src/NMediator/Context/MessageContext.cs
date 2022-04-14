@@ -27,4 +27,8 @@ public class MessageContext<TMessage> : IMessageContext<TMessage>
     public IDependencyScope Scope { get; }
     
     public object Result { get; set; }
+    
+    public Exception Exception { get; set; }
+    
+    public bool ExceptionHandled { get; set; }
 }
