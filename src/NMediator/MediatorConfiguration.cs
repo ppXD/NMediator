@@ -3,8 +3,8 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using NMediator.Filters;
 using NMediator.Ioc;
+using NMediator.Filters;
 using NMediator.Middlewares;
 
 namespace NMediator;
@@ -13,15 +13,17 @@ public partial class MediatorConfiguration
 {
     private IDependencyScope _resolver;
 
-    private readonly List<Type> _filters = new();
-
-    private readonly List<MiddlewareProcessor> _middlewareProcessors = new();
-
     private readonly ConcurrentDictionary<Type, List<Type>> _messageHandlerBindings = new();
+
+    public List<Type> Filters { get; } = new();
+    public List<Type> Middlewares { get; } = new();
+    public List<Type> Handlers => _messageHandlerBindings.SelectMany(x => x.Value).ToList();
 
     public MediatorConfiguration()
     {
         _resolver = new DefaultDependencyScope();
+
+        UseMiddleware<InvokeFilterPipelineMiddleware>();
     }
 
     public MediatorConfiguration UseDependencyScope(IDependencyScope scope)
@@ -47,8 +49,6 @@ public partial class MediatorConfiguration
     
     public MediatorConfiguration RegisterHandlers(params Type[] handlerTypes)
     {
-        if (handlerTypes == null || !handlerTypes.Any())
-            throw new ArgumentNullException(nameof(handlerTypes));
         RegisterHandlersInternal(handlerTypes);
         return this;
     }
@@ -56,33 +56,29 @@ public partial class MediatorConfiguration
     public MediatorConfiguration UseMiddleware<TMiddleware>()
         where TMiddleware : class, IMiddleware
     {
-        UseMiddlewares(typeof(TMiddleware));
-        return this;
+        return UseMiddleware(typeof(TMiddleware));
     }
 
     public MediatorConfiguration UseMiddleware(Type middleware)
     {
-        UseMiddlewares(middleware);
-        return this;
-    }
-    
-    public MediatorConfiguration UseMiddlewares(params Type[] middlewares)
-    {
-        RegisterMiddlewaresInternal(middlewares);
+        RegisterMiddlewareInternal(middleware);
         return this;
     }
     
     public MediatorConfiguration UseFilter<TFilter>()
         where TFilter : class, IFilter
     {
-        UseFilters(typeof(TFilter));
-        return this;
+        return UseFilters(typeof(TFilter));
     }
 
     public MediatorConfiguration UseFilter(Type filter)
     {
-        UseFilters(filter);
-        return this;
+        return UseFilters(filter);
+    }
+    
+    public MediatorConfiguration UseFilters(params Assembly[] assemblies)
+    {
+        return UseFilters(assemblies.SelectMany(assembly => assembly.GetTypes()).ToArray());
     }
     
     public MediatorConfiguration UseFilters(params Type[] filters)
@@ -93,13 +89,20 @@ public partial class MediatorConfiguration
     
     private MiddlewareProcessor BuildPipeline()
     {
-        UseMiddleware<InvokeFilterPipelineMiddleware>();
+        MiddlewareProcessor processor = null;
         
-        return _middlewareProcessors.First();
+        for (var i = Middlewares.Count - 1; i >= 0; i--)
+        {
+            processor = i == Middlewares.Count - 1
+                ? new MiddlewareProcessor(Middlewares[i], null)
+                : new MiddlewareProcessor(Middlewares[i], processor);
+        }
+        
+        return processor;
     }
     
     public IMediator CreateMediator()
     {
-        return new Mediator(_resolver, BuildPipeline(), _filters, _messageHandlerBindings);
+        return new Mediator(_resolver, BuildPipeline(), Filters, _messageHandlerBindings);
     }
 }

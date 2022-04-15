@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using NMediator.Middlewares;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.CommandHandlers;
 using NMediator.Test.TestData.Commands;
@@ -66,7 +68,6 @@ public class MiddlewareFixture : TestBase
             .RegisterHandler<TestCommandHasResponseHandler>()
             .UseMiddleware<TestFirstMiddleware>()
             .UseMiddleware(typeof(TestSecondMiddleware))
-            .UseMiddlewares(typeof(TestThirdMiddleware))
             .CreateMediator();
 
         await mediator.PublishAsync(new TestEvent());
@@ -81,9 +82,10 @@ public class MiddlewareFixture : TestBase
     [Fact]
     public void CannotUseNotAssignableFromIMiddlewareInterface()
     {
-        var func = () => new MediatorConfiguration()
+        var config = new MediatorConfiguration()
             .UseMiddleware(typeof(TestCommandHandler));
 
-        func.ShouldThrow<NotSupportedException>();
+        config.Middlewares.Count.ShouldBe(1);
+        config.Middlewares.Single().ShouldBe(typeof(InvokeFilterPipelineMiddleware));
     }
 }

@@ -11,6 +11,8 @@ public partial class MediatorConfiguration
 {
     private void RegisterHandlersInternal(IReadOnlyCollection<Type> handlerTypes)
     {
+        if (handlerTypes == null || !handlerTypes.Any()) return;
+        
         RegisterHandlers(handlerTypes, typeof(ICommandHandler<>));
         RegisterHandlers(handlerTypes, typeof(ICommandHandler<,>));
         RegisterHandlers(handlerTypes, typeof(IRequestHandler<,>));
@@ -45,44 +47,32 @@ public partial class MediatorConfiguration
         }
     }
 
-    private void RegisterMiddlewaresInternal(params Type[] middlewares)
+    private void RegisterMiddlewareInternal(Type middleware)
     {
-        foreach (var middleware in middlewares)
+        if (!typeof(IMiddleware).IsAssignableFrom(middleware)) return;
         {
-            RegisterMiddleware(middleware);
+            Middlewares.Add(middleware);
+            MoveInvokeFilterPipelineMiddlewareToBottom();
         }
     }
 
-    private void RegisterMiddleware(Type middleware)
+    private void RegisterFiltersInternal(IEnumerable<Type> filterTypes)
     {
-        if (!typeof(IMiddleware).IsAssignableFrom(middleware))
-            throw new NotSupportedException(nameof(middleware));
-        
-        var processors = new MiddlewareProcessor(middleware);
+        var filters = filterTypes
+            .Where(x => !x.IsAbstract)
+            .Where(x => x.IsClass && typeof(IFilter).IsAssignableFrom(x)).ToList();
 
-        if (_middlewareProcessors.Any())
-            _middlewareProcessors.Last().Next = processors;
-        _middlewareProcessors.Add(processors);
-    }
-
-    private void RegisterFiltersInternal(params Type[] filters)
-    {
-        foreach (var filter in filters)
-        {
-            RegisterFilter(filter);
-        }
-    }
-
-    private void RegisterFilter(Type filter)
-    {
-        if (!typeof(IFilter).IsAssignableFrom(filter))
-            throw new NotSupportedException(nameof(filter));
-        
-        _filters.Add(filter);
+        Filters.AddRange(filters);
     }
     
     private bool IsHandlerInterface(Type type, Type handleType)
     {
         return type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == handleType;
+    }
+
+    private void MoveInvokeFilterPipelineMiddlewareToBottom()
+    {
+        Middlewares.Remove(Middlewares.Single(x => x == typeof(InvokeFilterPipelineMiddleware)));
+        Middlewares.Add(typeof(InvokeFilterPipelineMiddleware));
     }
 }
