@@ -31,8 +31,4 @@
       <ProjectReference Include="..\..\src\NMediator.Extensions.Microsoft.DependencyInjection\NMediator.Extensions.Microsoft.DependencyInjection.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Messages\Requests" />
-    </ItemGroup>
-
 </Project>

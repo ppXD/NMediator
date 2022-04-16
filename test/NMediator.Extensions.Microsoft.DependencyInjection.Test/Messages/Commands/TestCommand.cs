@@ -2,5 +2,9 @@ namespace NMediator.Extensions.Microsoft.DependencyInjection.Test.Messages.Comma
 
 public class TestCommand : ICommand
 {
+}
+
+public class TestCommandResponse : IResponse
+{
     
 }

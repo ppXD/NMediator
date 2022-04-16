@@ -3,7 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NMediator.Extensions.Microsoft.DependencyInjection.Test.Base;
 using NMediator.Extensions.Microsoft.DependencyInjection.Test.Handlers.CommandHandlers;
+using NMediator.Extensions.Microsoft.DependencyInjection.Test.Handlers.EventHandlers;
+using NMediator.Extensions.Microsoft.DependencyInjection.Test.Handlers.RequestHandlers;
 using NMediator.Extensions.Microsoft.DependencyInjection.Test.Messages.Commands;
+using NMediator.Extensions.Microsoft.DependencyInjection.Test.Messages.Events;
+using NMediator.Extensions.Microsoft.DependencyInjection.Test.Messages.Requests;
 using NMediator.Extensions.Microsoft.DependencyInjection.Test.Services;
 using Shouldly;
 using Xunit;
@@ -13,10 +17,16 @@ namespace NMediator.Extensions.Microsoft.DependencyInjection.Test;
 public class HandlerFixture
 {
     private readonly Logger _logger;
+    private readonly IServiceCollection _services;
     
     public HandlerFixture()
     {
         _logger = new Logger();
+        _services = new ServiceCollection();
+        
+        _services.AddSingleton(_logger);
+        _services.AddScoped<ILogService, LogService>();
+        _services.AddScoped<IDoNothingService, DoNothingService>();
     }
     
     [Theory]
@@ -25,31 +35,57 @@ public class HandlerFixture
     [InlineData(3)]
     public async Task ShouldHandlerResolved(int way)
     {
-        var services = new ServiceCollection();
-        
-        services.AddSingleton(_logger);
-        services.AddScoped<ILogService, LogService>();
-        
         switch (way)
         {
             case 1:
-                services.AddNMediator(typeof(HandlerFixture).Assembly);
+                _services.AddNMediator(typeof(HandlerFixture).Assembly);
                 break;
             case 2:
-                services.AddNMediator(config =>
+                _services.AddNMediator(config =>
                 {
                     config.RegisterHandler<TestCommandHandler>();
+                    config.RegisterHandler<TestRequestHandler>();
+                    config.RegisterHandler<TestEventHandler>();
                 });
                 break;
             case 3:
-                services.AddNMediator(config =>
+                _services.AddNMediator(config =>
                 {
 
                 }, typeof(HandlerFixture).Assembly);
                 break;
         }
 
-        var mediator = services.BuildServiceProvider().GetRequiredService<IMediator>();
+        var mediator = _services.BuildServiceProvider().GetRequiredService<IMediator>();
+
+        await mediator.SendAsync(new TestCommand());
+        
+        _logger.Messages.Count.ShouldBe(1);
+        _logger.Messages.Single().ShouldBe(nameof(TestCommand));
+        _logger.Messages.Clear();
+
+        var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+
+        response.ShouldNotBeNull();
+        _logger.Messages.Count.ShouldBe(1);
+        _logger.Messages.Single().ShouldBe(nameof(TestRequest));
+        _logger.Messages.Clear();
+
+        await mediator.PublishAsync(new TestEvent());
+        
+        _logger.Messages.Count.ShouldBe(1);
+        _logger.Messages.Single().ShouldBe(nameof(TestEvent));
+    }
+
+    [Fact]
+    public async Task ShouldResolvedRegisterMultipleHandler()
+    {
+        _services.AddNMediator(config =>
+        {
+            config.RegisterHandler<TestCommandHandler>();
+        }, typeof(HandlerFixture).Assembly);
+
+        var mediator = _services.BuildServiceProvider().GetRequiredService<IMediator>();
 
         await mediator.SendAsync(new TestCommand());
         
@@ -58,23 +94,28 @@ public class HandlerFixture
     }
 
     [Fact]
-    public async Task ShouldResolvedRegisterMultipleHandler()
+    public async Task ShouldHandlerReturnResponse()
     {
-        var services = new ServiceCollection();
-        
-        services.AddSingleton(_logger);
-        services.AddScoped<ILogService, LogService>();
+        _services.AddNMediator(typeof(HandlerFixture).Assembly);
 
-        services.AddNMediator(config =>
-        {
-            config.RegisterHandler<TestCommandHandler>();
-        }, typeof(HandlerFixture).Assembly);
+        var mediator = _services.BuildServiceProvider().GetRequiredService<IMediator>();
 
-        var mediator = services.BuildServiceProvider().GetRequiredService<IMediator>();
+        var response = await mediator.SendAsync<TestCommand, TestCommandResponse>(new TestCommand());
 
-        await mediator.SendAsync(new TestCommand());
-        
+        response.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task ShouldDuplicatedAssembliesWork()
+    {
+        _services.AddNMediator(typeof(HandlerFixture).Assembly, typeof(HandlerFixture).Assembly);
+
+        var mediator = _services.BuildServiceProvider().GetRequiredService<IMediator>();
+
+        var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+
+        response.ShouldNotBeNull();
         _logger.Messages.Count.ShouldBe(1);
-        _logger.Messages.Single().ShouldBe(nameof(TestCommand));
+        _logger.Messages.Single().ShouldBe(nameof(TestRequest));
     }
 }
