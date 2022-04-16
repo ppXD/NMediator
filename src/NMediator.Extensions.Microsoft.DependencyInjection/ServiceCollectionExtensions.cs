@@ -25,7 +25,10 @@ public static class ServiceCollectionExtensions
         
         configuration?.Invoke(config);
 
-        services.AddTransient(s => config.UseDependencyScope(new MicrosoftDependencyScope(s.CreateScope())).CreateMediator());
+        services.AddSingleton(sp => config.UseDependencyScope(new MicrosoftDependencyScope(sp.CreateScope())));
+        
+        services.AddTransient(sp => sp.GetRequiredService<MediatorConfiguration>().CreateMediator());
+        services.AddTransient(sp => (Mediator) sp.GetRequiredService<MediatorConfiguration>().CreateMediator());
         
         config.Filters.Distinct().ToList().ForEach(f => services.AddTransient(f));
         config.Handlers.Distinct().ToList().ForEach(h => services.AddTransient(h));
