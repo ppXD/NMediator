@@ -9,9 +9,11 @@ namespace NMediator.Middlewares;
 public class MiddlewareProcessor
 {
     private readonly Type _middlewareType;
+    private readonly MiddlewareProcessor _next;
 
-    public MiddlewareProcessor(Type middlewareType)
+    public MiddlewareProcessor(Type middlewareType, MiddlewareProcessor next)
     {
+        _next = next;
         _middlewareType = middlewareType;
     }
 
@@ -24,11 +26,9 @@ public class MiddlewareProcessor
 
         await current.OnExecuting(context, cancellationToken).ConfigureAwait(false);
         
-        if (Next != null)
-            await Next.Process(context, cancellationToken).ConfigureAwait(false);
+        if (_next != null)
+            await _next.Process(context, cancellationToken).ConfigureAwait(false);
             
         await current.OnExecuted(context, cancellationToken).ConfigureAwait(false);
     }
-
-    public MiddlewareProcessor Next { get; set; }
 }

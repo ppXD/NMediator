@@ -285,9 +285,9 @@ public class FilterFixture : TestBase
     [Fact]
     public void CannotUseNotAssignableFromIFilterInterface()
     {
-        var func = () => new MediatorConfiguration()
+        var config = new MediatorConfiguration()
             .UseFilter(typeof(TestCommandHandler));
 
-        func.ShouldThrow<NotSupportedException>();
+        config.Filters.Count.ShouldBe(0);
     }
 }
