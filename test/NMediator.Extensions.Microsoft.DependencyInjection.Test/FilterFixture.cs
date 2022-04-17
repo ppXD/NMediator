@@ -96,5 +96,19 @@ public class FilterFixture
             $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnExecuted)}",
             $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}"
         });
+        _logger.Messages.Clear();
+        
+        await mediator.SendAsync(new ThrowExceptionCommand());
+        
+        _logger.Messages.Count.ShouldBe(6);
+        _logger.Messages.ShouldBe(new []
+        {
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuting)}",
+            $"{nameof(ThrowExceptionCommand)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}",
+            $"{nameof(ExceptionFilter)} {nameof(ExceptionFilter.OnException)}"
+        });
     }
 }

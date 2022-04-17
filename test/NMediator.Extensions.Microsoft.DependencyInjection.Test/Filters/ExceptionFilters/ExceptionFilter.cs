@@ -21,6 +21,7 @@ public class ExceptionFilter : IExceptionFilter
     public Task OnException(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
     {
         _logger.Messages.Add($"{nameof(ExceptionFilter)} {nameof(OnException)}");
+        context.ExceptionHandled = true;
         return Task.CompletedTask;
     }
 }
