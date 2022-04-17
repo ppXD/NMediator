@@ -46,7 +46,7 @@ public class MiddlewareFixture
             $"{nameof(TestMiddleware2)} {nameof(TestMiddleware2.OnExecuting)}",
             $"{nameof(TestCommand)}",
             $"{nameof(TestMiddleware2)} {nameof(TestMiddleware2.OnExecuted)}",
-            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}",
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}"
         });
         _logger.Messages.Clear();
 
@@ -60,7 +60,7 @@ public class MiddlewareFixture
             $"{nameof(TestMiddleware2)} {nameof(TestMiddleware2.OnExecuting)}",
             $"{nameof(TestRequest)}",
             $"{nameof(TestMiddleware2)} {nameof(TestMiddleware2.OnExecuted)}",
-            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}",
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}"
         });
         _logger.Messages.Clear();
 
@@ -73,7 +73,7 @@ public class MiddlewareFixture
             $"{nameof(TestMiddleware2)} {nameof(TestMiddleware2.OnExecuting)}",
             $"{nameof(TestEvent)}",
             $"{nameof(TestMiddleware2)} {nameof(TestMiddleware2.OnExecuted)}",
-            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}",
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}"
         });
     }
 
@@ -98,7 +98,7 @@ public class MiddlewareFixture
             $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuting)}",
             $"{nameof(TestCommand)}",
             $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}",
-            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}",
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}"
         });
     }
 }
