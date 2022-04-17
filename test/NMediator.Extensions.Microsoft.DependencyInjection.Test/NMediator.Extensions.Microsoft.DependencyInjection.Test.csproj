@@ -6,10 +6,10 @@
         <IsPackable>false</IsPackable>
 
         <LangVersion>latest</LangVersion>
-        
-        <TargetFrameworks>net6.0;netstandard2.0;netstandard2.1</TargetFrameworks>
 
         <OutputType>Library</OutputType>
+
+        <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
