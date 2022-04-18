@@ -1,9 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <Authors>ppXD</Authors>
+        <PackageId>NMediator</PackageId>
+        <AssemblyName>NMediator</AssemblyName>
+        <Description>Simple and easy to use mediator framework for .NET</Description>
+        <PackageTags>mediator;request;response;command;cqrs;ddd;pipeline;middleware;filter;</PackageTags>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <TargetFrameworks>net6.0;netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>latest</LangVersion>
         <Nullable>disable</Nullable>
+        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
     </PropertyGroup>
 
 </Project>
