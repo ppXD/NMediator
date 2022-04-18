@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.Microsoft.DependencyInjection", "src\NMediator.Extensions.Microsoft.DependencyInjection\NMediator.Extensions.Microsoft.DependencyInjection.csproj", "{C3DE8142-4C4D-4455-A81E-F8BD24A3E771}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.Microsoft.DependencyInjection.Test", "test\NMediator.Extensions.Microsoft.DependencyInjection.Test\NMediator.Extensions.Microsoft.DependencyInjection.Test.csproj", "{591DE90D-3C18-47A8-A248-3D4083F55A7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.DependencyInjection.Test", "test\NMediator.Extensions.DependencyInjection.Test\NMediator.Extensions.DependencyInjection.Test.csproj", "{591DE90D-3C18-47A8-A248-3D4083F55A7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.Autofac", "src\NMediator.Extensions.Autofac\NMediator.Extensions.Autofac.csproj", "{6CCF75A7-CA1D-4069-ACF3-B3F6EBF0E56E}"
 EndProject

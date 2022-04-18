@@ -26,7 +26,7 @@ public static class ContainerBuilderExtensions
 
         builder.RegisterType<AutofacDependencyScope>().AsImplementedInterfaces();
         builder.Register(c => config.UseDependencyScope(c.Resolve<IDependencyScope>())).SingleInstance();
-        builder.Register(c => c.Resolve<MediatorConfiguration>().CreateMediator()).AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
+        builder.Register(c => (Mediator) c.Resolve<MediatorConfiguration>().CreateMediator()).AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
         
         config.Filters.Distinct().ToList().ForEach(f => builder.RegisterType(f));
         config.Handlers.Distinct().ToList().ForEach(h => builder.RegisterType(h));
