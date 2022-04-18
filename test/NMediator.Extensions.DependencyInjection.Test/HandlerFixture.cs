@@ -7,6 +7,7 @@ using NMediator.Extensions.DependencyInjection.Test.Handlers.RequestHandlers;
 using NMediator.Extensions.DependencyInjection.Test.Messages.Commands;
 using NMediator.Extensions.DependencyInjection.Test.Messages.Events;
 using NMediator.Extensions.DependencyInjection.Test.Messages.Requests;
+using NMediator.Extensions.DependencyInjection.Test.Middlewares;
 using Shouldly;
 using Xunit;
 
@@ -85,6 +86,32 @@ public class HandlerFixture : TestFixtureBase
         response.ShouldNotBeNull();
     }
 
+    [Theory]
+    [InlineData(DependencyInjectionType.Autofac)]
+    [InlineData(DependencyInjectionType.MicrosoftDependencyInjection)]
+    public async Task ShouldHandlerPublishEvent(DependencyInjectionType dependencyInjectionType)
+    {
+        RegisterMediator(dependencyInjectionType, config =>
+        {
+            config.UseMiddleware<TestMiddleware1>();
+        }, new[] { typeof(HandlerFixture).Assembly });
+
+        var mediator = GetMediator<IMediator>(dependencyInjectionType);
+
+        await mediator.SendAsync(new PublishEventCommand());
+        
+        Logger.Messages.Count.ShouldBe(6);
+        Logger.Messages.ShouldBe(new []
+        {
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuting)}",
+            $"{nameof(PublishEventCommand)}",
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuting)}",
+            $"{nameof(TestEvent)}",
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}",
+            $"{nameof(TestMiddleware1)} {nameof(TestMiddleware1.OnExecuted)}"
+        });
+    }
+    
     [Theory]
     [InlineData(DependencyInjectionType.Autofac)]
     [InlineData(DependencyInjectionType.MicrosoftDependencyInjection)]
