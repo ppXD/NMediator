@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-    - "v[0-9]+.[0-9]+.[0-9]+"
+    - "[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   release:
@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup version from tag
-      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/}" >> $GITHUB_ENV
     - name: Setup dotnet
       uses: actions/setup-dotnet@v2
       with:
@@ -25,8 +25,10 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
     - name: Pack
-      run: dotnet pack src/NMediator/NMediator.csproj --configuration Release /p:Version=${VERSION} --no-build --output out
+      run: |
+        dotnet pack src/NMediator/NMediator.csproj --configuration Release /p:Version=${VERSION} --no-build --output output
+        dotnet pack src/NMediator.Extensions.Microsoft.DependencyInjection/NMediator.Extensions.Microsoft.DependencyInjection.csproj --configuration Release /p:Version=${VERSION} --no-build --output output
     - name: Push
-      run: dotnet nuget push **/output/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
+      run: dotnet nuget push **/output/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY} --skip-duplicate
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
