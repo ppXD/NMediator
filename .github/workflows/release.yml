@@ -25,7 +25,7 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
     - name: Pack
-      run: 
+      run: |
         dotnet pack src/NMediator/NMediator.csproj --configuration Release /p:Version=${VERSION} --no-build --output output
         dotnet pack src/NMediator.Extensions.Microsoft.DependencyInjection/NMediator.Extensions.Microsoft.DependencyInjection.csproj --configuration Release /p:Version=${VERSION} --no-build --output output
     - name: Push
