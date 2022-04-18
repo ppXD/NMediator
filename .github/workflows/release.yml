@@ -27,6 +27,7 @@ jobs:
     - name: Pack
       run: |
         dotnet pack src/NMediator/NMediator.csproj --configuration Release /p:Version=${VERSION} --no-build --output output
+        dotnet pack src/NMediator.Extensions.Autofac/NMediator.Extensions.Autofac.csproj --configuration Release /p:Version=${VERSION} --no-build --output output
         dotnet pack src/NMediator.Extensions.Microsoft.DependencyInjection/NMediator.Extensions.Microsoft.DependencyInjection.csproj --configuration Release /p:Version=${VERSION} --no-build --output output
     - name: Push
       run: dotnet nuget push **/output/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY} --skip-duplicate
