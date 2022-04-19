@@ -10,13 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{215CC333-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{33739362-59E2-499B-A95D-F7F3072B189D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCore", "examples\NMediator.Examples.AspNetCore\NMediator.Examples.AspNetCore.csproj", "{14F3A88D-E458-47E2-A7A0-470A2DA2A755}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.Microsoft.DependencyInjection", "src\NMediator.Extensions.Microsoft.DependencyInjection\NMediator.Extensions.Microsoft.DependencyInjection.csproj", "{C3DE8142-4C4D-4455-A81E-F8BD24A3E771}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.DependencyInjection.Test", "test\NMediator.Extensions.DependencyInjection.Test\NMediator.Extensions.DependencyInjection.Test.csproj", "{591DE90D-3C18-47A8-A248-3D4083F55A7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.Autofac", "src\NMediator.Extensions.Autofac\NMediator.Extensions.Autofac.csproj", "{6CCF75A7-CA1D-4069-ACF3-B3F6EBF0E56E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples", "examples\NMediator.Examples\NMediator.Examples.csproj", "{4798FEDA-C219-4C95-B345-24B682E8E329}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,10 +26,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{96C10437-8DC7-4A1C-A61F-9988ED6FF236} = {3348D76E-7BAC-4CA7-A2C3-6A5586C8498A}
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71} = {215CC333-808C-463D-839C-93C67618F6B7}
-		{14F3A88D-E458-47E2-A7A0-470A2DA2A755} = {33739362-59E2-499B-A95D-F7F3072B189D}
 		{C3DE8142-4C4D-4455-A81E-F8BD24A3E771} = {3348D76E-7BAC-4CA7-A2C3-6A5586C8498A}
 		{591DE90D-3C18-47A8-A248-3D4083F55A7A} = {215CC333-808C-463D-839C-93C67618F6B7}
 		{6CCF75A7-CA1D-4069-ACF3-B3F6EBF0E56E} = {3348D76E-7BAC-4CA7-A2C3-6A5586C8498A}
+		{4798FEDA-C219-4C95-B345-24B682E8E329} = {33739362-59E2-499B-A95D-F7F3072B189D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{96C10437-8DC7-4A1C-A61F-9988ED6FF236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -40,10 +40,6 @@ Global
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA4DF954-3E4B-478A-A89D-4E805D008E71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14F3A88D-E458-47E2-A7A0-470A2DA2A755}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3DE8142-4C4D-4455-A81E-F8BD24A3E771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C3DE8142-4C4D-4455-A81E-F8BD24A3E771}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3DE8142-4C4D-4455-A81E-F8BD24A3E771}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -56,5 +52,9 @@ Global
 		{6CCF75A7-CA1D-4069-ACF3-B3F6EBF0E56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CCF75A7-CA1D-4069-ACF3-B3F6EBF0E56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CCF75A7-CA1D-4069-ACF3-B3F6EBF0E56E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4798FEDA-C219-4C95-B345-24B682E8E329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4798FEDA-C219-4C95-B345-24B682E8E329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4798FEDA-C219-4C95-B345-24B682E8E329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4798FEDA-C219-4C95-B345-24B682E8E329}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
