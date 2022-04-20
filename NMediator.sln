@@ -18,9 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Extensions.Autofa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples", "examples\NMediator.Examples\NMediator.Examples.csproj", "{4798FEDA-C219-4C95-B345-24B682E8E329}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCore.DependencyInjection", "examples\NMediator.Examples.AspNetCore.DependencyInjection\NMediator.Examples.AspNetCore.DependencyInjection.csproj", "{03EC20D0-F13D-4ABB-AE20-47DEBFCA9A5F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCore.Autofac", "examples\NMediator.Examples.AspNetCore.Autofac\NMediator.Examples.AspNetCore.Autofac.csproj", "{056144AE-0216-45F5-BB67-501189433EA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCore", "examples\NMediator.Examples.AspNetCore\NMediator.Examples.AspNetCore.csproj", "{25013EAA-53C4-43CB-88DA-FC67CA21A063}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,8 +32,7 @@ Global
 		{591DE90D-3C18-47A8-A248-3D4083F55A7A} = {215CC333-808C-463D-839C-93C67618F6B7}
 		{6CCF75A7-CA1D-4069-ACF3-B3F6EBF0E56E} = {3348D76E-7BAC-4CA7-A2C3-6A5586C8498A}
 		{4798FEDA-C219-4C95-B345-24B682E8E329} = {33739362-59E2-499B-A95D-F7F3072B189D}
-		{03EC20D0-F13D-4ABB-AE20-47DEBFCA9A5F} = {33739362-59E2-499B-A95D-F7F3072B189D}
-		{056144AE-0216-45F5-BB67-501189433EA5} = {33739362-59E2-499B-A95D-F7F3072B189D}
+		{25013EAA-53C4-43CB-88DA-FC67CA21A063} = {33739362-59E2-499B-A95D-F7F3072B189D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{96C10437-8DC7-4A1C-A61F-9988ED6FF236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -62,13 +59,9 @@ Global
 		{4798FEDA-C219-4C95-B345-24B682E8E329}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4798FEDA-C219-4C95-B345-24B682E8E329}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4798FEDA-C219-4C95-B345-24B682E8E329}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03EC20D0-F13D-4ABB-AE20-47DEBFCA9A5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03EC20D0-F13D-4ABB-AE20-47DEBFCA9A5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03EC20D0-F13D-4ABB-AE20-47DEBFCA9A5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03EC20D0-F13D-4ABB-AE20-47DEBFCA9A5F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{056144AE-0216-45F5-BB67-501189433EA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{056144AE-0216-45F5-BB67-501189433EA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{056144AE-0216-45F5-BB67-501189433EA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{056144AE-0216-45F5-BB67-501189433EA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25013EAA-53C4-43CB-88DA-FC67CA21A063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25013EAA-53C4-43CB-88DA-FC67CA21A063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25013EAA-53C4-43CB-88DA-FC67CA21A063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25013EAA-53C4-43CB-88DA-FC67CA21A063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
