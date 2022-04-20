@@ -1,4 +1,3 @@
-using NMediator;
 using NMediator.Examples.Base;
 using NMediator.Examples.Services;
 using NMediator.Examples.Middlewares;
@@ -8,11 +7,11 @@ using NMediator.Examples.Filters.ExceptionFilters;
 using NMediator.Examples.Filters.MessageFilters;
 using NMediator.Examples.Filters.RequestFilters;
 using NMediator.Examples.Messages.Commands;
-using NMediator.Examples.Messages.Events;
-using NMediator.Examples.Messages.Requests;
 using NMediator.Extensions.Microsoft.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
 
 builder.Services.AddSingleton(new Logger());
 builder.Services.AddScoped<ILogService, LogService>();
@@ -36,16 +35,6 @@ builder.Services.AddNMediator(config =>
 
 var app = builder.Build();
 
-app.MapGet("command/send", async (IMediator mediator) =>
-{
-    await mediator.SendAsync(new ExampleCommand());
-});
-
-app.MapGet("event/publish", async (IMediator mediator) =>
-{
-    await mediator.PublishAsync(new ExampleEvent());
-});
-
-app.MapGet("request/send", async (IMediator mediator) => await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest()));
+app.MapControllers();
 
 app.Run();
