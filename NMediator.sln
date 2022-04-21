@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.AspNetCore.Api", "examples\NMediator.Examples.AspNetCore.Api\NMediator.Examples.AspNetCore.Api.csproj", "{7ACA3D3C-4ED8-4B6E-8EF4-F965A96B7475}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMediator.Examples.Autofac", "examples\NMediator.Examples.Autofac\NMediator.Examples.Autofac.csproj", "{1F1EB448-A068-4453-9EE5-D828A93EEFA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,7 @@ Global
 		{4798FEDA-C219-4C95-B345-24B682E8E329} = {33739362-59E2-499B-A95D-F7F3072B189D}
 		{25013EAA-53C4-43CB-88DA-FC67CA21A063} = {33739362-59E2-499B-A95D-F7F3072B189D}
 		{7ACA3D3C-4ED8-4B6E-8EF4-F965A96B7475} = {33739362-59E2-499B-A95D-F7F3072B189D}
+		{1F1EB448-A068-4453-9EE5-D828A93EEFA7} = {33739362-59E2-499B-A95D-F7F3072B189D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{96C10437-8DC7-4A1C-A61F-9988ED6FF236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -70,5 +73,9 @@ Global
 		{7ACA3D3C-4ED8-4B6E-8EF4-F965A96B7475}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7ACA3D3C-4ED8-4B6E-8EF4-F965A96B7475}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7ACA3D3C-4ED8-4B6E-8EF4-F965A96B7475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F1EB448-A068-4453-9EE5-D828A93EEFA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F1EB448-A068-4453-9EE5-D828A93EEFA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F1EB448-A068-4453-9EE5-D828A93EEFA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F1EB448-A068-4453-9EE5-D828A93EEFA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
