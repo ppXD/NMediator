@@ -8,12 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\NMediator.Extensions.Microsoft.DependencyInjection\NMediator.Extensions.Microsoft.DependencyInjection.csproj" />
+      <ProjectReference Include="..\..\src\NMediator.Extensions.Autofac\NMediator.Extensions.Autofac.csproj" />
       <ProjectReference Include="..\NMediator.Examples\NMediator.Examples.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     </ItemGroup>
 
 </Project>

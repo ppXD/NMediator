@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Autofac;
 using NMediator.Examples.Base;
 using NMediator.Examples.Filters.CommandFilters;
 using NMediator.Examples.Filters.EventFilters;
@@ -8,23 +8,23 @@ using NMediator.Examples.Filters.RequestFilters;
 using NMediator.Examples.Messages.Commands;
 using NMediator.Examples.Middlewares;
 using NMediator.Examples.Services;
-using NMediator.Extensions.Microsoft.DependencyInjection;
+using NMediator.Extensions.Autofac;
 
-namespace NMediator.Examples.AspNetCore;
+namespace NMediator.Examples.Autofac;
 
 public static class Program
 {
     public static Task Main(string[] args)
     {
-        var services = new ServiceCollection();
+        var builder = new ContainerBuilder();
 
         var logger = new Logger();
         
-        services.AddSingleton(logger);
-        services.AddScoped<ILogService, LogService>();
-        services.AddScoped<IDoNothingService, DoNothingService>();
+        builder.RegisterInstance(logger).SingleInstance();
+        builder.RegisterType<LogService>().As<ILogService>().InstancePerLifetimeScope();
+        builder.RegisterType<DoNothingService>().As<IDoNothingService>().InstancePerLifetimeScope();
 
-        services.AddNMediator(config =>
+        builder.RegisterNMediator(config =>
         {
             config
                 .UseMiddleware<ExampleMiddleware1>()
@@ -40,10 +40,10 @@ public static class Program
                 .UseFilter<ExceptionFilter>();
         }, typeof(ExampleCommand).Assembly);
         
-        var provider = services.BuildServiceProvider();
+        var container = builder.Build();
 
-        var mediator = provider.GetRequiredService<IMediator>();
+        var mediator = container.Resolve<IMediator>();
         
-        return Runner.Run(mediator, logger, "AspNetCore");
+        return Runner.Run(mediator, logger, "Autofac");
     }
 }
