@@ -1,21 +1,16 @@
+<div align="center">
+
 # NMediator
 
- NMediator is a simple, ultra-lightweight mediator for .NET applications.
+![build](https://github.com/ppXD/NMediator/workflows/build/badge.svg)
+![test](https://github.com/ppXD/NMediator/workflows/test/badge.svg)
+[![NuGet](https://img.shields.io/nuget/vpre/nmediator.svg)](https://www.nuget.org/packages/NMediator)
 
-## Basic usage
+NMediator is a **simple and easy to use** mediator for .NET applications.
 
-```csharp
-//Setup mediator
-var mediator = new MediatorConfiguration()
-    .RegisterHandlers(typeof(this).Assembly)
-    .CreateMediator();
+[Getting started](#getting-started) •
+[Installation](#installation) •
+[Configuration](#configuration) •
+[Integrations](#third-party-integrations)
 
-//Send command
-await mediator.SendAsync(new TestCommmand());
-
-//Publish event
-await mediator.PublishAsync(new TestEvent());
-
-//Send request and get response
-var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
-```
+</div>
