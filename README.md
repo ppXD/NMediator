@@ -16,7 +16,7 @@ NMediator is a **simple and easy to use** mediator for .NET applications.
 </div>
 
 ## Overview
-[![screenshot][overview-screenshot]](https://example.com)
+![screenshot][overview-screenshot]
 
 ## Features
 - Async/await first
@@ -48,4 +48,4 @@ var response = await mediator.SendAsync<ExampleCommand, ExampleResponse>(new Exa
 var response = await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
 ```
 
-[overview-screenshot]: assets/sceenshot/mediator.png
+[overview-screenshot]: assets/sceenshots/mediator.png
