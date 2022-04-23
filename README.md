@@ -8,10 +8,10 @@
 
 NMediator is a **simple and easy to use** mediator for .NET applications.
 
-[Getting started](#getting-started) •
+[Features](#features) •
 [Installation](#installation) •
-[Configuration](#configuration) •
-[Integrations](#third-party-integrations)
+[Basic usage](#basic usage) •
+[License](#license)
 
 </div>
 
