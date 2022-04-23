@@ -50,7 +50,25 @@ var response = await mediator.SendAsync<ExampleCommand, ExampleResponse>(new Exa
 var response = await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
 ```
 
+## Middlewares
+
+## Filters
+
+## IoC Container
+
+NMediator uses `IDependencyScope` to instantiate handlers, middlewares, and filters.
+
+No dependencies `DefaultDependencyScope` is used by default when `MediatorConfiguration` initialized.
+
+Recommended to use the built-in dependency injection extensions.
+
+[![NuGet](https://img.shields.io/badge/NMediator.Extensions-Autofac-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Autofac)  
+[![NuGet](https://img.shields.io/badge/NMediator.Extensions-Microsoft.DependencyInjection-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Microsoft.DependencyInjection)
+
+[Complete examples](![examples][project-examples])
+
 ## License
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+[project-examples]: examples
 [overview-screenshot]: assets/sceenshots/mediator.png
