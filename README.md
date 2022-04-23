@@ -47,4 +47,6 @@ var response = await mediator.SendAsync<ExampleCommand, ExampleResponse>(new Exa
 var response = await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
 ```
 
+## Test
+
 [product-screenshot]: assets/sceenshot/mediator.png
