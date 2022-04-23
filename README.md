@@ -22,6 +22,7 @@ NMediator is a **simple and easy to use** mediator for .NET applications.
 - Async/await first
 - No dependencies
 - In-process messaging
+- Each message processing per scope
 - Pipeline behaviors similar to ASP.NET Core
 - Built-in filters can be created to handle cross-cutting concerns
 - Built-in dependency injection extensions include ASP.NET Core, Autofac, etc.
