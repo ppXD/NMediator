@@ -60,7 +60,7 @@ NMediator uses `IDependencyScope` to instantiate handlers, middlewares, and filt
 
 No dependencies `DefaultDependencyScope` is used by default when `MediatorConfiguration` initialized.
 
-Recommended to use the built-in dependency injection extensions.
+**Recommended** to use the built-in dependency injection extensions.
 
 [![NuGet](https://img.shields.io/badge/NMediator.Extensions-Autofac-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Autofac)  
 [![NuGet](https://img.shields.io/badge/NMediator.Extensions-Microsoft.DependencyInjection-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Microsoft.DependencyInjection)
