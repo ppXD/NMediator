@@ -28,7 +28,7 @@ NMediator is a **simple and easy to use** mediator for .NET applications.
 
 ## Installation
 Install [NMediator with NuGet](https://www.nuget.org/packages/NMediator):
-```
+```bash
 Install-Package NMediator
 ```
 
