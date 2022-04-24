@@ -58,7 +58,7 @@ var response = await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new 
 
 NMediator uses `IDependencyScope` to instantiate handlers, middlewares, and filters.
 
-No dependencies `DefaultDependencyScope` is used by default when `MediatorConfiguration` initialized.
+No dependencies will use `DefaultDependencyScope` by default when `MediatorConfiguration` initialized.
 
 **Recommended** to use the built-in dependency injection extensions.
 
