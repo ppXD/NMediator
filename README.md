@@ -71,4 +71,4 @@ No dependencies `DefaultDependencyScope` is used by default when `MediatorConfig
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [project-examples]: examples
-[overview-screenshot]: assets/sceenshots/mediator.png
+[overview-screenshot]: assets/sceenshots/overview.png
