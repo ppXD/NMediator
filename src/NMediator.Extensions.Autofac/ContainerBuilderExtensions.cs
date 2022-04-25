@@ -19,18 +19,19 @@ public static class ContainerBuilderExtensions
     {
         var config = new MediatorConfiguration();
 
+        configuration?.Invoke(config);
+
         if (assemblies != null && assemblies.Any())
             config.RegisterHandlers(assemblies);
         
-        configuration?.Invoke(config);
-
         builder.RegisterType<AutofacDependencyScope>().AsImplementedInterfaces();
         builder.Register(c => config.UseDependencyScope(c.Resolve<IDependencyScope>())).SingleInstance();
-        builder.Register(c => (Mediator) c.Resolve<MediatorConfiguration>().CreateMediator()).AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
         
-        config.Filters.Distinct().ToList().ForEach(f => builder.RegisterType(f));
-        config.Handlers.Distinct().ToList().ForEach(h => builder.RegisterType(h));
-        config.Middlewares.Distinct().ToList().ForEach(m => builder.RegisterType(m));
+        builder.RegisterType<Mediator>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
+        
+        config.HandlerConfiguration.GetHandlers().ToList().ForEach(f => builder.RegisterType(f));
+        config.PipelineConfiguration.Filters.ForEach(h => builder.RegisterType(h));
+        config.PipelineConfiguration.Middlewares.ForEach(m => builder.RegisterType(m));
 
         return builder;
     }

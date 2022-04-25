@@ -1,30 +1,18 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using NMediator.Context;
-using NMediator.Ioc;
-using NMediator.Middlewares;
 
 namespace NMediator;
 
-public sealed partial class Mediator : IMediator
+public sealed class Mediator : IMediator
 {
-    private readonly IDependencyScope _resolver;
-    
-    private readonly MiddlewareProcessor _pipeline;
-    
-    private readonly List<Type> _filters;
-    
-    private readonly ConcurrentDictionary<Type, List<Type>> _messageHandlerBindings;
-    
-    public Mediator(IDependencyScope resolver, MiddlewareProcessor pipeline, List<Type> filters, ConcurrentDictionary<Type, List<Type>> messageHandlerBindings)
+    private readonly MediatorConfiguration _configuration;
+
+    public Mediator(MediatorConfiguration configuration)
     {
-        _resolver = resolver;
-        _pipeline = pipeline;
-        _filters = filters;
-        _messageHandlerBindings = messageHandlerBindings;
+        _configuration = configuration;
     }
 
     public async Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) 
@@ -57,22 +45,22 @@ public sealed partial class Mediator : IMediator
             new[] { typeof(IRequestHandler<TRequest, TResponse>) }, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendMessageAsync<TMessage, TContext>(TMessage message, IEnumerable<Type> matchedHandlerTypes, CancellationToken cancellationToken = default)
+    private async Task SendMessageAsync<TMessage, TContext>(TMessage message, IEnumerable<Type> handlerTypesToMatch, CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
         where TContext : IMessageContext<TMessage>
     {
-        await ProcessMessage<TMessage, TContext>(message, null, matchedHandlerTypes, cancellationToken).ConfigureAwait(false);
+        await ProcessMessage<TMessage, TContext>(message, null, handlerTypesToMatch, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<TResponse> SendMessageAsync<TMessage, TResponse, TContext>(TMessage message, IEnumerable<Type> matchedHandlerTypes, CancellationToken cancellationToken = default)
+    private async Task<TResponse> SendMessageAsync<TMessage, TResponse, TContext>(TMessage message, IEnumerable<Type> handlerTypesToMatch, CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
         where TResponse : class, IResponse
         where TContext : IMessageContext<TMessage>
     {
-        return (TResponse) await ProcessMessage<TMessage, TContext>(message, typeof(TResponse), matchedHandlerTypes, cancellationToken).ConfigureAwait(false);
+        return (TResponse) await ProcessMessage<TMessage, TContext>(message, typeof(TResponse), handlerTypesToMatch, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<object> ProcessMessage<TMessage, TContext>(TMessage message, Type responseType, IEnumerable<Type> matchedHandlerTypes,
+    private async Task<object> ProcessMessage<TMessage, TContext>(TMessage message, Type responseType, IEnumerable<Type> handlerTypesToMatch,
         CancellationToken cancellationToken = default)
         where TMessage : class, IMessage
         where TContext : IMessageContext<TMessage>
@@ -80,15 +68,15 @@ public sealed partial class Mediator : IMediator
         if (message == null)
             throw new ArgumentNullException(nameof(message));
 
-        using var scope = _resolver.BeginScope();
+        using var scope = _configuration.Resolver.BeginScope();
 
         var baseContext = new MessageContext<TMessage>(message, scope, responseType, 
-            FindFilterTypes<TMessage>(), FindHandlerTypes<TMessage>(matchedHandlerTypes));
+            _configuration.PipelineConfiguration.FindFilters<TMessage>(), _configuration.HandlerConfiguration.GetHandlers<TMessage>(handlerTypesToMatch));
 
         var context =
             (IMessageContext<TMessage>) Activator.CreateInstance(typeof(TContext), baseContext);
         
-        await _pipeline.Process(context, cancellationToken).ConfigureAwait(false);
+        await _configuration.PipelineConfiguration.PipelineProcessor.Process(context, cancellationToken).ConfigureAwait(false);
 
         return context?.Result;
     }
