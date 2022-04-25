@@ -50,9 +50,27 @@ var response = await mediator.SendAsync<ExampleCommand, ExampleResponse>(new Exa
 var response = await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
 ```
 
-## Middlewares
+## Middleware
 
-## Filters
+NMediator middleware is assembled into pipeline to handle messages and responses.
+- Automatically pass the message to the next component in the pipeline.
+- Can perform work before and after the next component in the pipeline.
+
+The NMediator pipeline consists of a sequence of middlewares, called one after the other. 
+The [Overview](#overview) diagram demonstrates the concept.
+
+To assemble the middleware into the pipeline you need to implement the `IMiddleware` interface.
+The `IMiddleware` interface is defined as:
+```csharp
+public interface IMiddleware
+{
+    Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default);
+    Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default);
+}
+```
+Middlewares are configured using `UseMiddleware` generic method.
+
+## Filter
 
 ## IoC Container
 
