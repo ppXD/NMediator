@@ -85,7 +85,7 @@ public class MiddlewareFixture : TestBase
         var config = new MediatorConfiguration()
             .UseMiddleware(typeof(TestCommandHandler));
 
-        config.Middlewares.Count.ShouldBe(1);
-        config.Middlewares.Single().ShouldBe(typeof(InvokeFilterPipelineMiddleware));
+        config.PipelineConfiguration.Middlewares.Count.ShouldBe(1);
+        config.PipelineConfiguration.Middlewares.Single().ShouldBe(typeof(InvokeFilterPipelineMiddleware));
     }
 }
