@@ -288,6 +288,6 @@ public class FilterFixture : TestBase
         var config = new MediatorConfiguration()
             .UseFilter(typeof(TestCommandHandler));
 
-        config.Filters.Count.ShouldBe(0);
+        config.PipelineConfiguration.Filters.Count.ShouldBe(0);
     }
 }

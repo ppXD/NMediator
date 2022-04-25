@@ -18,21 +18,19 @@ public static class ServiceCollectionExtensions
     {
         var config = new MediatorConfiguration();
 
-        if (assemblies != null && assemblies.Any())
-        {
-            config.RegisterHandlers(assemblies);
-        }
-        
         configuration?.Invoke(config);
 
+        if (assemblies != null && assemblies.Any())
+            config.RegisterHandlers(assemblies);
+
         services.AddSingleton(sp => config.UseDependencyScope(new MicrosoftDependencyScope(sp.CreateScope())));
+
+        services.AddTransient<Mediator>();
+        services.AddTransient<IMediator, Mediator>();
         
-        services.AddTransient(sp => sp.GetRequiredService<MediatorConfiguration>().CreateMediator());
-        services.AddTransient(sp => (Mediator) sp.GetRequiredService<MediatorConfiguration>().CreateMediator());
-        
-        config.Filters.Distinct().ToList().ForEach(f => services.AddTransient(f));
-        config.Handlers.Distinct().ToList().ForEach(h => services.AddTransient(h));
-        config.Middlewares.Distinct().ToList().ForEach(m => services.AddTransient(m));
+        config.HandlerConfiguration.GetHandlers().ToList().ForEach(f => services.AddTransient(f));
+        config.PipelineConfiguration.Filters.ForEach(h => services.AddTransient(h));
+        config.PipelineConfiguration.Middlewares.ForEach(m => services.AddTransient(m));
         
         return services;
     }

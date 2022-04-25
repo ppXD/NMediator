@@ -15,7 +15,7 @@ public class MediatorFixture : TestFixtureBase
         
         var mediatorResolvedByClass = GetMediator<Mediator>(dependencyInjectionType);
         var mediatorResolvedByInterface = GetMediator<IMediator>(dependencyInjectionType);
-
+        
         mediatorResolvedByClass.ShouldNotBeNull();
         mediatorResolvedByInterface.ShouldNotBeNull();
     }
