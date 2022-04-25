@@ -64,8 +64,8 @@ The `IMiddleware` interface is defined as:
 ```csharp
 public interface IMiddleware
 {
-    Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default);
-    Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default);
+    Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken);
+    Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken);
 }
 ```
 Middlewares are configured using `UseMiddleware` generic method.
