@@ -50,6 +50,14 @@ var response = await mediator.SendAsync<ExampleCommand, ExampleResponse>(new Exa
 var response = await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
 ```
 
+## Contract
+NMediator has three kinds of messages contract:
+- `ICommand`,`ICommand<>`
+- `IRequest<>`
+- `IEvent`
+
+## Handler
+
 ## Middleware
 
 NMediator middleware is assembled into pipeline to handle messages and responses.
@@ -71,8 +79,8 @@ public interface IMiddleware
 Middlewares are configured using `UseMiddleware` generic method.
 ```csharp
 var configuration = new MediatorConfiguration();
-configuration.UseMiddleware<YourMiddleware>();
-configuration.UseMiddleware(typeof(YourMiddleware));
+configuration.UseMiddleware<ExampleMiddleware>();
+configuration.UseMiddleware(typeof(ExampleMiddleware));
 ```
 
 ## Filter
