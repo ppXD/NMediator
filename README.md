@@ -69,6 +69,11 @@ public interface IMiddleware
 }
 ```
 Middlewares are configured using `UseMiddleware` generic method.
+```csharp
+var configuration = new MediatorConfiguration();
+configuration.UseMiddleware<YourMiddleware>();
+configuration.UseMiddleware(typeof(YourMiddleware));
+```
 
 ## Filter
 
