@@ -7,6 +7,6 @@ public interface ICommandFilter : IExecutionFilter<ICommand, ICommandContext<ICo
 }
 
 public interface ICommandFilter<TCommand> : IExecutionFilter<TCommand, ICommandContext<TCommand>> 
-    where TCommand : class, ICommand
+    where TCommand : class, IBasicCommand
 {
 }

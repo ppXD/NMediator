@@ -1,5 +1,5 @@
 namespace NMediator.Context;
 
-public interface IRequestContext<out TMessage> : IMessageContext<TMessage> where TMessage : IMessage
+public interface IRequestContext<out TRequest> : IMessageContext<TRequest> where TRequest : IRequest
 {
 }

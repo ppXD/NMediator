@@ -31,13 +31,13 @@ public class MediatorPipelineConfiguration
         }
     }
     
-    protected internal IEnumerable<Type> FindFilters<TMessage>() where TMessage : class, IMessage
+    protected internal IEnumerable<Type> FindFilters(IMessage message)
     {
-        var messageType = typeof(TMessage);
+        var messageType = message.GetType();
 
         var matchedFilterTypes = new List<Type>
         {
-            typeof(IMessageFilter), typeof(IMessageFilter<TMessage>), typeof(IExceptionFilter)
+            typeof(IMessageFilter), typeof(IMessageFilter<>).MakeGenericType(messageType), typeof(IExceptionFilter)
         };
         
         switch (messageType)

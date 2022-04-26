@@ -7,7 +7,7 @@ namespace NMediator.Context;
 public class MessageContext<TMessage> : IMessageContext<TMessage>
     where TMessage : IMessage
 {
-    public MessageContext(TMessage message, IDependencyScope scope, Type responseType = null, IEnumerable<Type> filters = null, IEnumerable<Type> messageBindingHandlers = null)
+    protected MessageContext(TMessage message, IDependencyScope scope, Type responseType = null, IEnumerable<Type> filters = null, IEnumerable<Type> messageBindingHandlers = null)
     {
         Scope = scope;
         Message = message;

@@ -25,7 +25,7 @@ public class MiddlewareFixture : TestBase
             .UseMiddleware<TestFirstMiddleware>()
             .CreateMediator();
 
-        var command = new TestCommand(Guid.NewGuid());
+        var command = new TestCommand();
         
         await mediator.SendAsync(command);
         
@@ -45,7 +45,7 @@ public class MiddlewareFixture : TestBase
             .UseMiddleware<TestThirdMiddleware>()
             .CreateMediator();
 
-        var command = new TestCommand(Guid.NewGuid());
+        var command = new TestCommand();
         
         await mediator.SendAsync(command);
         
@@ -65,15 +65,15 @@ public class MiddlewareFixture : TestBase
         var mediator = new MediatorConfiguration()
             .RegisterHandler<TestRequestHandler>()
             .RegisterHandler<TestEventHandler>()
-            .RegisterHandler<TestCommandHasResponseHandler>()
+            .RegisterHandler<TestHasResponseCommandHandler>()
             .UseMiddleware<TestFirstMiddleware>()
             .UseMiddleware(typeof(TestSecondMiddleware))
             .CreateMediator();
 
         await mediator.PublishAsync(new TestEvent());
         
-        var requestResponse = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
-        var commandResponse = await mediator.SendAsync<TestCommand, TestResponse>(new TestCommand(Guid.NewGuid()));
+        var requestResponse = await mediator.RequestAsync<TestResponse>(new TestRequest());
+        var commandResponse = await mediator.SendAsync(new TestHasResponseCommand());
         
         requestResponse.Result.ShouldBe("Test response");
         commandResponse.Result.ShouldBe("Test command response");

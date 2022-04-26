@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NMediator.Test.TestData;
@@ -29,7 +28,7 @@ public class FilterFixture : TestBase
             .UseFilter<AllMessagesFilter1>()
             .CreateMediator();
 
-        var command = new TestCommand(Guid.NewGuid());
+        var command = new TestCommand();
         
         await mediator.SendAsync(command);
         
@@ -77,7 +76,7 @@ public class FilterFixture : TestBase
             .UseFilter(typeof(TestRequestFilter))
             .CreateMediator();
         
-        var testCommand = new TestCommand(Guid.NewGuid());
+        var testCommand = new TestCommand();
         var otherCommand = new TestOtherCommand();
         
         await mediator.SendAsync(testCommand);
@@ -90,7 +89,7 @@ public class FilterFixture : TestBase
         TestStore.Stores.Any(x => x.Equals($"{nameof(TestOtherCommandFilter)} {nameof(TestOtherCommandFilter.OnExecuting)}")).ShouldBeTrue();
         TestStore.Stores.Clear();
 
-        var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+        var response = await mediator.RequestAsync<TestResponse>(new TestRequest());
         response.ShouldNotBeNull();
         TestStore.Stores.Count.ShouldBe(9);
         TestStore.Stores.Any(x => x.Equals($"{nameof(TestRequestFilter)} {nameof(TestRequestFilter.OnExecuting)}")).ShouldBeTrue();
@@ -117,7 +116,7 @@ public class FilterFixture : TestBase
             .UseMiddleware<TestThirdMiddleware>()
             .CreateMediator();
 
-        var command = new TestCommand(Guid.NewGuid());
+        var command = new TestCommand();
         
         await mediator.SendAsync(command);
         
@@ -200,7 +199,7 @@ public class FilterFixture : TestBase
     [Fact]
     public async Task ShouldFilterThrowExceptionExpectOrder()
     {
-        var command = new TestCommand(Guid.NewGuid());
+        var command = new TestCommand();
 
         var mediator1 = new MediatorConfiguration()
             .RegisterHandler<TestCommandHandler>()
@@ -260,7 +259,7 @@ public class FilterFixture : TestBase
         var mediator = new MediatorConfiguration()
             .RegisterHandler<TestRequestHandler>()
             .RegisterHandler<TestEventHandler>()
-            .RegisterHandler<TestCommandHasResponseHandler>()
+            .RegisterHandler<TestHasResponseCommandHandler>()
             .UseFilter<AllMessagesFilter1>()
             .UseFilter<AllMessagesFilter2>()
             .UseFilter<AllCommandsFilter1>()
@@ -275,8 +274,8 @@ public class FilterFixture : TestBase
 
         await mediator.PublishAsync(new TestEvent());
         
-        var requestResponse = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
-        var commandResponse = await mediator.SendAsync<TestCommand, TestResponse>(new TestCommand(Guid.NewGuid()));
+        var requestResponse = await mediator.RequestAsync<TestResponse>(new TestRequest());
+        var commandResponse = await mediator.SendAsync(new TestHasResponseCommand());
         
         requestResponse.Result.ShouldBe("Test response");
         commandResponse.Result.ShouldBe("Test command response");
