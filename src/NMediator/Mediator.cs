@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NMediator.Context;
+using NMediator.Ioc;
 
 namespace NMediator;
 
@@ -19,7 +20,7 @@ public class Mediator : IMediator
     {
         var commandType = command.GetType();
         
-        await SendMessageAsync(command, typeof(CommandContext<>).MakeGenericType(commandType),
+        await ProcessMessage(command, typeof(CommandContext<>).MakeGenericType(commandType), null,
             new[] { typeof(ICommandHandler<>).MakeGenericType(commandType) }, cancellationToken).ConfigureAwait(false);
     }
 
@@ -27,32 +28,22 @@ public class Mediator : IMediator
     {
         var commandType = command.GetType();
 
-        return await SendMessageAsync(command, typeof(CommandContext<>).MakeGenericType(commandType),
-            new[] { typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(TResponse)) }, cancellationToken).ConfigureAwait(false);
-    }
-
-    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : class, IEvent
-    {
-        await SendMessageAsync(@event, typeof(EventContext<TEvent>),
-            new[] { typeof(IEventHandler<TEvent>) }, cancellationToken).ConfigureAwait(false);
+        return (TResponse) await ProcessMessage(command, typeof(CommandContext<>).MakeGenericType(commandType),
+            typeof(TResponse), new[] { typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(TResponse)) }, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<TResponse> RequestAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
 
-        return await SendMessageAsync(request, typeof(RequestContext<>).MakeGenericType(requestType),
-            new[] { typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse)) }, cancellationToken).ConfigureAwait(false);
+        return (TResponse) await ProcessMessage(request, typeof(RequestContext<>).MakeGenericType(requestType),
+            typeof(TResponse), new[] { typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse)) }, cancellationToken).ConfigureAwait(false);
     }
     
-    private async Task SendMessageAsync(IMessage message, Type contextType, IEnumerable<Type> handlerTypesToMatch, CancellationToken cancellationToken = default)
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : class, IEvent
     {
-        await ProcessMessage(message, contextType, null, handlerTypesToMatch, cancellationToken).ConfigureAwait(false);
-    }
-
-    private async Task<TResponse> SendMessageAsync<TResponse>(IMessage<TResponse> message, Type contextType, IEnumerable<Type> handlerTypesToMatch, CancellationToken cancellationToken = default)
-    {
-        return (TResponse) await ProcessMessage(message, contextType, typeof(TResponse), handlerTypesToMatch, cancellationToken).ConfigureAwait(false);
+        await ProcessMessage(@event, typeof(EventContext<TEvent>), null,
+            new[] { typeof(IEventHandler<TEvent>) }, cancellationToken).ConfigureAwait(false);
     }
     
     private async Task<object> ProcessMessage(IMessage message, Type contextType, Type responseType, IEnumerable<Type> handlerTypesToMatch,
