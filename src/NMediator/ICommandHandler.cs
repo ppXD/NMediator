@@ -1,17 +1,13 @@
-using System.Threading;
-using System.Threading.Tasks;
 using NMediator.Context;
 
 namespace NMediator;
 
-public interface ICommandHandler<in TCommand>
+public interface ICommandHandler<in TCommand> : IHandler<TCommand, ICommandContext<TCommand>>
     where TCommand : class, ICommand
 {
-    Task Handle(ICommandContext<TCommand> context, CancellationToken cancellationToken = default);
 }
 
-public interface ICommandHandler<in TCommand, TResponse>
+public interface ICommandHandler<in TCommand, TResponse> : IHandler<TCommand, TResponse, ICommandContext<TCommand>>
     where TCommand : class, ICommand<TResponse>
 {
-    Task<TResponse> Handle(ICommandContext<TCommand> context, CancellationToken cancellationToken = default);
 }
