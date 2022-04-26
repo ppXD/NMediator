@@ -1,5 +1,5 @@
 namespace NMediator.Examples.Messages.Requests;
 
-public class ExampleRequest : IRequest
+public class ExampleRequest : IRequest<ExampleResponse>
 {
 }

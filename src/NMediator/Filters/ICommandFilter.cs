@@ -2,7 +2,7 @@ using NMediator.Context;
 
 namespace NMediator.Filters;
 
-public interface ICommandFilter : IExecutionFilter<ICommand, ICommandContext<ICommand>>
+public interface ICommandFilter : IExecutionFilter<IBasicCommand, ICommandContext<IBasicCommand>>
 {
 }
 

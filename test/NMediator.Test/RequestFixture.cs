@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.RequestHandlers;

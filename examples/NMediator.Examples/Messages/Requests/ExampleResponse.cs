@@ -1,5 +1,5 @@
 namespace NMediator.Examples.Messages.Requests;
 
-public class ExampleResponse : IResponse
+public class ExampleResponse
 {
 }
