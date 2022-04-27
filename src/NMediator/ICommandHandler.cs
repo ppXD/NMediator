@@ -8,7 +8,6 @@ public interface ICommandHandler<in TCommand> : IHandler<TCommand, ICommandConte
 }
 
 public interface ICommandHandler<in TCommand, TResponse> : IHandler<TCommand, TResponse, ICommandContext<TCommand>>
-    where TCommand : class, ICommand
-    where TResponse : class, IResponse
+    where TCommand : class, ICommand<TResponse>
 {
 }

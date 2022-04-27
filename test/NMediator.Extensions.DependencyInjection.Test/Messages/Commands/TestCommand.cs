@@ -1,10 +1,9 @@
 namespace NMediator.Extensions.DependencyInjection.Test.Messages.Commands;
 
-public class TestCommand : BaseCommand
+public class TestCommand : BaseCommand<TestCommandResponse>
 {
 }
 
-public class TestCommandResponse : IResponse
+public class TestCommandResponse
 {
-    
 }

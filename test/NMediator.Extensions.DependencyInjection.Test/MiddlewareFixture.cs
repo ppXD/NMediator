@@ -37,7 +37,7 @@ public class MiddlewareFixture : TestFixtureBase
         });
         Logger.Messages.Clear();
 
-        var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+        var response = await mediator.RequestAsync(new TestRequest());
 
         response.ShouldNotBeNull();
         Logger.Messages.Count.ShouldBe(5);

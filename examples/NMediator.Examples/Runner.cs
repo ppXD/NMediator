@@ -27,7 +27,7 @@ public static class Runner
         await mediator.PublishAsync(new ExampleEvent());
         var publishMessages = GetLogMessagesThenClear(logger);
 
-        await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
+        await mediator.RequestAsync(new ExampleRequest());
         var requestMessages = GetLogMessagesThenClear(logger);
         
         var sendEquals = sendMessages.SequenceEqual(new[]

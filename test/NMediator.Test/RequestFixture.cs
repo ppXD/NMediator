@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.RequestHandlers;
@@ -15,16 +14,18 @@ public class RequestFixture : TestBase
     {
         var mediator = new MediatorConfiguration()
             .RegisterHandler<TestRequestHandler>()
+            .RegisterHandler<TestStringRequestHandler>()
             .CreateMediator();
 
         var request = new TestRequest();
 
-        var response = await mediator.RequestAsync<TestRequest, TestResponse>(request);
-            
-        response.ShouldNotBeNull();
-            
-        TestStore.Stores.Count.ShouldBe(1);
-        TestStore.Stores.Single().ShouldBe(request);
+        var response1 = await mediator.RequestAsync<TestResponse>(request);
+        var response2 = await mediator.RequestAsync(new TestStringRequest());
+        
+        response1.ShouldNotBeNull();
+        response2.ShouldNotBeEmpty();
+        
+        TestStore.Stores.Count.ShouldBe(2);
     }
         
     [Fact]
@@ -38,8 +39,8 @@ public class RequestFixture : TestBase
 
         var request = new TestRequest();
 
-        var response1 = await mediator.RequestAsync<TestRequest, TestResponse>(request);
-        var response2 = await mediator.RequestAsync<TestRequest, TestOtherResponse>(request);
+        var response1 = await mediator.RequestAsync<TestResponse>(request);
+        var response2 = await mediator.RequestAsync<TestOtherResponse>(request);
         
         response1.ShouldNotBeNull();
         response2.ShouldNotBeNull();
@@ -60,10 +61,10 @@ public class RequestFixture : TestBase
         var request = new TestRequest();
         var otherRequest = new TestOtherRequest();
         
-        var response1 = await mediator.RequestAsync<TestRequest, TestResponse>(request);
-        var response2 = await mediator.RequestAsync<TestRequest, TestOtherResponse>(request);
-        var response3 = await mediator.RequestAsync<TestOtherRequest, TestResponse>(otherRequest);
-        var response4 = await mediator.RequestAsync<TestOtherRequest, TestOtherResponse>(otherRequest);
+        var response1 = await mediator.RequestAsync<TestResponse>(request);
+        var response2 = await mediator.RequestAsync<TestOtherResponse>(request);
+        var response3 = await mediator.RequestAsync<TestResponse>(otherRequest);
+        var response4 = await mediator.RequestAsync<TestOtherResponse>(otherRequest);
         
         response1.ShouldNotBeNull();
         response2.ShouldNotBeNull();
@@ -85,7 +86,7 @@ public class RequestFixture : TestBase
             .RegisterHandler<TestRequestHandler>()
             .CreateMediator();
 
-        var funcTask = () => mediator.RequestAsync<TestRequest, TestOtherResponse>(new TestRequest());
+        var funcTask = () => mediator.RequestAsync<TestOtherResponse>(new TestRequest());
 
         funcTask.ShouldThrow<NoHandlerFoundException>();
     }
@@ -98,7 +99,7 @@ public class RequestFixture : TestBase
             .RegisterHandler<TestRequestDuplicatedHandler>()
             .CreateMediator();
         
-        var funcTask = () => mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+        var funcTask = () => mediator.RequestAsync<TestResponse>(new TestRequest());
 
         funcTask.ShouldThrow<MoreThanOneHandlerException>();
     }

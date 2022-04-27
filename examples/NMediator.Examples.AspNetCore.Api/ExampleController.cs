@@ -82,7 +82,7 @@ public class ExampleController : ControllerBase
     [Route("request/send"), HttpGet]
     public async Task<IActionResult> SendRequest()
     {
-        var response = await _mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
+        var response = await _mediator.RequestAsync(new ExampleRequest());
         
         var messages = new List<string>(_logger.Messages);
 

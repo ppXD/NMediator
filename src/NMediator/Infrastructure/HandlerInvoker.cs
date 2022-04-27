@@ -21,7 +21,7 @@ public class HandlerInvoker
         if (_context.MessageBindingHandlers == null || !_context.MessageBindingHandlers.Any())
             throw new NoHandlerFoundException(_context.Message.GetType());
 
-        if (_context.Message is ICommand or IRequest)
+        if (_context.Message is not IEvent)
         {
             if (_context.MessageBindingHandlers.Count() > 1)
                 throw new MoreThanOneHandlerException(_context.Message.GetType());

@@ -6,9 +6,9 @@ using NMediator.Test.TestData.Requests;
 
 namespace NMediator.Test.TestData.CommandHandlers;
 
-public class TestCommandHasResponseHandler : ICommandHandler<TestCommand, TestResponse>
+public class TestHasResponseCommandHandler : ICommandHandler<TestHasResponseCommand, TestResponse>
 {
-    public Task<TestResponse> Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestResponse> Handle(ICommandContext<TestHasResponseCommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestResponse
