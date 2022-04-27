@@ -2,7 +2,7 @@
 
 <p>
 <p align="center">
-   <img width="150" height="150" src="assets/logos/logo.png" alt="Logo">
+   <img src="assets/logos/logo1.png" alt="Logo">
 </p>
 
 # NMediator
@@ -108,5 +108,5 @@ No dependencies will use `DefaultDependencyScope` by default when `MediatorConfi
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [project-examples]: examples
-[project-logo]: assets/logos/logo.png
+[project-logo]: assets/logos/logo1.png
 [overview-screenshot]: assets/sceenshots/overview.png
