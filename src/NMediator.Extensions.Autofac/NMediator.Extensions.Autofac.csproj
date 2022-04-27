@@ -5,20 +5,16 @@
         <PackageId>NMediator.Extensions.Autofac</PackageId>
         <AssemblyName>NMediator.Extensions.Autofac</AssemblyName>
         <Description>Autofac for NMediator</Description>
-        <PackageIcon>logo.png</PackageIcon>
         <PackageTags>mediator;request;response;command;cqrs;ddd;pipeline;middleware;filter;</PackageTags>
         <PackageProjectUrl>https://github.com/ppXD/NMediator</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ppXD/NMediator</RepositoryUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <IconUrl>https://raw.githubusercontent.com/ppXD/NMediator/54098275da2afac32391298a9df76454808bce3b/assets/logos/logo_1024x1024.png</IconUrl>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <LangVersion>latest</LangVersion>
         <TargetFrameworks>net6.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     </PropertyGroup>
-
-    <ItemGroup>
-        <None Include="..\..\assets\logos\logo.png" Pack="true" PackagePath="" />
-    </ItemGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\NMediator\NMediator.csproj" />
