@@ -1,9 +1,11 @@
 <div align="center">
 
+<p>
 <p align="center">
-   <img src="assets/logos/logo.png" alt="Logo">
+   <img src="assets/logos/logo_150x150.png" alt="Logo">
 </p>
-<h1 align="center"><b>NMediator</b></h1>
+
+# NMediator
 
 ![build](https://github.com/ppXD/NMediator/workflows/build/badge.svg)
 ![test](https://github.com/ppXD/NMediator/workflows/test/badge.svg)
