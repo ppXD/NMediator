@@ -3,8 +3,9 @@
 <p align="center">
 <a href="#">
 </a>
-
-![logo][project-logo]
+<p align="center">
+   <img src="assets/logos/logo.png" alt="Logo">
+</p>
 
 </p>
 
