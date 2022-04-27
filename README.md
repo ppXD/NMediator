@@ -81,11 +81,10 @@ public interface IMiddleware
     Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken);
 }
 ```
-Middlewares are configured using `UseMiddleware` generic method.
+`UseMiddleware<TMiddleware>` is the generic method to configure the middleware.
 ```csharp
 var configuration = new MediatorConfiguration();
 configuration.UseMiddleware<ExampleMiddleware>();
-configuration.UseMiddleware(typeof(ExampleMiddleware));
 ```
 
 ## Filter
