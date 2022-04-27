@@ -2,7 +2,7 @@
 
 <p>
 <p align="center">
-   <img width="188" height="188" src="assets/logos/logo.png" alt="Logo">
+   <img width="150" height="150" src="assets/logos/logo.png" alt="Logo">
 </p>
 
 # NMediator
