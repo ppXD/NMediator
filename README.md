@@ -1,7 +1,11 @@
 <div align="center">
 
 <p align="center">
-   <img width="150" height="150" src="assets/logos/logo.png" alt="Logo">
+<a href="#">
+</a>
+<p align="center">
+    <img width="150" height="150" src="assets/logos/logo.png" alt="Logo">
+</p>
 </p>
 
 # NMediator
