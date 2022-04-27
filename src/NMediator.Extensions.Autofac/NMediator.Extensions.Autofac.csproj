@@ -9,7 +9,6 @@
         <PackageProjectUrl>https://github.com/ppXD/NMediator</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ppXD/NMediator</RepositoryUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <IconUrl>https://raw.githubusercontent.com/ppXD/NMediator/54098275da2afac32391298a9df76454808bce3b/assets/logos/logo_1024x1024.png</IconUrl>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <LangVersion>latest</LangVersion>
