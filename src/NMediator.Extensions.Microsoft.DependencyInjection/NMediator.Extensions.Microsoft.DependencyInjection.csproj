@@ -5,6 +5,7 @@
         <PackageId>NMediator.Extensions.Microsoft.DependencyInjection</PackageId>
         <AssemblyName>NMediator.Extensions.Microsoft.DependencyInjection</AssemblyName>
         <Description>Microsoft denpendency injection for NMediator</Description>
+        <PackageIcon>logo.png</PackageIcon>
         <PackageTags>mediator;request;response;command;cqrs;ddd;pipeline;middleware;filter;</PackageTags>
         <PackageProjectUrl>https://github.com/ppXD/NMediator</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ppXD/NMediator</RepositoryUrl>
@@ -15,6 +16,10 @@
         <TargetFrameworks>net6.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Include="..\..\assets\logos\logo.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+    
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>

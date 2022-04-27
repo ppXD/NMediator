@@ -5,6 +5,7 @@
         <PackageId>NMediator</PackageId>
         <AssemblyName>NMediator</AssemblyName>
         <Description>Simple and easy to use mediator framework for .NET</Description>
+        <PackageIcon>logo.png</PackageIcon>
         <PackageTags>mediator;request;response;command;cqrs;ddd;pipeline;middleware;filter;</PackageTags>
         <PackageProjectUrl>https://github.com/ppXD/NMediator</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ppXD/NMediator</RepositoryUrl>
@@ -14,4 +15,8 @@
         <Nullable>disable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Include="..\..\assets\logos\logo.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+    
 </Project>
