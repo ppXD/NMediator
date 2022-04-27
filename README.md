@@ -1,5 +1,6 @@
 <div align="center">
 
+<p>
 <p align="center">
    <img src="assets/logos/logo.png" alt="Logo">
 </p>
