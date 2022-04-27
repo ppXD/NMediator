@@ -1,7 +1,5 @@
 <div align="center">
 
-<p>
-
 ![logo][project-logo]
 
 # NMediator
