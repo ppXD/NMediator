@@ -46,14 +46,14 @@ var mediator = new MediatorConfiguration()
 
 await mediator.SendAsync(new ExampleCommand());
 await mediator.PublishAsync(new ExampleEvent());
-var response = await mediator.SendAsync<ExampleCommand, ExampleResponse>(new ExampleCommand());
-var response = await mediator.RequestAsync<ExampleRequest, ExampleResponse>(new ExampleRequest());
+var response = await mediator.SendAsync(new ExampleCommand());
+var response = await mediator.RequestAsync(new ExampleRequest());
 ```
 
 ## Contract
 NMediator has three kinds of messages contract:
-- `ICommand`,`ICommand<>`
-- `IRequest<>`
+- `ICommand`,`ICommand<out TResponse>`
+- `IRequest<out TResponse>`
 - `IEvent`
 
 ## Handler
