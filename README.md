@@ -7,8 +7,6 @@
    <img src="assets/logos/logo.png" alt="Logo">
 </p>
 
-</p>
-
 # NMediator
 
 ![build](https://github.com/ppXD/NMediator/workflows/build/badge.svg)
