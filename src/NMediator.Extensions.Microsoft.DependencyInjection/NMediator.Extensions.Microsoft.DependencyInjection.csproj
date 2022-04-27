@@ -5,7 +5,6 @@
         <PackageId>NMediator.Extensions.Microsoft.DependencyInjection</PackageId>
         <AssemblyName>NMediator.Extensions.Microsoft.DependencyInjection</AssemblyName>
         <Description>Microsoft denpendency injection for NMediator</Description>
-        <PackageIcon>logo.png</PackageIcon>
         <PackageTags>mediator;request;response;command;cqrs;ddd;pipeline;middleware;filter;</PackageTags>
         <PackageProjectUrl>https://github.com/ppXD/NMediator</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ppXD/NMediator</RepositoryUrl>
