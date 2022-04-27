@@ -1,6 +1,9 @@
 <div align="center">
 
+<p>
+
 ![logo][project-logo]
+
 # NMediator
 
 ![build](https://github.com/ppXD/NMediator/workflows/build/badge.svg)
