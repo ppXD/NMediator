@@ -4,7 +4,7 @@ using NMediator.Ioc;
 
 namespace NMediator.Context;
 
-public class RequestContext<TRequest> : MessageContext<TRequest>, IRequestContext<TRequest> where TRequest : IMessage
+public class RequestContext<TRequest> : MessageContext<TRequest>, IRequestContext<TRequest> where TRequest : IRequest
 {
     public RequestContext(IMessageContext<TRequest> context) : base(context.Message, context.Scope, context.ResponseType, context.Filters, context.MessageBindingHandlers)
     {

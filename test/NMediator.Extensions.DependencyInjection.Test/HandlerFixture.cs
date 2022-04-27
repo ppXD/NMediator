@@ -39,7 +39,7 @@ public class HandlerFixture : TestFixtureBase
         Logger.Messages.Single().ShouldBe(nameof(TestCommand));
         Logger.Messages.Clear();
 
-        var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+        var response = await mediator.RequestAsync(new TestRequest());
 
         response.ShouldNotBeNull();
         Logger.Messages.Count.ShouldBe(1);
@@ -81,7 +81,7 @@ public class HandlerFixture : TestFixtureBase
 
         var mediator = GetMediator<IMediator>(dependencyInjectionType);
 
-        var response = await mediator.SendAsync<TestCommand, TestCommandResponse>(new TestCommand());
+        var response = await mediator.SendAsync(new TestCommand());
 
         response.ShouldNotBeNull();
     }
@@ -123,7 +123,7 @@ public class HandlerFixture : TestFixtureBase
 
         var mediator = GetMediator<IMediator>(dependencyInjectionType);
 
-        var response = await mediator.RequestAsync<TestRequest, TestResponse>(new TestRequest());
+        var response = await mediator.RequestAsync(new TestRequest());
 
         response.ShouldNotBeNull();
         Logger.Messages.Count.ShouldBe(1);

@@ -1,6 +1,6 @@
 namespace NMediator.Extensions.DependencyInjection.Test.Messages.Requests;
 
-public class TestRequest : IRequest
+public class TestRequest : IRequest<TestResponse>
 {
     
 }

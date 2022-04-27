@@ -8,7 +8,7 @@ namespace NMediator.Test.TestData.CommandHandlers;
 
 public class TestMultipleCommandHandler : 
     ICommandHandler<TestCommand>,
-    ICommandHandler<TestOtherCommand, TestResponse>
+    ICommandHandler<TestHasResponseCommand, TestResponse>
 {
     public Task Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
@@ -16,7 +16,7 @@ public class TestMultipleCommandHandler :
         return Task.CompletedTask;
     }
 
-    public Task<TestResponse> Handle(ICommandContext<TestOtherCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestResponse> Handle(ICommandContext<TestHasResponseCommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestResponse());

@@ -12,17 +12,17 @@ public class MediatorHandlerConfiguration
 
     public IEnumerable<Type> GetHandlers() => HandlerMappings.SelectMany(x => x.Value).Distinct().ToList();
 
-    public IEnumerable<Type> GetHandlers<TMessage>(IEnumerable<Type> typesToMatch) where TMessage : class, IMessage
+    public IEnumerable<Type> GetHandlers(IMessage message, IEnumerable<Type> typesToMatch)
     {
-        var messageType = typeof(TMessage);
+        var messageType = message.GetType();
         
         HandlerMappings.TryGetValue(messageType, out var handlerTypes);
 
         if (handlerTypes == null)
             throw new NoHandlerFoundException(messageType);
 
-        if (typeof(ICommand).IsAssignableFrom(typeof(TMessage)) && handlerTypes.Count > 1)
-            throw new MoreThanOneHandlerException(typeof(TMessage));
+        if (typeof(ICommand).IsAssignableFrom(messageType) && handlerTypes.Count > 1)
+            throw new MoreThanOneHandlerException(messageType);
         
         handlerTypes = handlerTypes.Where(handlerType =>
                 handlerType.GetInterfaces()
