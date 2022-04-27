@@ -26,6 +26,7 @@ NMediator is a **simple and easy to use** mediator for .NET applications.
 ## Features
 - Async/await first
 - No dependencies
+- Fluent configuration
 - In-process messaging
 - Each message processing per scope
 - Full coverage tests to ensure stability
