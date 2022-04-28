@@ -58,34 +58,31 @@ var response = await mediator.RequestAsync(new ExampleRequest());
 ## Contract
 NMediator has three kinds of messages contract:
 - `ICommand`,`ICommand<out TResponse>` 
-dispatched to a single handler.
+
+Command messages dispatched to a single handler. Send a command via the mediator:
 ```csharp
 public class ExampleCommand : ICommand { }
 public class ExampleHasResponseCommand : ICommand<ExampleResponse> { }
-```
-Send a command via the mediator:
-```csharp
+
 await mediator.SendAsync(new ExampleCommand());
 var response = await mediator.SendAsync(new ExampleResponse());
 ```
 
 - `IRequest<out TResponse>`
-dispatched to a single handler.
+
+Request messages dispatched to a single handler. Send a request via the mediator:
 ```csharp
 public class ExampleRequest : IRequest<ExampleResponse> { }
-```
-Send a request via the mediator:
-```csharp
+
 var response = await mediator.RequestAsync(new ExampleRequest());
 ```
 
 - `IEvent`
-dispatched to multi handlers.
+
+Event messages dispatched to multi handlers. Publish a event via the mediator:
 ```csharp
 public class ExampleEvent : IEvent { }
-```
-Publish a event via the mediator:
-```csharp
+
 await mediator.PublishAsync(new ExampleEvent());
 ```
 
