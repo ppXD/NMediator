@@ -60,10 +60,16 @@ NMediator has three kinds of messages contract:
 - `ICommand`,`ICommand<out TResponse>`
 ```csharp
 public class ExampleCommand : ICommand { }
-public class ExampleHasResponseCommand : ICommand<string> { }
+public class ExampleHasResponseCommand : ICommand<string>, ICommand<ExampleResponse> { }
 ```
 - `IRequest<out TResponse>`
+```csharp
+public class ExampleRequest : IRequest<string>, IRequest<ExampleResponse> { }
+```
 - `IEvent`
+```csharp
+public class ExampleEvent : IEvent { }
+```
 
 ## Handler
 
