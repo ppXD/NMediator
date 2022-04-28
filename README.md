@@ -87,7 +87,7 @@ await mediator.PublishAsync(new ExampleEvent());
 ```
 
 ## Handler
-Each message contract has a corresponding handler interface
+Each message contract has a corresponding handler interface.
 - `ICommandHandler<in TCommand>`,`ICommandHandler<in TCommand, TResponse>`
 ```csharp
 public class ExampleCommandHandler : ICommandHandler<ExampleCommand> 
