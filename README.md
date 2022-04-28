@@ -58,6 +58,10 @@ var response = await mediator.RequestAsync(new ExampleRequest());
 ## Contract
 NMediator has three kinds of messages contract:
 - `ICommand`,`ICommand<out TResponse>`
+```csharp
+public class ExampleCommand : ICommand { }
+public class ExampleHasResponseCommand : ICommand<string> { }
+```
 - `IRequest<out TResponse>`
 - `IEvent`
 
