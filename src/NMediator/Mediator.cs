@@ -17,6 +17,9 @@ public class Mediator : IMediator
 
     public async Task SendAsync(ICommand command, CancellationToken cancellationToken = default)
     {
+        if (command == null)
+            throw new ArgumentNullException(nameof(command));
+        
         var commandType = command.GetType();
         
         await ProcessMessage(command, typeof(CommandContext<>).MakeGenericType(commandType), null,
@@ -25,6 +28,9 @@ public class Mediator : IMediator
 
     public async Task<TResponse> SendAsync<TResponse>(ICommand<TResponse> command, CancellationToken cancellationToken = default)
     {
+        if (command == null)
+            throw new ArgumentNullException(nameof(command));
+        
         var commandType = command.GetType();
 
         return (TResponse) await ProcessMessage(command, typeof(CommandContext<>).MakeGenericType(commandType),
@@ -33,13 +39,16 @@ public class Mediator : IMediator
 
     public async Task<TResponse> RequestAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
+        if (request == null)
+            throw new ArgumentNullException(nameof(request));
+        
         var requestType = request.GetType();
 
         return (TResponse) await ProcessMessage(request, typeof(RequestContext<>).MakeGenericType(requestType),
             typeof(TResponse), new[] { typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse)) }, cancellationToken).ConfigureAwait(false);
     }
     
-    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : class, IEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : class, IEvent, new()
     {
         await ProcessMessage(@event, typeof(EventContext<TEvent>), null,
             new[] { typeof(IEventHandler<TEvent>) }, cancellationToken).ConfigureAwait(false);

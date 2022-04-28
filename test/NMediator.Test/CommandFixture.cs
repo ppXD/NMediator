@@ -63,7 +63,7 @@ public class CommandFixture : TestBase
         TestStore.Stores.Count.ShouldBe(1);
         TestStore.Stores.Single().ShouldBe(command);
     }
-
+    
     [Fact]
     public async Task ShouldSendMultipleCommand()
     {
