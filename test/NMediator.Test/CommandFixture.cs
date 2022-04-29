@@ -1,9 +1,10 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.CommandHandlers;
 using NMediator.Test.TestData.Commands;
-using NMediator.Test.TestData.Requests;
+using NMediator.Test.TestData.Responses;
 using Shouldly;
 using Xunit;
 
@@ -99,6 +100,39 @@ public class CommandFixture : TestBase
         TestStore.Stores.Count.ShouldBe(3);
     }
 
+    [Fact]
+    public async Task ShouldDerivedResponseCommandBeWork()
+    {
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<TestHasDerivedResponseCommandHandler1>()
+            .CreateMediator();
+        
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<TestHasDerivedResponseCommandHandler2>()
+            .CreateMediator();
+        
+        var mediator3 = new MediatorConfiguration()
+            .RegisterHandler<TestHasDerivedResponseCommandHandler3>()
+            .CreateMediator();
+        
+        var response1 = await mediator1.SendAsync(new TestHasDerivedResponseCommand());
+        var response2 = await mediator1.SendAsync<TestResponse>(new TestHasDerivedResponseCommand());
+
+        var response3 = () => mediator2.SendAsync(new TestHasDerivedResponseCommand());
+        var response4 = await mediator2.SendAsync<TestResponse>(new TestHasDerivedResponseCommand());
+        
+        var response5 = () => mediator3.SendAsync(new TestHasDerivedResponseCommand());
+        var response6 = await mediator3.SendAsync<TestResponse>(new TestHasDerivedResponseCommand());
+        
+        response1.ShouldNotBeNull();
+        response2.ShouldNotBeNull();
+        response3.ShouldThrow<NoHandlerFoundException>();
+        response4.ShouldNotBeNull();
+        response5.ShouldThrow<Exception>();
+        response6.ShouldNotBeNull();
+        TestStore.Stores.Count.ShouldBe(4);
+    }
+    
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -109,7 +143,7 @@ public class CommandFixture : TestBase
         if (hasResponse)
             config.RegisterHandler<TestMultipleImplementationHasResponseCommandHandler>();
         else
-            config.RegisterHandler<TestMultipleImplementationNonResponseCommandHandler>();
+            config.RegisterHandler<TestMultipleImplementationNonResponseCommandHandler1>();
 
         var mediator = config.CreateMediator();
         
@@ -123,7 +157,6 @@ public class CommandFixture : TestBase
 
             otherResponseTask.ShouldThrow<NoHandlerFoundException>();
         }
-            
         else
             await mediator.SendAsync(command);
         
@@ -146,17 +179,22 @@ public class CommandFixture : TestBase
     }
 
     [Fact]
-    public void CannotMoreThanOneCommandHandler()
+    public async Task DuplicatedHandlerShouldNotThrow()
     {
         var mediator = new MediatorConfiguration()
-            .RegisterHandler<TestMultipleImplementationNonResponseCommandHandler>()
+            .RegisterHandler<TestMultipleImplementationNonResponseCommandHandler1>()
+            .RegisterHandler<TestMultipleImplementationNonResponseCommandHandler2>()
             .RegisterHandler<TestMultipleImplementationHasResponseCommandHandler>()
             .CreateMediator();
         
         var command = new TestMultipleImplementationCommand();
+        
+        await mediator.SendAsync(command);
+        var response2 = await mediator.SendAsync<TestResponse>(command);
 
-        var sendTask = () => mediator.SendAsync<TestResponse>(command);
-
-        sendTask.ShouldThrow<MoreThanOneHandlerException>();
+        response2.ShouldNotBeNull();
+        TestStore.Stores.Count.ShouldBe(2);
+        TestStore.Stores[0].ShouldBe($"{nameof(TestMultipleImplementationNonResponseCommandHandler1)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestMultipleImplementationHasResponseCommandHandler)}");
     }
 }

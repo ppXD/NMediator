@@ -13,6 +13,7 @@ using NMediator.Test.TestData.Filters.RequestFilters;
 using NMediator.Test.TestData.Middlewares;
 using NMediator.Test.TestData.RequestHandlers;
 using NMediator.Test.TestData.Requests;
+using NMediator.Test.TestData.Responses;
 using Shouldly;
 using Xunit;
 

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.RequestHandlers;
 using NMediator.Test.TestData.Requests;
+using NMediator.Test.TestData.Responses;
 using Shouldly;
 using Xunit;
 
@@ -92,15 +93,16 @@ public class RequestFixture : TestBase
     }
     
     [Fact]
-    public void CannotDuplicatedRequestHandler()
+    public async Task DuplicatedHandlerShouldNotThrow()
     {
         var mediator = new MediatorConfiguration()
             .RegisterHandler<TestRequestHandler>()
             .RegisterHandler<TestRequestDuplicatedHandler>()
             .CreateMediator();
         
-        var funcTask = () => mediator.RequestAsync<TestResponse>(new TestRequest());
+        var response = await mediator.RequestAsync<TestResponse>(new TestRequest());
 
-        funcTask.ShouldThrow<MoreThanOneHandlerException>();
+        response.ShouldNotBeNull();
+        response.Result.ShouldBe("Test response");
     }
 }

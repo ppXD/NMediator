@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NMediator.Context;
 using NMediator.Test.TestData.Requests;
+using NMediator.Test.TestData.Responses;
 
 namespace NMediator.Test.TestData.RequestHandlers;
 
@@ -12,7 +13,7 @@ public class TestRequestDuplicatedHandler : IRequestHandler<TestRequest, TestRes
         TestStore.Stores.Add(context.Message);
         return Task.FromResult(new TestResponse
         {
-            Result = "Test response"
+            Result = "Test duplicated handler"
         });
     }
 }
