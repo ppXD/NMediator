@@ -22,9 +22,6 @@ public class MediatorHandlerConfiguration
     
         if (handlers == null)
             throw new NoHandlerFoundException(messageType);
-    
-        if (typeof(IBasicCommand).IsAssignableFrom(messageType) && handlers.Count > 1)
-            throw new MoreThanOneHandlerException(messageType);
         
         return handlers;
     }
