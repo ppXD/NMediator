@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.RequestHandlers;
@@ -90,6 +91,39 @@ public class RequestFixture : TestBase
         var funcTask = () => mediator.RequestAsync<TestOtherResponse>(new TestRequest());
 
         funcTask.ShouldThrow<NoHandlerFoundException>();
+    }
+    
+    [Fact]
+    public async Task ShouldDerivedResponseCommandBeWork()
+    {
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<TestDerivedRequestHandler1>()
+            .CreateMediator();
+        
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<TestDerivedRequestHandler2>()
+            .CreateMediator();
+        
+        var mediator3 = new MediatorConfiguration()
+            .RegisterHandler<TestDerivedRequestHandler3>()
+            .CreateMediator();
+        
+        var response1 = await mediator1.RequestAsync(new TestDerivedRequest());
+        var response2 = await mediator1.RequestAsync<TestResponse>(new TestDerivedRequest());
+
+        var response3 = () => mediator2.RequestAsync(new TestDerivedRequest());
+        var response4 = await mediator2.RequestAsync<TestResponse>(new TestDerivedRequest());
+        
+        var response5 = () => mediator3.RequestAsync(new TestDerivedRequest());
+        var response6 = await mediator3.RequestAsync<TestResponse>(new TestDerivedRequest());
+        
+        response1.ShouldNotBeNull();
+        response2.ShouldNotBeNull();
+        response3.ShouldThrow<NoHandlerFoundException>();
+        response4.ShouldNotBeNull();
+        response5.ShouldThrow<Exception>();
+        response6.ShouldNotBeNull();
+        TestStore.Stores.Count.ShouldBe(4);
     }
     
     [Fact]

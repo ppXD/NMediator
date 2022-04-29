@@ -4,5 +4,4 @@ namespace NMediator.Test.TestData.Commands;
 
 public class TestHasDerivedResponseCommand : ICommand<TestDerivedResponse>
 {
-    
 }
