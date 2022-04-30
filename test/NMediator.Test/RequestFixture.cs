@@ -127,6 +127,92 @@ public class RequestFixture : TestBase
     }
     
     [Fact]
+    public async Task ShouldInterfaceHandlerBeWork()
+    {
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<ITestRequestHandler>()
+            .CreateMediator();
+
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<ITestRequestHandler>()
+            .RegisterHandler<TestInterfaceRequestHandler>()
+            .CreateMediator();
+        
+        var mediator3 = new MediatorConfiguration()
+            .RegisterHandler<ITestRequestHandler>()
+            .RegisterHandler<TestOneWayRequestHandler>()
+            .CreateMediator();
+        
+        var mediator4 = new MediatorConfiguration()
+            .RegisterHandler<ITestRequestHandler>()
+            .RegisterHandler<TestOneWayRequestHandler>()
+            .RegisterHandler<TestTwoWayRequestHandler>()
+            .CreateMediator();
+        
+        var mediator5 = new MediatorConfiguration()
+            .RegisterHandler<ITestRequestHandler>()
+            .RegisterHandler<TestOneWayRequestHandler>()
+            .RegisterHandler<TestTwoWayRequestHandler>()
+            .RegisterHandler<TestAllWayRequestHandler>()
+            .CreateMediator();
+        
+        var mediator6 = new MediatorConfiguration()
+            .RegisterHandler<ITestRequestHandler>()
+            .RegisterHandler<TestOneWayRequestHandler>()
+            .RegisterHandler<TestTwoWayRequestHandler>()
+            .RegisterHandler<TestAllWayRequestHandler>()
+            .RegisterHandler<TestInheritAllWayRequestHandler>()
+            .CreateMediator();
+        
+        await mediator1.RequestAsync<TestResponse>(new TestInterfaceRequest());
+        await mediator1.RequestAsync<TestDerivedResponse>(new TestInterfaceRequest());
+        await mediator2.RequestAsync<TestResponse>(new TestInterfaceRequest());
+        await mediator2.RequestAsync<TestDerivedResponse>(new TestInterfaceRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestInterfaceRequestHandler)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestInterfaceRequestHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator1.RequestAsync<TestResponse>(new TestOneWayRequest());
+        await mediator1.RequestAsync<TestDerivedResponse>(new TestOneWayRequest());
+        await mediator3.RequestAsync<TestResponse>(new TestOneWayRequest());
+        await mediator3.RequestAsync<TestDerivedResponse>(new TestOneWayRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestOneWayRequestHandler)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestOneWayRequestHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator1.RequestAsync<TestResponse>(new TestTwoWayRequest());
+        await mediator1.RequestAsync<TestDerivedResponse>(new TestTwoWayRequest());
+        await mediator4.RequestAsync<TestResponse>(new TestTwoWayRequest());
+        await mediator4.RequestAsync<TestDerivedResponse>(new TestTwoWayRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestTwoWayRequestHandler)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestTwoWayRequestHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator1.RequestAsync<TestResponse>(new TestInheritAllWayRequest());
+        await mediator1.RequestAsync<TestDerivedResponse>(new TestInheritAllWayRequest());
+        await mediator5.RequestAsync<TestResponse>(new TestInheritAllWayRequest());
+        await mediator5.RequestAsync<TestDerivedResponse>(new TestInheritAllWayRequest());
+        await mediator6.RequestAsync<TestResponse>(new TestInheritAllWayRequest()); 
+        await mediator6.RequestAsync<TestDerivedResponse>(new TestInheritAllWayRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestAllWayRequestHandler)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestAllWayRequestHandler)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(TestInheritAllWayRequestHandler)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(TestInheritAllWayRequestHandler)}");
+    }
+    
+    [Fact]
     public async Task DuplicatedHandlerShouldNotThrow()
     {
         var mediator = new MediatorConfiguration()

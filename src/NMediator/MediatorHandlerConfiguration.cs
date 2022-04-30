@@ -95,11 +95,13 @@ public class MediatorHandlerConfiguration
     {
         if (handler.MessageType == message.GetType() && handler.ResponseType == responseType)
             return 0;
-        if (message.GetType().IsSubclassOf(handler.MessageType) && handler.ResponseType == responseType)
-            return 1;
         if (message.GetType() == handler.MessageType)
+            return 1;
+        if (message.GetType().IsSubclassOf(handler.MessageType))
             return 2;
-        return 3;
+        if (message.GetType().IsClass)
+            return 3;
+        return 4;
     }
     
     private class MessageAndResponse : IEquatable<MessageAndResponse>
