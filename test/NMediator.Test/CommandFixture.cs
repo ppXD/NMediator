@@ -162,6 +162,118 @@ public class CommandFixture : TestBase
         
         TestStore.Stores.Count.ShouldBe(1);
     }
+
+    [Fact]
+    public async Task ShouldInterfaceHandlerBeWork()
+    {
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<ITestCommandHandler>()
+            .RegisterHandler<ITestCommandHasResponseHandler>()
+            .CreateMediator();
+
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<ITestCommandHandler>()
+            .RegisterHandler<TestInterfaceCommandHandler>()
+            .RegisterHandler<TestInterfaceHasResponseCommandHandler>()
+            .CreateMediator();
+        
+        var mediator3 = new MediatorConfiguration()
+            .RegisterHandler<ITestCommandHandler>()
+            .RegisterHandler<TestCommandOneWayCommandHandler>()
+            .RegisterHandler<TestCommandOneWayHasResponseCommandHandler>()
+            .CreateMediator();
+        
+        var mediator4 = new MediatorConfiguration()
+            .RegisterHandler<ITestCommandHandler>()
+            .RegisterHandler<TestCommandOneWayCommandHandler>()
+            .RegisterHandler<TestCommandOneWayHasResponseCommandHandler>()
+            .RegisterHandler<TestCommandTwoWayCommandHandler>()
+            .RegisterHandler<TestCommandTwoWayHasResponseCommandHandler>()
+            .CreateMediator();
+        
+        var mediator5 = new MediatorConfiguration()
+            .RegisterHandler<ITestCommandHandler>()
+            .RegisterHandler<TestCommandOneWayCommandHandler>()
+            .RegisterHandler<TestCommandOneWayHasResponseCommandHandler>()
+            .RegisterHandler<TestCommandTwoWayCommandHandler>()
+            .RegisterHandler<TestCommandTwoWayHasResponseCommandHandler>()
+            .RegisterHandler<TestCommandAllWayCommandHandler>()
+            .RegisterHandler<TestCommandAllWayHasResponseCommandHandler>()
+            .CreateMediator();
+        
+        var mediator6 = new MediatorConfiguration()
+            .RegisterHandler<ITestCommandHandler>()
+            .RegisterHandler<TestCommandAllWayCommandHandler>()
+            .RegisterHandler<TestCommandAllWayHasResponseCommandHandler>()
+            .RegisterHandler<TestInheritAllWayCommandHandler>()
+            .RegisterHandler<TestInheritAllWayHasResponseCommandHandler>()
+            .CreateMediator();
+        
+         await mediator1.SendAsync(new TestInterfaceCommand());
+         await mediator1.SendAsync<TestResponse>(new TestInterfaceCommand());
+         await mediator1.SendAsync<TestDerivedResponse>(new TestInterfaceCommand());
+         await mediator2.SendAsync(new TestInterfaceCommand());
+         await mediator2.SendAsync<TestResponse>(new TestInterfaceCommand());
+         await mediator2.SendAsync<TestDerivedResponse>(new TestInterfaceCommand());
+        
+         TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandHandler)}");
+         TestStore.Stores[1].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+         TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+         TestStore.Stores[3].ShouldBe($"{nameof(TestInterfaceCommandHandler)}");
+         TestStore.Stores[4].ShouldBe($"{nameof(TestInterfaceHasResponseCommandHandler)}");
+         TestStore.Stores[5].ShouldBe($"{nameof(TestInterfaceHasResponseCommandHandler)}");
+         TestStore.Stores.Clear();
+        
+         await mediator1.SendAsync(new TestCommandOneWayCommand());
+         await mediator1.SendAsync<TestResponse>(new TestCommandOneWayCommand());
+         await mediator1.SendAsync<TestDerivedResponse>(new TestCommandOneWayCommand());
+         await mediator3.SendAsync(new TestCommandOneWayCommand());
+         await mediator3.SendAsync<TestResponse>(new TestCommandOneWayCommand());
+         await mediator3.SendAsync<TestDerivedResponse>(new TestCommandOneWayCommand());
+        
+         TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandHandler)}");
+         TestStore.Stores[1].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+         TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+         TestStore.Stores[3].ShouldBe($"{nameof(TestCommandOneWayCommandHandler)}");
+         TestStore.Stores[4].ShouldBe($"{nameof(TestCommandOneWayHasResponseCommandHandler)}");
+         TestStore.Stores[5].ShouldBe($"{nameof(TestCommandOneWayHasResponseCommandHandler)}");
+         TestStore.Stores.Clear();
+        
+         await mediator1.SendAsync(new TestCommandTwoWayCommand());
+         await mediator1.SendAsync<TestResponse>(new TestCommandTwoWayCommand());
+         await mediator1.SendAsync<TestDerivedResponse>(new TestCommandTwoWayCommand());
+         await mediator4.SendAsync(new TestCommandTwoWayCommand());
+         await mediator4.SendAsync<TestResponse>(new TestCommandTwoWayCommand());
+         await mediator4.SendAsync<TestDerivedResponse>(new TestCommandTwoWayCommand());
+        
+         TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandHandler)}");
+         TestStore.Stores[1].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+         TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+         TestStore.Stores[3].ShouldBe($"{nameof(TestCommandTwoWayCommandHandler)}");
+         TestStore.Stores[4].ShouldBe($"{nameof(TestCommandTwoWayHasResponseCommandHandler)}");
+         TestStore.Stores[5].ShouldBe($"{nameof(TestCommandTwoWayHasResponseCommandHandler)}");
+         TestStore.Stores.Clear();
+        
+         await mediator1.SendAsync(new TestInheritAllWayCommand());
+         await mediator1.SendAsync<TestResponse>(new TestInheritAllWayCommand());
+         await mediator1.SendAsync<TestDerivedResponse>(new TestInheritAllWayCommand());
+         await mediator5.SendAsync(new TestInheritAllWayCommand());
+         await mediator5.SendAsync<TestResponse>(new TestInheritAllWayCommand());
+         await mediator5.SendAsync<TestDerivedResponse>(new TestInheritAllWayCommand());
+        await mediator6.SendAsync(new TestInheritAllWayCommand());
+        await mediator6.SendAsync<TestResponse>(new TestInheritAllWayCommand());
+        await mediator6.SendAsync<TestDerivedResponse>(new TestInheritAllWayCommand());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandHasResponseHandler)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestCommandAllWayCommandHandler)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(TestCommandAllWayHasResponseCommandHandler)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(TestCommandAllWayHasResponseCommandHandler)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(TestInheritAllWayCommandHandler)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(TestInheritAllWayHasResponseCommandHandler)}");
+        TestStore.Stores[8].ShouldBe($"{nameof(TestInheritAllWayHasResponseCommandHandler)}");
+    }
     
     [Fact]
     public async Task ShouldNotDuplicatedHandlersWhenRegisterSameHandlers()

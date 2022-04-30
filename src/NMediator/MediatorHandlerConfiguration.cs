@@ -23,7 +23,7 @@ public class MediatorHandlerConfiguration
         if (handlers == null)
             throw new NoHandlerFoundException(messageType);
         
-        return handlers;
+        return handlers.OrderBy(m => Prioritize(m, message, responseType));
     }
     
     protected internal void RegisterHandlers(IReadOnlyCollection<Type> handlerTypes)
@@ -54,21 +54,26 @@ public class MediatorHandlerConfiguration
                     new MessageAndResponse(messageType, responseType)
                 });
 
+                messageAndResponses.AddRange(messageType.Assembly.GetTypes()
+                    .Where(x => x.IsClass && messageType.IsAssignableFrom(x))
+                    .Select(classType => new MessageAndResponse(classType, responseType)));
+                
                 if (responseType != null)
                 {
+                    var messageTypes = messageAndResponses.Select(m => m.MessageType).ToList();
+                    
                     messageAndResponses.AddRange(responseType.Assembly.GetTypes()
                         .Where(type => responseType.IsSubclassOf(type))
-                        .Select(subClassType => new MessageAndResponse(messageType, subClassType)));
+                        .SelectMany(subClassType =>
+                            messageTypes.Select(m => new MessageAndResponse(m, subClassType))));
                 }
 
                 foreach (var messageAndResponse in messageAndResponses)
                 {
-                    var handlerWrapper = new HandlerWrapper(handlerType, responseType);
+                    var handlerWrapper = new HandlerWrapper(handlerType, messageType, responseType);
 
                     if (HandlerDispatchers.ContainsKey(messageAndResponse))
                     {
-                        if (!typeof(IEvent).IsAssignableFrom(messageType)) continue;
-                        
                         if (!HandlerDispatchers[messageAndResponse].Contains(handlerWrapper))
                             HandlerDispatchers[messageAndResponse].Add(handlerWrapper);
                     }
@@ -84,6 +89,17 @@ public class MediatorHandlerConfiguration
     private static bool IsHandlerInterface(Type type, Type handleType)
     {
         return type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == handleType;
+    }
+
+    private static int Prioritize(HandlerWrapper handler, IMessage message, Type responseType)
+    {
+        if (handler.MessageType == message.GetType() && handler.ResponseType == responseType)
+            return 0;
+        if (message.GetType().IsSubclassOf(handler.MessageType) && handler.ResponseType == responseType)
+            return 1;
+        if (message.GetType() == handler.MessageType)
+            return 2;
+        return 3;
     }
     
     private class MessageAndResponse : IEquatable<MessageAndResponse>
@@ -128,8 +144,8 @@ public class MediatorHandlerConfiguration
             return !Equals(left, right);
         }
 
-        private Type MessageType { get; }
+        public Type MessageType { get; }
 
-        private Type ResponseType { get; }
+        public Type ResponseType { get; }
     }
 }

@@ -23,10 +23,7 @@ public class HandlerInvoker
 
         if (_context.Message is not IEvent)
         {
-            if (_context.Handlers.Count() > 1)
-                throw new MoreThanOneHandlerException(_context.Message.GetType());
-
-            return await InvokeHandleMethod(_context.Handlers.Single(), _context, cancellationToken)
+            return await InvokeHandleMethod(_context.Handlers.First(), _context, cancellationToken)
                 .ConfigureAwait(false);
         }
 

@@ -4,14 +4,18 @@ namespace NMediator.Infrastructure;
 
 public class HandlerWrapper : IEquatable<HandlerWrapper>
 {
-    public HandlerWrapper(Type handler, Type responseType)
+    public HandlerWrapper(Type handler, Type messageType, Type responseType)
     {
         Handler = handler;
+        MessageType = messageType;
         ResponseType = responseType;
     }
     
+    
     public Type Handler { get; }
     
+    public Type MessageType { get; }
+
     public Type ResponseType { get; }
 
     public bool Equals(HandlerWrapper other)
@@ -19,7 +23,7 @@ public class HandlerWrapper : IEquatable<HandlerWrapper>
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         
-        return Handler == other.Handler && ResponseType == other.ResponseType;
+        return Handler == other.Handler && MessageType == other.MessageType && ResponseType == other.ResponseType;
     }
 
     public override bool Equals(object obj)
@@ -33,7 +37,7 @@ public class HandlerWrapper : IEquatable<HandlerWrapper>
     {
         unchecked
         {
-            return ((Handler != null ? Handler.GetHashCode() : 0) * 397) ^ (ResponseType != null ? ResponseType.GetHashCode() : 0);
+            return ((Handler != null ? Handler.GetHashCode() : 0) * 397) ^ (MessageType != null ? MessageType.GetHashCode() : 0) ^ (ResponseType != null ? ResponseType.GetHashCode() : 0);
         }
     }
 
