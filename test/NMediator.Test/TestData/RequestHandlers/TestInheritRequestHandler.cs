@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NMediator.Context;
-using NMediator.Test.TestData.Commands;
 using NMediator.Test.TestData.Requests;
 using NMediator.Test.TestData.Responses;
 

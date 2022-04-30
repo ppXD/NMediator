@@ -274,6 +274,50 @@ public class CommandFixture : TestBase
         TestStore.Stores[7].ShouldBe($"{nameof(TestInheritAllWayHasResponseCommandHandler)}");
         TestStore.Stores[8].ShouldBe($"{nameof(TestInheritAllWayHasResponseCommandHandler)}");
     }
+
+    [Fact]
+    public async Task ShouldAbstractHandlerBeWork()
+    {
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractCommandHandler>()
+            .CreateMediator();
+        
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractCommandHandler>()
+            .RegisterHandler<TestAbstractCommandBaseHandler>()
+            .RegisterHandler<TestAbstractHasResponseCommandBaseHandler>()
+            .CreateMediator();
+        
+        var mediator3 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractCommandHandler>()
+            .RegisterHandler<TestAbstractCommandBaseHandler>()
+            .RegisterHandler<TestAbstractHasResponseCommandBaseHandler>()
+            .RegisterHandler<TestAbstractCommandHandler>()
+            .RegisterHandler<TestAbstractHasResponseCommandHandler>()
+            .CreateMediator();
+        
+        await mediator1.SendAsync(new TestAbstractCommand());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractCommandHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator2.SendAsync(new TestAbstractCommand());
+        await mediator2.SendAsync<TestResponse>(new TestAbstractCommand());
+        await mediator2.SendAsync<TestDerivedResponse>(new TestAbstractCommand());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractCommandBaseHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestAbstractHasResponseCommandBaseHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestAbstractHasResponseCommandBaseHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator3.SendAsync(new TestAbstractCommand());
+        await mediator3.SendAsync<TestResponse>(new TestAbstractCommand());
+        await mediator3.SendAsync<TestDerivedResponse>(new TestAbstractCommand());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractCommandHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestAbstractHasResponseCommandHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestAbstractHasResponseCommandHandler)}");
+    }
     
     [Fact]
     public async Task ShouldNotDuplicatedHandlersWhenRegisterSameHandlers()

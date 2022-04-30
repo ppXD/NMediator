@@ -211,6 +211,51 @@ public class RequestFixture : TestBase
         TestStore.Stores[4].ShouldBe($"{nameof(TestInheritAllWayRequestHandler)}");
         TestStore.Stores[5].ShouldBe($"{nameof(TestInheritAllWayRequestHandler)}");
     }
+
+    [Fact]
+    public async Task ShouldAbstractHandlerBeWork()
+    {
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractRequestAsTestResponseHandler>()
+            .RegisterHandler<ITestAbstractRequestAsDerivedResponseHandler>()
+            .CreateMediator();
+        
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractRequestAsTestResponseHandler>()
+            .RegisterHandler<ITestAbstractRequestAsDerivedResponseHandler>()
+            .RegisterHandler<TestAbstractRequestBaseAsTestResponseHandler>()
+            .RegisterHandler<TestAbstractRequestBaseAsDerivedResponseHandler>()
+            .CreateMediator();
+        
+        var mediator3 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractRequestAsTestResponseHandler>()
+            .RegisterHandler<ITestAbstractRequestAsDerivedResponseHandler>()
+            .RegisterHandler<TestAbstractRequestBaseAsTestResponseHandler>()
+            .RegisterHandler<TestAbstractRequestBaseAsDerivedResponseHandler>()
+            .RegisterHandler<TestAbstractRequestAsTestResponseHandler>()
+            .RegisterHandler<TestAbstractRequestAsDerivedResponseHandler>()
+            .CreateMediator();
+        
+        await mediator1.RequestAsync<TestResponse>(new TestAbstractRequest());
+        await mediator1.RequestAsync<TestDerivedResponse>(new TestAbstractRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestAbstractRequestAsTestResponseHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestAbstractRequestAsDerivedResponseHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator2.RequestAsync<TestResponse>(new TestAbstractRequest());
+        await mediator2.RequestAsync<TestDerivedResponse>(new TestAbstractRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractRequestBaseAsTestResponseHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestAbstractRequestBaseAsDerivedResponseHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator3.RequestAsync<TestResponse>(new TestAbstractRequest());
+        await mediator3.RequestAsync<TestDerivedResponse>(new TestAbstractRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractRequestAsTestResponseHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestAbstractRequestAsDerivedResponseHandler)}");
+    }
     
     [Fact]
     public async Task DuplicatedHandlerShouldNotThrow()
