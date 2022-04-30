@@ -2,6 +2,7 @@ using System;
 using NMediator.Test.TestData.Commands;
 using NMediator.Test.TestData.Events;
 using NMediator.Test.TestData.Requests;
+using NMediator.Test.TestData.Responses;
 using Shouldly;
 using Xunit;
 

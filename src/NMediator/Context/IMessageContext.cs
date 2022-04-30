@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NMediator.Infrastructure;
 using NMediator.Ioc;
 
 namespace NMediator.Context;
@@ -12,7 +13,7 @@ public interface IMessageContext<out TMessage> where TMessage : IMessage
     
     IEnumerable<Type> Filters { get; }
     
-    IEnumerable<Type> MessageBindingHandlers { get; }
+    IEnumerable<HandlerWrapper> Handlers { get; }
     
     IDependencyScope Scope { get; }
     
