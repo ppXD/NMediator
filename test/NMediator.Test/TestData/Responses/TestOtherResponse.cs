@@ -1,4 +1,4 @@
-namespace NMediator.Test.TestData.Requests;
+namespace NMediator.Test.TestData.Responses;
 
 public class TestOtherResponse
 {
