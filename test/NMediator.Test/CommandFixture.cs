@@ -280,6 +280,7 @@ public class CommandFixture : TestBase
     {
         var mediator1 = new MediatorConfiguration()
             .RegisterHandler<ITestAbstractCommandHandler>()
+            .RegisterHandler<ITestAbstractHasResponseCommandHandler>()
             .CreateMediator();
         
         var mediator2 = new MediatorConfiguration()
@@ -297,8 +298,12 @@ public class CommandFixture : TestBase
             .CreateMediator();
         
         await mediator1.SendAsync(new TestAbstractCommand());
+        await mediator1.SendAsync<TestResponse>(new TestAbstractCommand());
+        await mediator1.SendAsync<TestDerivedResponse>(new TestAbstractCommand());
         
-        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractCommandHandler)}");
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestAbstractCommandHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestAbstractHasResponseCommandHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(ITestAbstractHasResponseCommandHandler)}");
         TestStore.Stores.Clear();
         
         await mediator2.SendAsync(new TestAbstractCommand());

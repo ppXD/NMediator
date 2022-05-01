@@ -6,6 +6,15 @@ using NMediator.Test.TestData.Responses;
 
 namespace NMediator.Test.TestData.RequestHandlers;
 
+public class ITestAbstractRequestAsITestResponseHandler : IRequestHandler<ITestAbstractRequest, ITestResponse>
+{
+    public Task<ITestResponse> Handle(IRequestContext<ITestAbstractRequest> context, CancellationToken cancellationToken = default)
+    {
+        TestStore.Stores.Add($"{nameof(ITestAbstractRequestAsITestResponseHandler)}");
+        return Task.FromResult((ITestResponse) new TestDerivedResponse());
+    }
+}
+
 public class ITestAbstractRequestAsTestResponseHandler : IRequestHandler<ITestAbstractRequest, TestResponse>
 {
     public Task<TestResponse> Handle(IRequestContext<ITestAbstractRequest> context, CancellationToken cancellationToken = default)

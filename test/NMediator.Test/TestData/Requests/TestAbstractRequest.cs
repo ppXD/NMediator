@@ -2,7 +2,7 @@ using NMediator.Test.TestData.Responses;
 
 namespace NMediator.Test.TestData.Requests;
 
-public interface ITestAbstractRequest : IRequest<TestResponse>, IRequest<TestDerivedResponse>
+public interface ITestAbstractRequest : IRequest<ITestResponse>, IRequest<TestResponse>, IRequest<TestDerivedResponse>
 {
 }
 

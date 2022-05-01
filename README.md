@@ -57,11 +57,86 @@ var response = await mediator.RequestAsync(new ExampleRequest());
 
 ## Contract
 NMediator has three kinds of messages contract:
-- `ICommand`,`ICommand<out TResponse>`
+- `ICommand`,`ICommand<out TResponse>` 
+
+Command messages dispatched to a single handler. Send a command via the mediator:
+```csharp
+public class ExampleCommand : ICommand { }
+public class ExampleHasResponseCommand : ICommand<ExampleResponse> { }
+
+await mediator.SendAsync(new ExampleCommand());
+var response = await mediator.SendAsync(new ExampleResponse());
+```
+
 - `IRequest<out TResponse>`
+
+Request messages dispatched to a single handler. Send a request via the mediator:
+```csharp
+public class ExampleRequest : IRequest<ExampleResponse> { }
+
+var response = await mediator.RequestAsync(new ExampleRequest());
+```
+
 - `IEvent`
 
+Event messages dispatched to multi handlers. Publish a event via the mediator:
+```csharp
+public class ExampleEvent : IEvent { }
+
+await mediator.PublishAsync(new ExampleEvent());
+```
+
 ## Handler
+Each message contract has a corresponding handler interface.
+- `ICommandHandler<in TCommand>`,`ICommandHandler<in TCommand, TResponse>`
+```csharp
+public class ExampleCommandHandler : ICommandHandler<ExampleCommand> 
+{
+    public Task Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken)
+    {
+        Debug.WriteLine($"Command is {context.Message}");
+        return Task.CompletedTask;
+    }
+}
+public class ExampleHasResponseCommandHandler : ICommandHandler<ExampleHasResponseCommand, ExampleResponse>
+{
+    public Task<ExampleResponse> Handle(ICommandContext<ExampleHasResponseCommand> context, CancellationToken cancellationToken)
+    {
+        Debug.WriteLine($"Command is {context.Message}");
+        return Task.FromResult(new ExampleResponse());
+    }
+}
+```
+- `IRequestHandler<in TRequest, TResponse>`
+```csharp
+public class ExampleRequestHandler : IRequestHandler<ExampleRequest, ExampleResponse>
+{
+    public Task<ExampleResponse> Handle(IRequestContext<ExampleRequest> context, CancellationToken cancellationToken)
+    {
+        Debug.WriteLine($"Request is {context.Message}");
+        return Task.FromResult(new ExampleResponse());
+    }
+}
+```
+- `IEventHandler<in TEvent>`
+```csharp
+public class ExampleEventHandler1 : IEventHandler<ExampleEvent> 
+{
+    public Task Handle(IEventContext<ExampleEvent> context, CancellationToken cancellationToken)
+    {
+        Debug.WriteLine($"Event is {context.Message}");
+        return Task.CompletedTask;
+    }
+}
+public class ExampleEventHandler2 : IEventHandler<ExampleEvent> 
+{
+    public Task Handle(IEventContext<ExampleEvent> context, CancellationToken cancellationToken)
+    {
+        Debug.WriteLine($"Event is {context.Message}");
+        return Task.CompletedTask;
+    }
+}
+```
 
 ## Middleware
 
@@ -81,11 +156,10 @@ public interface IMiddleware
     Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken);
 }
 ```
-Middlewares are configured using `UseMiddleware` generic method.
+`UseMiddleware<TMiddleware>` is the generic method to configure the middleware.
 ```csharp
 var configuration = new MediatorConfiguration();
 configuration.UseMiddleware<ExampleMiddleware>();
-configuration.UseMiddleware(typeof(ExampleMiddleware));
 ```
 
 ## Filter
