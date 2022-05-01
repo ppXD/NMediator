@@ -10,8 +10,17 @@ public class ITestAbstractCommandHandler : ICommandHandler<ITestAbstractCommand>
 {
     public Task Handle(ICommandContext<ITestAbstractCommand> context, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add($"{nameof(TestAbstractCommandHandler)}");
+        TestStore.Stores.Add($"{nameof(ITestAbstractCommandHandler)}");
         return Task.CompletedTask;
+    }
+}
+
+public class ITestAbstractHasResponseCommandHandler : ICommandHandler<ITestAbstractCommand, ITestResponse>
+{
+    public Task<ITestResponse> Handle(ICommandContext<ITestAbstractCommand> context, CancellationToken cancellationToken = default)
+    {
+        TestStore.Stores.Add($"{nameof(ITestAbstractHasResponseCommandHandler)}");
+        return Task.FromResult((ITestResponse) new TestDerivedResponse());
     }
 }
 

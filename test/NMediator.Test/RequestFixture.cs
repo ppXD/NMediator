@@ -215,6 +215,10 @@ public class RequestFixture : TestBase
     [Fact]
     public async Task ShouldAbstractHandlerBeWork()
     {
+        var mediator = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractRequestAsITestResponseHandler>()
+            .CreateMediator();
+        
         var mediator1 = new MediatorConfiguration()
             .RegisterHandler<ITestAbstractRequestAsTestResponseHandler>()
             .RegisterHandler<ITestAbstractRequestAsDerivedResponseHandler>()
@@ -235,6 +239,13 @@ public class RequestFixture : TestBase
             .RegisterHandler<TestAbstractRequestAsTestResponseHandler>()
             .RegisterHandler<TestAbstractRequestAsDerivedResponseHandler>()
             .CreateMediator();
+        
+        await mediator.RequestAsync<TestResponse>(new TestAbstractRequest());
+        await mediator.RequestAsync<TestDerivedResponse>(new TestAbstractRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestAbstractRequestAsITestResponseHandler)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestAbstractRequestAsITestResponseHandler)}");
+        TestStore.Stores.Clear();
         
         await mediator1.RequestAsync<TestResponse>(new TestAbstractRequest());
         await mediator1.RequestAsync<TestDerivedResponse>(new TestAbstractRequest());

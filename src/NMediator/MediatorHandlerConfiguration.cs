@@ -66,6 +66,12 @@ public class MediatorHandlerConfiguration
                         .Where(type => responseType.IsSubclassOf(type))
                         .SelectMany(subClassType =>
                             messageTypes.Select(m => new MessageAndResponse(m, subClassType))));
+                    
+                    if (responseType.IsInterface)
+                        messageAndResponses.AddRange(responseType.Assembly.GetTypes()
+                            .Where(type => responseType.IsAssignableFrom(type))
+                            .SelectMany(implement =>
+                                messageTypes.Select(m => new MessageAndResponse(m, implement))));
                 }
 
                 foreach (var messageAndResponse in messageAndResponses)
@@ -93,15 +99,18 @@ public class MediatorHandlerConfiguration
 
     private static int Prioritize(HandlerWrapper handler, IMessage message, Type responseType)
     {
-        if (handler.MessageType == message.GetType() && handler.ResponseType == responseType)
-            return 0;
-        if (message.GetType() == handler.MessageType)
-            return 1;
-        if (message.GetType().IsSubclassOf(handler.MessageType))
-            return 2;
-        if (message.GetType().IsClass)
-            return 3;
-        return 4;
+        return message switch
+        {
+            not null when message.GetType() == handler.MessageType && 
+                          responseType == handler.ResponseType => 1,
+            not null when message.GetType() == handler.MessageType &&
+                          responseType.IsAssignableFrom(handler.ResponseType) => 2,
+            not null when message.GetType().IsSubclassOf(handler.MessageType) &&
+                          responseType == handler.ResponseType => 3,
+            not null when message.GetType().IsSubclassOf(handler.MessageType) &&
+                          responseType.IsAssignableFrom(handler.ResponseType) => 4,
+            _ => 5
+        };
     }
     
     private class MessageAndResponse : IEquatable<MessageAndResponse>
