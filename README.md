@@ -159,17 +159,17 @@ public interface IMiddleware
 `UseMiddleware<TMiddleware>` is the generic method to configure the middleware.
 ```csharp
 var configuration = new MediatorConfiguration();
-configuration.UseMiddleware<ExampleMiddleware>();
+configuration.UseMiddleware<DiagnosticsMiddleware>();
 ```
 
-The following `LoggingMiddleware` example shows how to log elapsed time of each message:
+The following `DiagnosticsMiddleware` example shows how to log elapsed time of each message:
 ```csharp
-public class LoggingMiddleware : IMiddleware
+public class DiagnosticsMiddleware : IMiddleware
 {
     private readonly ILogger<LoggingMiddleware> _logger;
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
     
-    public LoggingMiddleware(ILogger<LoggingMiddleware> logger)
+    public DiagnosticsMiddleware(ILogger<LoggingMiddleware> logger)
     {
         _logger = logger;
     }

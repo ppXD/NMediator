@@ -5,12 +5,12 @@ using NMediator.Middlewares;
 
 namespace NMediator.Examples.Middlewares;
 
-public class LoggingMiddleware : IMiddleware
+public class DiagnosticsMiddleware : IMiddleware
 {
     private readonly Logger _logger;
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
     
-    public LoggingMiddleware(Logger logger)
+    public DiagnosticsMiddleware(Logger logger)
     {
         _logger = logger;
     }
