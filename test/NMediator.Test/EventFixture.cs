@@ -75,4 +75,46 @@ public class EventFixture : TestBase
         TestStore.Stores.Any(x => x.GetType() == typeof(TestMultipleEvent1)).ShouldBeTrue();
         TestStore.Stores.Any(x => x.GetType() == typeof(TestMultipleEvent2)).ShouldBeTrue();
     }
+
+    [Fact]
+    public async Task ShouldAbstractHandlerBeWork()
+    {
+        var mediator1 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractEventHandler>()
+            .CreateMediator();
+
+        var mediator2 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractEventHandler>()
+            .RegisterHandler<TestAbstractEventBaseHandler>()
+            .CreateMediator();
+        
+        var mediator3 = new MediatorConfiguration()
+            .RegisterHandler<ITestAbstractEventHandler>()
+            .RegisterHandler<TestAbstractEventBaseHandler>()
+            .RegisterHandler<TestAbstractEventHandler>()
+            .CreateMediator();
+
+        var mediator4 = new MediatorConfiguration()
+            .RegisterHandler<TestAbstractAllInOneEventHandler>()
+            .CreateMediator();
+        
+        await mediator1.PublishAsync(new TestAbstractEvent());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestAbstractEventHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator2.PublishAsync(new TestAbstractEvent());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractEventBaseHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator3.PublishAsync(new TestAbstractEvent());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractEventHandler)}");
+        TestStore.Stores.Clear();
+        
+        await mediator4.PublishAsync(new TestAbstractEvent());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractEventHandler)}");
+    }
 }
