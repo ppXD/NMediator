@@ -52,7 +52,10 @@ public class HandlerInvoker
 
     private static MethodInfo GetHandleMethod(Type handlerType, Type messageType, Type responseType)
     {
-        return handlerType.GetRuntimeMethods().Single(m => IsHandleMethod(m, messageType, responseType));
+        return handlerType.GetRuntimeMethods()
+            .Where(m => IsHandleMethod(m, messageType, responseType))
+            .OrderBy(m => Prioritize(m, messageType))
+            .First();
     }
 
     private static bool IsHandleMethod(MethodInfo m, Type messageType, Type responseType)
@@ -70,12 +73,20 @@ public class HandlerInvoker
 
     private static bool ContainsParameter(MethodBase m, Type messageType)
     {
-        return m.GetParameters().Any()
-               && (m.GetParameters()[0].ParameterType.GenericTypeArguments.Contains(messageType) || m.GetParameters()[0]
-                   .ParameterType.GenericTypeArguments.First().GetTypeInfo()
-                   .IsAssignableFrom(messageType.GetTypeInfo()));
+        var handleMessageType = m.GetParameters()[0].ParameterType.GenericTypeArguments.First();
+        
+        return handleMessageType == messageType || handleMessageType.IsAssignableFrom(messageType);
     }
 
+    private static int Prioritize(MethodBase m, Type messageType)
+    {
+        var handleMessageType = m.GetParameters()[0].ParameterType.GenericTypeArguments.First();
+
+        if (handleMessageType == messageType)
+            return 1;
+        return handleMessageType.IsSubclassOf(messageType) ? 2 : 3;
+    }
+    
     private static object GetResultFromTask(Task task)
     {
         if (!task.GetType().GetTypeInfo().IsGenericType)
