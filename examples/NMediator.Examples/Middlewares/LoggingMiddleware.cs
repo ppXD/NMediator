@@ -24,7 +24,7 @@ public class LoggingMiddleware : IMiddleware
 
     public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{_stopwatch.Elapsed.Milliseconds}");
+        _logger.Messages.Add($"{_stopwatch.ElapsedMilliseconds}");
         
         return Task.CompletedTask;
     }

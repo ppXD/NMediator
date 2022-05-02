@@ -162,6 +162,33 @@ var configuration = new MediatorConfiguration();
 configuration.UseMiddleware<ExampleMiddleware>();
 ```
 
+The following `LoggingMiddleware` example shows how to log elapsed time of each message:
+```csharp
+public class LoggingMiddleware : IMiddleware
+{
+    private readonly ILogger<LoggingMiddleware> _logger;
+    private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+    
+    public LoggingMiddleware(ILogger<LoggingMiddleware> logger)
+    {
+        _logger = logger;
+    }
+
+    public Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
+    {
+        _stopwatch.Start();
+        _logger.LogInformation("Message starting");
+        return Task.CompletedTask;
+    }
+
+    public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation($"Message finished in {_stopwatch.ElapsedMilliseconds}ms");
+        return Task.CompletedTask;
+    }
+}
+```
+
 ## Filter
 
 ## IoC Container
