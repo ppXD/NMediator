@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using NMediator.Filters;
 using NMediator.Infrastructure;
-using NMediator.Middlewares;
 
 namespace NMediator;
 
@@ -18,11 +17,6 @@ public class MediatorConfiguration
     public MediatorHandlerConfiguration HandlerConfiguration { get; } = new();
 
     public MediatorPipelineConfiguration PipelineConfiguration { get; } = new();
-
-    public MediatorConfiguration()
-    {
-        UseMiddleware<InvokeFilterPipelineMiddleware>();
-    }
     
     public MediatorConfiguration UseDependencyScope(IDependencyScope scope)
     {
@@ -48,18 +42,6 @@ public class MediatorConfiguration
     public MediatorConfiguration RegisterHandlers(params Type[] handlerTypes)
     {
         HandlerConfiguration.RegisterHandlers(handlerTypes);
-        return this;
-    }
-
-    public MediatorConfiguration UseMiddleware<TMiddleware>()
-        where TMiddleware : class, IMiddleware
-    {
-        return UseMiddleware(typeof(TMiddleware));
-    }
-
-    public MediatorConfiguration UseMiddleware(Type middleware)
-    {
-        PipelineConfiguration.UseMiddleware(middleware);
         return this;
     }
     

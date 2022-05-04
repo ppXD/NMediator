@@ -1,12 +1,10 @@
-using NMediator.Context;
-
 namespace NMediator.Filters;
 
-public interface IEventFilter : IExecutionFilter<IEvent, IEventContext<IEvent>>
+public interface IEventFilter
 {
 }
 
-public interface IEventFilter<TEvent> : IExecutionFilter<TEvent, IEventContext<TEvent>> 
+public interface IEventFilter<TEvent>
     where TEvent : class, IEvent
 {
 }

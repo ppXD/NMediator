@@ -6,7 +6,6 @@ namespace NMediator.Filters;
 
 public interface IExecutionFilter<TMessage, in TContext> : IFilter
     where TMessage : class, IMessage
-    where TContext : IMessageContext<TMessage>
 {
     Task OnExecuting(TContext context, CancellationToken cancellationToken = default);
     

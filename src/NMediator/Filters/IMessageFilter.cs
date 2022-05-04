@@ -1,12 +1,10 @@
-using NMediator.Context;
-
 namespace NMediator.Filters;
 
-public interface IMessageFilter : IExecutionFilter<IMessage, IMessageContext<IMessage>>
+public interface IMessageFilter
 {
 }
 
-public interface IMessageFilter<TMessage> : IExecutionFilter<TMessage, IMessageContext<TMessage>> 
+public interface IMessageFilter<TMessage>
     where TMessage : class, IMessage
 {
 }
