@@ -60,7 +60,7 @@ public class Mediator : IMediator
         using var scope = _configuration.Resolver.BeginScope();
 
         var context =
-            (IMessageContext<IMessage>) Activator.CreateInstance(contextType, message, scope, responseType, 
+            (IMessageContext<IMessage>) Activator.CreateInstance(contextType, message, scope, 
                 _configuration.PipelineConfiguration.FindFilters(message), _configuration.HandlerConfiguration.GetHandlers(message, responseType));
         
         await _configuration.PipelineConfiguration.PipelineProcessor.Process(context, cancellationToken).ConfigureAwait(false);

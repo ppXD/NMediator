@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using NMediator.Ioc;
 using NMediator.Filters;
+using NMediator.Infrastructure;
 using NMediator.Middlewares;
 
 namespace NMediator;

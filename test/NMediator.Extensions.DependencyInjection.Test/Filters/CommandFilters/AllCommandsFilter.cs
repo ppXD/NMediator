@@ -18,13 +18,13 @@ public class AllCommandsFilter : ICommandFilter
         _doNothingService = doNothingService;
     }
 
-    public Task OnExecuting(ICommandContext<IBasicCommand> context, CancellationToken cancellationToken = default)
+    public Task OnExecuting(ICommandContext<ICommand> context, CancellationToken cancellationToken = default)
     {
         _logger.Messages.Add($"{nameof(AllCommandsFilter)} {nameof(OnExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(ICommandContext<IBasicCommand> context, CancellationToken cancellationToken = default)
+    public Task OnExecuted(ICommandContext<ICommand> context, CancellationToken cancellationToken = default)
     {
         _logger.Messages.Add($"{nameof(AllCommandsFilter)} {nameof(OnExecuted)}");
         return Task.CompletedTask;

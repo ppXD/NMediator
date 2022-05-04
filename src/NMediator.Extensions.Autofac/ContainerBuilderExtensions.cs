@@ -1,6 +1,5 @@
 using Autofac;
 using System.Reflection;
-using NMediator.Ioc;
 
 namespace NMediator.Extensions.Autofac;
 

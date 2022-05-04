@@ -1,5 +1,5 @@
 namespace NMediator.Context;
 
-public interface ICommandContext<out TCommand> : IMessageContext<TCommand> where TCommand : IBasicCommand
+public interface ICommandContext<out TCommand> : IMessageContext<TCommand> where TCommand : ICommand
 {
 }

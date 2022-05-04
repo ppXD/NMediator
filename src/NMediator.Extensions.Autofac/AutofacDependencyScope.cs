@@ -1,5 +1,4 @@
 using Autofac;
-using NMediator.Ioc;
 
 namespace NMediator.Extensions.Autofac;
 
