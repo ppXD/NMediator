@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NMediator.Ioc;
 
 namespace NMediator.Extensions.Microsoft.DependencyInjection;
 

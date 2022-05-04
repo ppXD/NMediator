@@ -42,7 +42,7 @@ public class MediatorPipelineConfiguration
         
         switch (messageType)
         {
-            case not null when typeof(IBasicCommand).IsAssignableFrom(messageType):
+            case not null when typeof(ICommand).IsAssignableFrom(messageType):
                 matchedFilterTypes.AddRange(new[] { typeof(ICommandFilter), typeof(ICommandFilter<>).MakeGenericType(messageType) });
                 break;
             case not null when typeof(IRequest).IsAssignableFrom(messageType):

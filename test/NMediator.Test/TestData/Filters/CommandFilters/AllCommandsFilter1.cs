@@ -7,13 +7,13 @@ namespace NMediator.Test.TestData.Filters.CommandFilters;
 
 public class AllCommandsFilter1 : ICommandFilter
 {
-    public Task OnExecuting(ICommandContext<IBasicCommand> context, CancellationToken cancellationToken = default)
+    public Task OnExecuting(ICommandContext<ICommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(AllCommandsFilter1)} {nameof(OnExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(ICommandContext<IBasicCommand> context, CancellationToken cancellationToken = default)
+    public Task OnExecuted(ICommandContext<ICommand> context, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(AllCommandsFilter1)} {nameof(OnExecuted)}");
         return Task.CompletedTask;

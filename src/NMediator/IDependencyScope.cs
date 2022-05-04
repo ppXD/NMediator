@@ -1,6 +1,6 @@
 using System;
 
-namespace NMediator.Ioc;
+namespace NMediator;
 
 public interface IDependencyScope : IDisposable
 {
