@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Test.TestData.Commands;
 using NMediator.Test.TestData.Responses;
 
@@ -10,15 +9,15 @@ public class TestMultipleCommandHandler :
     ICommandHandler<TestCommand>,
     ICommandHandler<TestHasResponseCommand, TestResponse>
 {
-    public Task Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(TestCommand command, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add(context.Message);
+        TestStore.Stores.Add(command);
         return Task.CompletedTask;
     }
 
-    public Task<TestResponse> Handle(ICommandContext<TestHasResponseCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestResponse> Handle(TestHasResponseCommand command, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add(context.Message);
+        TestStore.Stores.Add(command);
         return Task.FromResult(new TestResponse());
     }
 }

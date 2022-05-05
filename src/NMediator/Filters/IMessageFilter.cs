@@ -1,10 +1,10 @@
 namespace NMediator.Filters;
 
-public interface IMessageFilter
+public interface IMessageFilter : IHandlerFilter<IMessage>
 {
 }
 
-public interface IMessageFilter<TMessage>
+public interface IMessageFilter<TMessage> : IHandlerFilter<TMessage>
     where TMessage : class, IMessage
 {
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace NMediator.Infrastructure;
+namespace NMediator.Internal;
 
 public class HandlerWrapper : IEquatable<HandlerWrapper>
 {
@@ -10,7 +10,6 @@ public class HandlerWrapper : IEquatable<HandlerWrapper>
         MessageType = messageType;
         ResponseType = responseType;
     }
-    
     
     public Type Handler { get; }
     

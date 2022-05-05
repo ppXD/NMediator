@@ -9,12 +9,3 @@ public class NoHandlerFoundException : Exception
             
     }
 }
-
-public class MoreThanOneHandlerException : Exception
-{
-    public MoreThanOneHandlerException(Type messageType)
-        : base ($"Cannot have more than one handler for message type {messageType.FullName}")
-    {
-            
-    }
-}

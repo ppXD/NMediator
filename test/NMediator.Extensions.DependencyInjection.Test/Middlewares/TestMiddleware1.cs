@@ -1,9 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Extensions.DependencyInjection.Test.Base;
 using NMediator.Extensions.DependencyInjection.Test.Services;
-using NMediator.Middlewares;
 
 namespace NMediator.Extensions.DependencyInjection.Test.Middlewares;
 

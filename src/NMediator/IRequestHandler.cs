@@ -6,5 +6,5 @@ namespace NMediator;
 public interface IRequestHandler<in TRequest, TResponse>
     where TRequest : class, IRequest<TResponse>
 {
-    Task Handle(TRequest request, CancellationToken cancellationToken = default);
+    Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken = default);
 }

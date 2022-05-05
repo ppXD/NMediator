@@ -1,12 +1,10 @@
-
-
 namespace NMediator.Filters;
 
-public interface ICommandFilter
+public interface ICommandFilter : IHandlerFilter<ICommand>
 {
 }
 
-public interface ICommandFilter<TCommand>
+public interface ICommandFilter<TCommand> : IHandlerFilter<TCommand> 
     where TCommand : class, ICommand
 {
 }

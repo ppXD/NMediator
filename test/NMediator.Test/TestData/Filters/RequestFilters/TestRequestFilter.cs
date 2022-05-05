@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Filters;
 using NMediator.Test.TestData.Requests;
 
@@ -8,15 +7,15 @@ namespace NMediator.Test.TestData.Filters.RequestFilters;
 
 public class TestRequestFilter : IRequestFilter<TestRequest>
 {
-    public Task OnExecuting(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuting(HandlerExecutingContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add($"{nameof(TestRequestFilter)} {nameof(OnExecuting)}");
+        TestStore.Stores.Add($"{nameof(TestRequestFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(HandlerExecutedContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add($"{nameof(TestRequestFilter)} {nameof(OnExecuted)}");
+        TestStore.Stores.Add($"{nameof(TestRequestFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

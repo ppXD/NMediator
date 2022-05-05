@@ -1,47 +1,36 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 
-namespace NMediator.Infrastructure;
+namespace NMediator.Internal;
 
-public class HandlerInvoker
+public class HandlerInvoker<TMessage> where TMessage : class, IMessage
 {
-    private readonly IMessageContext<IMessage> _context;
-    
-    public HandlerInvoker(IMessageContext<IMessage> context)
+    public async Task<object> Invoke(TMessage message, IList<HandlerWrapper> handlers, IDependencyScope scope, CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-    
-    public async Task<object> Invoke(CancellationToken cancellationToken)
-    {
-        if (_context.Handlers == null || !_context.Handlers.Any())
-            throw new NoHandlerFoundException(_context.Message.GetType());
+        if (handlers == null || !handlers.Any())
+            throw new NoHandlerFoundException(typeof(TMessage));
 
-        if (_context.Message is not IEvent)
-        {
-            return await InvokeHandleMethod(_context.Handlers.First(), _context, cancellationToken)
+        if (message is ICommand or IRequest)
+            return await InvokeHandleMethod(message, handlers.First(), scope, cancellationToken)
                 .ConfigureAwait(false);
-        }
 
-        foreach (var handler in _context.Handlers)
-        {
-            await InvokeHandleMethod(handler, _context, cancellationToken, false)
+        foreach (var handler in handlers)
+            await InvokeHandleMethod(message, handler, scope, cancellationToken, false)
                 .ConfigureAwait(false);
-        }
 
         return null;
     }
 
-    private static async Task<object> InvokeHandleMethod(HandlerWrapper handlerWrapper, IMessageContext<IMessage> context, CancellationToken cancellationToken, bool shouldGetResult = true)
+    private static async Task<object> InvokeHandleMethod(TMessage message, HandlerWrapper handlerWrapper, IDependencyScope scope, CancellationToken cancellationToken, bool shouldGetResult = true)
     {
-        var handler = context.Scope.Resolve(handlerWrapper.Handler);
-        var handleMethod = GetHandleMethod(handlerWrapper.Handler, context.Message.GetType(), handlerWrapper.ResponseType);
+        var handler = scope.Resolve(handlerWrapper.Handler);
+        var handleMethod = GetHandleMethod(handlerWrapper.Handler, typeof(TMessage), handlerWrapper.ResponseType);
 
-        var handleTask = (Task)handleMethod.Invoke(handler, new object[] { context, cancellationToken });
+        var handleTask = (Task)handleMethod.Invoke(handler, new object[] { message, cancellationToken });
 
         if (handleTask == null) return null;
 
@@ -73,14 +62,14 @@ public class HandlerInvoker
 
     private static bool ContainsParameter(MethodBase m, Type messageType)
     {
-        var handleMessageType = m.GetParameters()[0].ParameterType.GenericTypeArguments.First();
+        var handleMessageType = m.GetParameters()[0].ParameterType;
         
         return handleMessageType == messageType || handleMessageType.IsAssignableFrom(messageType);
     }
 
     private static int Prioritize(MethodBase m, Type messageType)
     {
-        var handleMessageType = m.GetParameters()[0].ParameterType.GenericTypeArguments.First();
+        var handleMessageType = m.GetParameters()[0].ParameterType;
 
         if (handleMessageType == messageType)
             return 1;

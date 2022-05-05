@@ -1,7 +1,5 @@
 using System.Diagnostics;
-using NMediator.Context;
 using NMediator.Examples.Base;
-using NMediator.Middlewares;
 
 namespace NMediator.Examples.Middlewares;
 

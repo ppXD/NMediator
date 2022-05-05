@@ -1,4 +1,3 @@
-using NMediator.Context;
 using NMediator.Examples.Messages.Commands;
 using NMediator.Examples.Services;
 

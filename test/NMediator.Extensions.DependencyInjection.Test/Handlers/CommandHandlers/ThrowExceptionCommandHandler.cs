@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Extensions.DependencyInjection.Test.Messages.Commands;
 using NMediator.Extensions.DependencyInjection.Test.Services;
 

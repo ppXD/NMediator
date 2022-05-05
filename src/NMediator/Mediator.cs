@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using NMediator.Internal;
 
 namespace NMediator;
 
@@ -25,7 +26,7 @@ public class Mediator : IMediator
     {
         if (command == null)
             throw new ArgumentNullException(nameof(command));
-        
+
         return (TResponse)await ProcessMessage(command, typeof(TResponse), cancellationToken).ConfigureAwait(false);
     }
 
@@ -41,7 +42,7 @@ public class Mediator : IMediator
     {
         await ProcessMessage(@event, null, cancellationToken).ConfigureAwait(false);
     }
-    
+
     private async Task<object> ProcessMessage(IMessage message, Type responseType, CancellationToken cancellationToken = default)
     {
         if (message == null)
@@ -49,13 +50,11 @@ public class Mediator : IMediator
 
         using var scope = _configuration.Resolver.BeginScope();
 
-        // var context =
-        //     (IMessageContext<IMessage>) Activator.CreateInstance(contextType, message, scope, 
-        //         _configuration.PipelineConfiguration.FindFilters(message), _configuration.HandlerConfiguration.GetHandlers(message, responseType));
-        //
-        // await _configuration.PipelineConfiguration.PipelineProcessor.Process(context, cancellationToken).ConfigureAwait(false);
-        //
-        // return context?.Result;
+        var messageProcessor = Activator.CreateInstance(typeof(MessageProcessor<>).MakeGenericType(message.GetType()),
+            message, scope, _configuration.FilterConfiguration.FindFilters(message), _configuration.HandlerConfiguration.GetHandlers(message, responseType)) as dynamic;
+
+        await messageProcessor.Process(cancellationToken);
+        
         return null;
     }
 }
