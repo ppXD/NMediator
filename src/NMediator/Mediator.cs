@@ -51,8 +51,10 @@ public class Mediator : IMediator
         using var scope = _configuration.Resolver.BeginScope();
 
         var messageProcessor = Activator.CreateInstance(typeof(MessageProcessor<>).MakeGenericType(message.GetType()),
-            message, scope, _configuration.FilterConfiguration.FindFilters(message), _configuration.HandlerConfiguration.GetHandlers(message, responseType)) as dynamic;
+            message, scope, _configuration.FilterConfiguration.FindFilters(message), _configuration.HandlerConfiguration.GetHandlers(message, responseType)) as dynamic ?? throw new InvalidOperationException("Could not create processor.");
 
-        return await messageProcessor.Process(cancellationToken);
+        var executedContext = await messageProcessor.Process(cancellationToken);
+
+        return executedContext?.Result;
     }
 }

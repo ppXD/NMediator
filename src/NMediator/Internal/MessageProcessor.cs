@@ -12,10 +12,9 @@ public class MessageProcessor<TMessage> where TMessage : class, IMessage, new()
     private readonly TMessage _message;
     private readonly IDependencyScope _scope;
     private readonly IList<IFilter> _filters;
-    private readonly IList<HandlerWrapper> _handlers;
 
-    private readonly FilterInvoker<TMessage> _filterInvoker =  new();
-    private readonly HandlerInvoker<TMessage> _handlerInvoker = new();
+    private readonly FilterInvoker<TMessage> _filterInvoker;
+    private readonly HandlerInvoker<TMessage> _handlerInvoker;
 
     public MessageProcessor(
         TMessage message, 
@@ -26,14 +25,16 @@ public class MessageProcessor<TMessage> where TMessage : class, IMessage, new()
         _message = message;
         _scope = scope;
         _filters = filters;
-        _handlers = handlers;
+
+        _filterInvoker = new FilterInvoker<TMessage>(message, scope, filters);
+        _handlerInvoker = new HandlerInvoker<TMessage>(message, scope, handlers);
     }
 
-    public async Task<object> Process(CancellationToken cancellationToken)
+    public async Task<HandlerExecutedContext<TMessage>> Process(CancellationToken cancellationToken)
     {
         async Task<HandlerExecutedContext<TMessage>> Continuation() => new(_message, _scope, _filters)
         {
-            Result = await _handlerInvoker.Invoke(_message, _handlers, _scope, cancellationToken).ConfigureAwait(false)
+            Result = await _handlerInvoker.Invoke(cancellationToken).ConfigureAwait(false)
         };
         
         var preContext = 
@@ -44,19 +45,55 @@ public class MessageProcessor<TMessage> where TMessage : class, IMessage, new()
                 await _filterInvoker.InvokeHandlerFilter(filter, preContext, next, cancellationToken)
                     .ConfigureAwait(false));
 
-        
-        var postContext = await thunk().ConfigureAwait(false);
+        try
+        {
+            return await thunk().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            var exceptionContext = await _filterInvoker
+                .InvokeExceptionFilters(GetExceptionFilters(), ex, cancellationToken).ConfigureAwait(false);
+            
+            if (!exceptionContext.ExceptionHandled) throw;
+        }
 
-        return postContext.Result;
+        return null;
     }
 
     private IEnumerable<IFilter> GetHandlerFilters()
     {
         return _filters
-            .Where(filter => filter is IHandlerFilter<IMessage> || 
-                             filter is TypeFilter t && t.ImplementationType.GetInterfaces()
-                                 .Any(x => x.IsGenericType &&
-                                           x.GetGenericTypeDefinition() == typeof(IHandlerFilter<>)))
+            .Where(filter =>
+            {
+                var filterType = filter switch
+                {
+                    TypeFilter typeFilter => typeFilter.ImplementationType,
+                    _ => filter.GetType()
+                };
+                return filterType.GetInterfaces()
+                    .Any(x => x.IsGenericType &&
+                              x.GetGenericTypeDefinition() == typeof(IHandlerFilter<>));
+            })
+            .Select(filter =>
+            {
+                if (filter is TypeFilter typeFilter)
+                    return (IFilter)_scope.Resolve(typeFilter.ImplementationType);
+                return filter;
+            });
+    }
+
+    private IEnumerable<IFilter> GetExceptionFilters()
+    {
+        return _filters
+            .Where(filter =>
+            {
+                var filterType = filter switch
+                {
+                    TypeFilter typeFilter => typeFilter.ImplementationType,
+                    _ => filter.GetType()
+                };
+                return typeof(IExceptionFilter).IsAssignableFrom(filterType);
+            })
             .Select(filter =>
             {
                 if (filter is TypeFilter typeFilter)

@@ -5,5 +5,5 @@ namespace NMediator.Filters;
 
 public interface IExceptionFilter : IFilter
 {
-    Task OnException(ExceptionContext<IMessage> context, CancellationToken cancellationToken = default);
+    Task OnException(IExceptionContext<IMessage> context, CancellationToken cancellationToken = default);
 }

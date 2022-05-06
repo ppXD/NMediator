@@ -6,7 +6,7 @@ namespace NMediator.Test.TestData.Filters.ExceptionFilters;
 
 public class ExceptionHandledFilter2 : IExceptionFilter
 {
-    public Task OnException(ExceptionContext<IMessage> context, CancellationToken cancellationToken = default)
+    public Task OnException(IExceptionContext<IMessage> context, CancellationToken cancellationToken = default)
     {
         context.ExceptionHandled = true;
         TestStore.Stores.Add($"{nameof(ExceptionHandledFilter2)} {nameof(OnException)}");

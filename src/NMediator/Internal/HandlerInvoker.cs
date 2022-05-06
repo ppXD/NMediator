@@ -9,23 +9,36 @@ namespace NMediator.Internal;
 
 public class HandlerInvoker<TMessage> where TMessage : class, IMessage
 {
-    public async Task<object> Invoke(TMessage message, IList<HandlerWrapper> handlers, IDependencyScope scope, CancellationToken cancellationToken)
+    private readonly TMessage _message;
+    private readonly IDependencyScope _scope;
+    private readonly IList<HandlerWrapper> _handlers;
+
+    public HandlerInvoker(TMessage message, IDependencyScope scope, IList<HandlerWrapper> handlers)
     {
-        if (handlers == null || !handlers.Any())
+        _message = message;
+        _scope = scope;
+        _handlers = handlers;
+    }
+
+    public async Task<object> Invoke(CancellationToken cancellationToken)
+    {
+        if (_handlers == null || !_handlers.Any())
             throw new NoHandlerFoundException(typeof(TMessage));
 
-        if (message is ICommand or IRequest)
-            return await InvokeHandleMethod(message, handlers.First(), scope, cancellationToken)
+        if (_message is ICommand or IRequest)
+            return await InvokeHandleMethod(_message, _handlers.First(), _scope, cancellationToken)
                 .ConfigureAwait(false);
 
-        foreach (var handler in handlers)
-            await InvokeHandleMethod(message, handler, scope, cancellationToken, false)
+        foreach (var handler in _handlers)
+            await InvokeHandleMethod(_message, handler, _scope, cancellationToken, false)
                 .ConfigureAwait(false);
 
         return null;
     }
 
-    private static async Task<object> InvokeHandleMethod(TMessage message, HandlerWrapper handlerWrapper, IDependencyScope scope, CancellationToken cancellationToken, bool shouldGetResult = true)
+    private static async Task<object> InvokeHandleMethod(
+        TMessage message, HandlerWrapper handlerWrapper, 
+        IDependencyScope scope, CancellationToken cancellationToken, bool shouldGetResult = true)
     {
         var handler = scope.Resolve(handlerWrapper.Handler) as dynamic;
         var handleTask = (Task) handler.Handle(message, cancellationToken);
