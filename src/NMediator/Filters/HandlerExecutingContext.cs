@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NMediator.Filters;
 
-public class HandlerExecutingContext<TMessage> : FilterContext<TMessage> where TMessage : class, IMessage
+public class HandlerExecutingContext<TMessage> : FilterContext<TMessage>, IHandlerExecutingContext<TMessage> where TMessage : class, IMessage
 {
     public HandlerExecutingContext(
         TMessage message, 
@@ -11,6 +11,4 @@ public class HandlerExecutingContext<TMessage> : FilterContext<TMessage> where T
         : base(message, scope, filters)
     {
     }
-    
-    public object Result { get; set; }
 }

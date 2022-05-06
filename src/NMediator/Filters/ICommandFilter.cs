@@ -4,7 +4,7 @@ public interface ICommandFilter : IHandlerFilter<ICommand>
 {
 }
 
-public interface ICommandFilter<TCommand> : IHandlerFilter<TCommand> 
+public interface ICommandFilter<in TCommand> : IHandlerFilter<TCommand> 
     where TCommand : class, ICommand
 {
 }

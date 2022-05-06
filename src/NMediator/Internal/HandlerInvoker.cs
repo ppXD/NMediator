@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace NMediator.Internal;
 
@@ -27,53 +27,10 @@ public class HandlerInvoker<TMessage> where TMessage : class, IMessage
 
     private static async Task<object> InvokeHandleMethod(TMessage message, HandlerWrapper handlerWrapper, IDependencyScope scope, CancellationToken cancellationToken, bool shouldGetResult = true)
     {
-        var handler = scope.Resolve(handlerWrapper.Handler);
-        var handleMethod = GetHandleMethod(handlerWrapper.Handler, typeof(TMessage), handlerWrapper.ResponseType);
-
-        var handleTask = (Task)handleMethod.Invoke(handler, new object[] { message, cancellationToken });
-
-        if (handleTask == null) return null;
-
+        var handler = scope.Resolve(handlerWrapper.Handler) as dynamic;
+        var handleTask = (Task) handler.Handle(message, cancellationToken);
         await handleTask.ConfigureAwait(false);
-
         return shouldGetResult ? GetResultFromTask(handleTask) : null;
-    }
-
-    private static MethodInfo GetHandleMethod(Type handlerType, Type messageType, Type responseType)
-    {
-        return handlerType.GetRuntimeMethods()
-            .Where(m => IsHandleMethod(m, messageType, responseType))
-            .OrderBy(m => Prioritize(m, messageType))
-            .First();
-    }
-
-    private static bool IsHandleMethod(MethodInfo m, Type messageType, Type responseType)
-    {
-        return m.Name == "Handle" && m.IsPublic && ContainsReturnType(m, responseType) && ContainsParameter(m, messageType);
-    }
-
-    private static bool ContainsReturnType(MethodInfo m, Type returnType)
-    {
-        if (returnType != null)
-            return m.ReturnType.GetGenericArguments().Contains(returnType);
-
-        return m.ReturnType == typeof(Task);
-    }
-
-    private static bool ContainsParameter(MethodBase m, Type messageType)
-    {
-        var handleMessageType = m.GetParameters()[0].ParameterType;
-        
-        return handleMessageType == messageType || handleMessageType.IsAssignableFrom(messageType);
-    }
-
-    private static int Prioritize(MethodBase m, Type messageType)
-    {
-        var handleMessageType = m.GetParameters()[0].ParameterType;
-
-        if (handleMessageType == messageType)
-            return 1;
-        return handleMessageType.IsSubclassOf(messageType) ? 2 : 3;
     }
     
     private static object GetResultFromTask(Task task)

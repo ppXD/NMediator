@@ -7,7 +7,7 @@ using NMediator.Filters;
 
 namespace NMediator.Internal;
 
-public class MessageProcessor<TMessage> where TMessage : class, IMessage
+public class MessageProcessor<TMessage> where TMessage : class, IMessage, new()
 {
     private readonly TMessage _message;
     private readonly IDependencyScope _scope;
@@ -29,7 +29,7 @@ public class MessageProcessor<TMessage> where TMessage : class, IMessage
         _handlers = handlers;
     }
 
-    public async Task Process(CancellationToken cancellationToken = default)
+    public async Task<object> Process(CancellationToken cancellationToken)
     {
         async Task<HandlerExecutedContext<TMessage>> Continuation() => new(_message, _scope, _filters)
         {
@@ -44,7 +44,10 @@ public class MessageProcessor<TMessage> where TMessage : class, IMessage
                 await _filterInvoker.InvokeHandlerFilter(filter, preContext, next, cancellationToken)
                     .ConfigureAwait(false));
 
-        await thunk();
+        
+        var postContext = await thunk().ConfigureAwait(false);
+
+        return postContext.Result;
     }
 
     private IEnumerable<IFilter> GetHandlerFilters()

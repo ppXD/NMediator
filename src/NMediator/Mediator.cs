@@ -43,7 +43,7 @@ public class Mediator : IMediator
         await ProcessMessage(@event, null, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<object> ProcessMessage(IMessage message, Type responseType, CancellationToken cancellationToken = default)
+    private async Task<object> ProcessMessage(IMessage message, Type responseType, CancellationToken cancellationToken)
     {
         if (message == null)
             throw new ArgumentNullException(nameof(message));
@@ -53,8 +53,6 @@ public class Mediator : IMediator
         var messageProcessor = Activator.CreateInstance(typeof(MessageProcessor<>).MakeGenericType(message.GetType()),
             message, scope, _configuration.FilterConfiguration.FindFilters(message), _configuration.HandlerConfiguration.GetHandlers(message, responseType)) as dynamic;
 
-        await messageProcessor.Process(cancellationToken);
-        
-        return null;
+        return await messageProcessor.Process(cancellationToken);
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace NMediator.Filters;
 
-public abstract class FilterContext<TMessage> where TMessage : class, IMessage
+public abstract class FilterContext<TMessage> : IFilterContext<TMessage> where TMessage : class, IMessage
 {
     protected FilterContext(
         TMessage message,
@@ -19,4 +19,6 @@ public abstract class FilterContext<TMessage> where TMessage : class, IMessage
     public IDependencyScope Scope { get; }
     
     public IList<IFilter> Filters { get; }
+    
+    public object Result { get; set; }
 }

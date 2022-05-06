@@ -4,7 +4,7 @@ public interface IEventFilter : IHandlerFilter<IEvent>
 {
 }
 
-public interface IEventFilter<TEvent> : IHandlerFilter<TEvent>
+public interface IEventFilter<in TEvent> : IHandlerFilter<TEvent>
     where TEvent : class, IEvent
 {
 }

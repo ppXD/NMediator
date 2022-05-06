@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NMediator.Filters;
 using NMediator.Test.TestData;
 using NMediator.Test.TestData.CommandHandlers;
 using NMediator.Test.TestData.Commands;
@@ -117,16 +119,16 @@ public class FilterFixture : TestBase
         
         await mediator.SendAsync(command);
         
-        TestStore.Stores.Count.ShouldBe(15);
-        TestStore.Stores[3].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuting)}");
-        TestStore.Stores[4].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuting)}");
-        TestStore.Stores[5].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuting)}");
-        TestStore.Stores[6].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnHandlerExecuting)}");
-        TestStore.Stores[7].ShouldBe(command);
-        TestStore.Stores[8].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnHandlerExecuted)}");
-        TestStore.Stores[9].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuted)}");
-        TestStore.Stores[10].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuted)}");
-        TestStore.Stores[11].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuted)}");
+        TestStore.Stores.Count.ShouldBe(9);
+        TestStore.Stores[0].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnHandlerExecuting)}");
+        TestStore.Stores[4].ShouldBe(command);
+        TestStore.Stores[5].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnHandlerExecuted)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[8].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuted)}");
     }
 
     [Fact]

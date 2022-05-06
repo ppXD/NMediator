@@ -4,7 +4,7 @@ public interface IMessageFilter : IHandlerFilter<IMessage>
 {
 }
 
-public interface IMessageFilter<TMessage> : IHandlerFilter<TMessage>
+public interface IMessageFilter<in TMessage> : IHandlerFilter<TMessage>
     where TMessage : class, IMessage
 {
 }
