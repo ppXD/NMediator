@@ -1,7 +1,7 @@
 using System;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.ExceptionServices;
 using NMediator.Filters;
 
 namespace NMediator.Internal;
@@ -24,7 +24,7 @@ public class FilterInvoker<TMessage> where TMessage : class, IMessage
         
         var wasError = false;
         HandlerExecutedContext<TMessage> postContext;
-        
+
         try
         {
             postContext = await continuation().ConfigureAwait(false);
@@ -32,14 +32,14 @@ public class FilterInvoker<TMessage> where TMessage : class, IMessage
         catch (Exception ex)
         {
             wasError = true;
-            
+
             postContext = new HandlerExecutedContext<TMessage>(preContext.Message, preContext.Scope, preContext.Filters)
             {
-                ExceptionDispatchInfo = ExceptionDispatchInfo.Capture(ex) 
+                ExceptionDispatchInfo = ExceptionDispatchInfo.Capture(ex)
             };
-            
+
             await filter.OnHandlerExecuted(postContext, cancellationToken).ConfigureAwait(false);
-            
+
             if (!postContext.ExceptionHandled)
                 throw;
         }
