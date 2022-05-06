@@ -62,27 +62,15 @@ public class MessageProcessor<TMessage> where TMessage : class, IMessage, new()
 
     private IEnumerable<IFilter> GetHandlerFilters()
     {
-        return _filters
-            .Where(filter =>
-            {
-                var filterType = filter switch
-                {
-                    TypeFilter typeFilter => typeFilter.ImplementationType,
-                    _ => filter.GetType()
-                };
-                return filterType.GetInterfaces()
-                    .Any(x => x.IsGenericType &&
-                              x.GetGenericTypeDefinition() == typeof(IHandlerFilter<>));
-            })
-            .Select(filter =>
-            {
-                if (filter is TypeFilter typeFilter)
-                    return (IFilter)_scope.Resolve(typeFilter.ImplementationType);
-                return filter;
-            });
+        return GetFilters(typeof(IHandlerFilter<>));
     }
 
     private IEnumerable<IFilter> GetExceptionFilters()
+    {
+        return GetFilters(typeof(IExceptionFilter));
+    }
+
+    private IEnumerable<IFilter> GetFilters(Type targetFilter)
     {
         return _filters
             .Where(filter =>
@@ -92,7 +80,9 @@ public class MessageProcessor<TMessage> where TMessage : class, IMessage, new()
                     TypeFilter typeFilter => typeFilter.ImplementationType,
                     _ => filter.GetType()
                 };
-                return typeof(IExceptionFilter).IsAssignableFrom(filterType);
+                return filterType.GetInterfaces()
+                    .Any(x => x == targetFilter || x.IsGenericType &&
+                              x.GetGenericTypeDefinition() == targetFilter);
             })
             .Select(filter =>
             {
