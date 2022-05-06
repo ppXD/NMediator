@@ -17,16 +17,16 @@ public class TestRequestFilter : IRequestFilter<TestRequest>
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnExecuting(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
+
+    public Task OnHandlerExecuting(IHandlerExecutingContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(TestRequestFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(TestRequestFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<TestRequest> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(TestRequestFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(TestRequestFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

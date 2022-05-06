@@ -19,7 +19,7 @@ public class PublishEventCommandHandler : ICommandHandler<PublishEventCommand>
         _doNothingService = doNothingService;
     }
 
-    public async Task Handle(ICommandContext<PublishEventCommand> context, CancellationToken cancellationToken = default)
+    public async Task Handle(PublishEventCommand command, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(PublishEventCommand)}", cancellationToken).ConfigureAwait(false);
         await _mediator.PublishAsync(new TestEvent(), cancellationToken).ConfigureAwait(false);

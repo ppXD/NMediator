@@ -16,7 +16,7 @@ public class TestCommandHandler : ICommandHandler<TestCommand, TestCommandRespon
         _doNothingService = doNothingService;
     }
 
-    public async Task<TestCommandResponse> Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public async Task<TestCommandResponse> Handle(TestCommand command, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(TestCommand)}", cancellationToken).ConfigureAwait(false);
         return new TestCommandResponse();

@@ -17,7 +17,7 @@ public class ThrowExceptionCommandHandler : ICommandHandler<ThrowExceptionComman
         _doNothingService = doNothingService;
     }
 
-    public async Task Handle(ICommandContext<ThrowExceptionCommand> context, CancellationToken cancellationToken = default)
+    public async Task Handle(ThrowExceptionCommand command, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(ThrowExceptionCommand)}", cancellationToken).ConfigureAwait(false);
         throw new Exception();

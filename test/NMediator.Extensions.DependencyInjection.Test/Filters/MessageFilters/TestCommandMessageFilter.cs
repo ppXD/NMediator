@@ -18,15 +18,15 @@ public class TestCommandMessageFilter : IMessageFilter<TestCommand>
         _doNothingService = doNothingService;
     }
     
-    public Task OnExecuting(IMessageContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuting(IHandlerExecutingContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IMessageContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

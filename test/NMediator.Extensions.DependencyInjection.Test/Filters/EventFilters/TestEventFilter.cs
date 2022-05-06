@@ -17,16 +17,16 @@ public class TestEventFilter : IEventFilter<TestEvent>
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnExecuting(IEventContext<TestEvent> context, CancellationToken cancellationToken = default)
+
+    public Task OnHandlerExecuting(IHandlerExecutingContext<TestEvent> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(TestEventFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(TestEventFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IEventContext<TestEvent> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<TestEvent> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(TestEventFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(TestEventFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }
