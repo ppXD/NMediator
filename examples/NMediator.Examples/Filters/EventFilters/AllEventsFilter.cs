@@ -1,4 +1,3 @@
-using NMediator.Context;
 using NMediator.Examples.Base;
 using NMediator.Examples.Services;
 using NMediator.Filters;
@@ -15,16 +14,16 @@ public class AllEventsFilter : IEventFilter
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnExecuting(IEventContext<IEvent> context, CancellationToken cancellationToken = default)
+
+    public Task OnHandlerExecuting(IHandlerExecutingContext<IEvent> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(AllEventsFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(AllEventsFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IEventContext<IEvent> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<IEvent> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(AllEventsFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(AllEventsFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

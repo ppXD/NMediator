@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using TypeFilter = NMediator.Filters.TypeFilter;
 
 namespace NMediator.Extensions.Microsoft.DependencyInjection;
 
@@ -27,10 +28,17 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<Mediator>();
         services.AddTransient<IMediator, Mediator>();
-        
-        config.HandlerConfiguration.GetHandlers().ToList().ForEach(f => services.AddTransient(f));
-        config.PipelineConfiguration.Filters.ForEach(h => services.AddTransient(h));
-        config.PipelineConfiguration.Middlewares.ForEach(m => services.AddTransient(m));
+
+        foreach (var handler in config.HandlerConfiguration.GetHandlers())
+        {
+            services.AddTransient(handler);
+        }
+
+        foreach (var filter in config.FilterConfiguration.Filters)
+        {
+            if (filter is TypeFilter typeFilter)
+                services.AddTransient(typeFilter.ImplementationType);
+        }
         
         return services;
     }

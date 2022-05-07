@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Extensions.DependencyInjection.Test.Messages.Events;
 using NMediator.Extensions.DependencyInjection.Test.Services;
 
@@ -17,7 +16,7 @@ public class TestEventHandler : IEventHandler<TestEvent>
         _doNothingService = doNothingService;
     }
 
-    public async Task Handle(IEventContext<TestEvent> context, CancellationToken cancellationToken = default)
+    public async Task Handle(TestEvent @event, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(TestEvent)}", cancellationToken).ConfigureAwait(false);
     }

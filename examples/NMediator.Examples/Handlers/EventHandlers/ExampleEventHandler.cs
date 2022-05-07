@@ -1,4 +1,3 @@
-using NMediator.Context;
 using NMediator.Examples.Messages.Events;
 using NMediator.Examples.Services;
 
@@ -15,7 +14,7 @@ public class ExampleEventHandler : IEventHandler<ExampleEvent>
         _doNothingService = doNothingService;
     }
 
-    public async Task Handle(IEventContext<ExampleEvent> context, CancellationToken cancellationToken = default)
+    public async Task Handle(ExampleEvent @event, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(ExampleEvent)}", cancellationToken).ConfigureAwait(false);
     }

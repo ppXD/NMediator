@@ -1,12 +1,10 @@
-using NMediator.Context;
-
 namespace NMediator.Filters;
 
-public interface ICommandFilter : IExecutionFilter<ICommand, ICommandContext<ICommand>>
+public interface ICommandFilter : IHandlerFilter<ICommand>
 {
 }
 
-public interface ICommandFilter<TCommand> : IExecutionFilter<TCommand, ICommandContext<TCommand>> 
+public interface ICommandFilter<in TCommand> : IHandlerFilter<TCommand> 
     where TCommand : class, ICommand
 {
 }

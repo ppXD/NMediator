@@ -1,6 +1,6 @@
 using System;
 
-namespace NMediator.Infrastructure;
+namespace NMediator.Internal;
 
 public class DefaultDependencyScope : IDependencyScope
 {

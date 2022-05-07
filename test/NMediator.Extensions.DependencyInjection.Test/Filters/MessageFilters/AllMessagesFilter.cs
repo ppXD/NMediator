@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Extensions.DependencyInjection.Test.Base;
 using NMediator.Extensions.DependencyInjection.Test.Services;
 using NMediator.Filters;
@@ -17,16 +16,16 @@ public class AllMessagesFilter : IMessageFilter
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
+
+    public Task OnHandlerExecuting(IHandlerExecutingContext<IMessage> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(AllMessagesFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(AllMessagesFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<IMessage> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(AllMessagesFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(AllMessagesFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

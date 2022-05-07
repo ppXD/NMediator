@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Test.TestData.Requests;
 using NMediator.Test.TestData.Responses;
 
@@ -8,9 +7,9 @@ namespace NMediator.Test.TestData.RequestHandlers;
 
 public class TestOtherRequestHandler : IRequestHandler<TestOtherRequest, TestOtherResponse>
 {
-    public Task<TestOtherResponse> Handle(IRequestContext<TestOtherRequest> context, CancellationToken cancellationToken = default)
+    public Task<TestOtherResponse> Handle(TestOtherRequest request, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add(context.Message);
+        TestStore.Stores.Add(request);
         return Task.FromResult(new TestOtherResponse());
     }
 }

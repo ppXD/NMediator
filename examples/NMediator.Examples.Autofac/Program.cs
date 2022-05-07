@@ -6,7 +6,6 @@ using NMediator.Examples.Filters.ExceptionFilters;
 using NMediator.Examples.Filters.MessageFilters;
 using NMediator.Examples.Filters.RequestFilters;
 using NMediator.Examples.Messages.Commands;
-using NMediator.Examples.Middlewares;
 using NMediator.Examples.Services;
 using NMediator.Extensions.Autofac;
 
@@ -27,8 +26,6 @@ public static class Program
         builder.RegisterNMediator(config =>
         {
             config
-                .UseMiddleware<ExampleMiddleware1>()
-                .UseMiddleware<ExampleMiddleware2>()
                 .UseFilter<AllMessagesFilter>()
                 .UseFilter<ExampleCommandMessageFilter>()
                 .UseFilter<AllCommandsFilter>()

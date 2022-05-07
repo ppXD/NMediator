@@ -1,21 +1,20 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Filters;
 
 namespace NMediator.Test.TestData.Filters.RequestFilters;
 
 public class AllRequestsFilter1 : IRequestFilter
 {
-    public Task OnExecuting(IRequestContext<IRequest> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuting(IHandlerExecutingContext<IRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add($"{nameof(AllRequestsFilter1)} {nameof(OnExecuting)}");
+        TestStore.Stores.Add($"{nameof(AllRequestsFilter1)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IRequestContext<IRequest> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<IRequest> context, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add($"{nameof(AllRequestsFilter1)} {nameof(OnExecuted)}");
+        TestStore.Stores.Add($"{nameof(AllRequestsFilter1)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

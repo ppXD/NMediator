@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Extensions.DependencyInjection.Test.Messages.Requests;
 using NMediator.Extensions.DependencyInjection.Test.Services;
 
@@ -17,7 +16,7 @@ public class TestRequestHandler : IRequestHandler<TestRequest, TestResponse>
         _doNothingService = doNothingService;
     }
     
-    public async Task<TestResponse> Handle(IRequestContext<TestRequest> context, CancellationToken cancellationToken = default)
+    public async Task<TestResponse> Handle(TestRequest request, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(TestRequest)}", cancellationToken).ConfigureAwait(false);
         return new TestResponse();

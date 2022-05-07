@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Test.TestData.Commands;
 using NMediator.Test.TestData.Responses;
 
@@ -8,7 +7,7 @@ namespace NMediator.Test.TestData.CommandHandlers;
 
 public class ITestCommandHandler : ICommandHandler<ITestCommand>
 {
-    public Task Handle(ICommandContext<ITestCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(ITestCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(ITestCommandHandler)}");
         return Task.CompletedTask;
@@ -17,7 +16,7 @@ public class ITestCommandHandler : ICommandHandler<ITestCommand>
 
 public class ITestCommandHasResponseHandler : ICommandHandler<ITestCommand, TestDerivedResponse>
 {
-    public Task<TestDerivedResponse> Handle(ICommandContext<ITestCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestDerivedResponse> Handle(ITestCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(ITestCommandHasResponseHandler)}");
         return Task.FromResult(new TestDerivedResponse());
@@ -26,7 +25,7 @@ public class ITestCommandHasResponseHandler : ICommandHandler<ITestCommand, Test
 
 public class TestInterfaceCommandHandler : ICommandHandler<TestInterfaceCommand>
 {
-    public Task Handle(ICommandContext<TestInterfaceCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(TestInterfaceCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestInterfaceCommandHandler)}");
         return Task.CompletedTask;
@@ -35,7 +34,7 @@ public class TestInterfaceCommandHandler : ICommandHandler<TestInterfaceCommand>
 
 public class TestInterfaceHasResponseCommandHandler : ICommandHandler<TestInterfaceCommand, TestDerivedResponse>
 {
-    public Task<TestDerivedResponse> Handle(ICommandContext<TestInterfaceCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestDerivedResponse> Handle(TestInterfaceCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestInterfaceHasResponseCommandHandler)}");
         return Task.FromResult(new TestDerivedResponse());
@@ -44,7 +43,7 @@ public class TestInterfaceHasResponseCommandHandler : ICommandHandler<TestInterf
 
 public class TestCommandOneWayCommandHandler : ICommandHandler<TestCommandOneWayCommand>
 {
-    public Task Handle(ICommandContext<TestCommandOneWayCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(TestCommandOneWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestCommandOneWayCommandHandler)}");
         return Task.CompletedTask;
@@ -53,7 +52,7 @@ public class TestCommandOneWayCommandHandler : ICommandHandler<TestCommandOneWay
 
 public class TestCommandOneWayHasResponseCommandHandler : ICommandHandler<TestCommandOneWayCommand, TestDerivedResponse>
 {
-    public Task<TestDerivedResponse> Handle(ICommandContext<TestCommandOneWayCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestDerivedResponse> Handle(TestCommandOneWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestCommandOneWayHasResponseCommandHandler)}");
         return Task.FromResult(new TestDerivedResponse());
@@ -62,7 +61,7 @@ public class TestCommandOneWayHasResponseCommandHandler : ICommandHandler<TestCo
 
 public class TestCommandTwoWayCommandHandler : ICommandHandler<TestCommandTwoWayCommand>
 {
-    public Task Handle(ICommandContext<TestCommandTwoWayCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(TestCommandTwoWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestCommandTwoWayCommandHandler)}");
         return Task.CompletedTask;
@@ -71,7 +70,7 @@ public class TestCommandTwoWayCommandHandler : ICommandHandler<TestCommandTwoWay
 
 public class TestCommandTwoWayHasResponseCommandHandler : ICommandHandler<TestCommandTwoWayCommand, TestDerivedResponse>
 {
-    public Task<TestDerivedResponse> Handle(ICommandContext<TestCommandTwoWayCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestDerivedResponse> Handle(TestCommandTwoWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestCommandTwoWayHasResponseCommandHandler)}");
         return Task.FromResult(new TestDerivedResponse());
@@ -80,7 +79,7 @@ public class TestCommandTwoWayHasResponseCommandHandler : ICommandHandler<TestCo
 
 public class TestCommandAllWayCommandHandler : ICommandHandler<TestCommandAllWayCommand>
 {
-    public Task Handle(ICommandContext<TestCommandAllWayCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(TestCommandAllWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestCommandAllWayCommandHandler)}");
         return Task.CompletedTask;
@@ -89,7 +88,7 @@ public class TestCommandAllWayCommandHandler : ICommandHandler<TestCommandAllWay
 
 public class TestCommandAllWayHasResponseCommandHandler : ICommandHandler<TestCommandAllWayCommand, TestDerivedResponse>
 {
-    public Task<TestDerivedResponse> Handle(ICommandContext<TestCommandAllWayCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestDerivedResponse> Handle(TestCommandAllWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestCommandAllWayHasResponseCommandHandler)}");
         return Task.FromResult(new TestDerivedResponse());
@@ -98,7 +97,7 @@ public class TestCommandAllWayHasResponseCommandHandler : ICommandHandler<TestCo
 
 public class TestInheritAllWayCommandHandler : ICommandHandler<TestInheritAllWayCommand>
 {
-    public Task Handle(ICommandContext<TestInheritAllWayCommand> context, CancellationToken cancellationToken = default)
+    public Task Handle(TestInheritAllWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestInheritAllWayCommandHandler)}");
         return Task.CompletedTask;
@@ -107,7 +106,7 @@ public class TestInheritAllWayCommandHandler : ICommandHandler<TestInheritAllWay
 
 public class TestInheritAllWayHasResponseCommandHandler : ICommandHandler<TestInheritAllWayCommand, TestDerivedResponse>
 {
-    public Task<TestDerivedResponse> Handle(ICommandContext<TestInheritAllWayCommand> context, CancellationToken cancellationToken = default)
+    public Task<TestDerivedResponse> Handle(TestInheritAllWayCommand command, CancellationToken cancellationToken = default)
     {
         TestStore.Stores.Add($"{nameof(TestInheritAllWayHasResponseCommandHandler)}");
         return Task.FromResult(new TestDerivedResponse());

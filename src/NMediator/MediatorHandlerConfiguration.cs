@@ -1,29 +1,29 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NMediator.Infrastructure;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using NMediator.Internal;
 
 namespace NMediator;
 
 public class MediatorHandlerConfiguration
 {
-    private ConcurrentDictionary<MessageAndResponse, List<HandlerWrapper>> HandlerDispatchers { get; } = new();
+    private ConcurrentDictionary<HandlerKey, List<HandlerWrapper>> HandlerMappings { get; } = new();
 
     public IEnumerable<Type> GetHandlers() =>
-        HandlerDispatchers.SelectMany(x => x.Value).Select(x => x.Handler).Distinct().ToList();
+        HandlerMappings.SelectMany(x => x.Value).Select(x => x.Handler).Distinct().ToList();
 
-    public IEnumerable<HandlerWrapper> GetHandlers(IMessage message, Type responseType)
+    public IList<HandlerWrapper> GetHandlers(IMessage message, Type responseType)
     {
         var messageType = message.GetType();
     
-        HandlerDispatchers.TryGetValue(new MessageAndResponse(messageType, responseType), out var handlers);
+        HandlerMappings.TryGetValue(new HandlerKey(messageType, responseType), out var handlers);
     
         if (handlers == null)
             throw new NoHandlerFoundException(messageType);
         
-        return handlers.OrderBy(m => Prioritize(m, message, responseType));
+        return handlers.OrderBy(m => Prioritize(m, message, responseType)).ToList();
     }
     
     protected internal void RegisterHandlers(IReadOnlyCollection<Type> handlerTypes)
@@ -49,43 +49,43 @@ public class MediatorHandlerConfiguration
                 var messageType = implementedInterface.GenericTypeArguments[0];
                 var responseType = implementedInterface.GenericTypeArguments.Length > 1 ? implementedInterface.GenericTypeArguments[1] : null;
                 
-                var messageAndResponses = new List<MessageAndResponse>(new[]
+                var keys = new List<HandlerKey>(new[]
                 {
-                    new MessageAndResponse(messageType, responseType)
+                    new HandlerKey(messageType, responseType)
                 });
 
-                messageAndResponses.AddRange(messageType.Assembly.GetTypes()
+                keys.AddRange(messageType.Assembly.GetTypes()
                     .Where(x => x.IsClass && messageType.IsAssignableFrom(x))
-                    .Select(classType => new MessageAndResponse(classType, responseType)));
+                    .Select(classType => new HandlerKey(classType, responseType)));
                 
                 if (responseType != null)
                 {
-                    var messageTypes = messageAndResponses.Select(m => m.MessageType).ToList();
+                    var messageTypes = keys.Select(m => m.MessageType).ToList();
                     
-                    messageAndResponses.AddRange(responseType.Assembly.GetTypes()
+                    keys.AddRange(responseType.Assembly.GetTypes()
                         .Where(type => responseType.IsSubclassOf(type))
                         .SelectMany(subClassType =>
-                            messageTypes.Select(m => new MessageAndResponse(m, subClassType))));
+                            messageTypes.Select(m => new HandlerKey(m, subClassType))));
                     
                     if (responseType.IsInterface)
-                        messageAndResponses.AddRange(responseType.Assembly.GetTypes()
+                        keys.AddRange(responseType.Assembly.GetTypes()
                             .Where(type => responseType.IsAssignableFrom(type))
                             .SelectMany(implement =>
-                                messageTypes.Select(m => new MessageAndResponse(m, implement))));
+                                messageTypes.Select(m => new HandlerKey(m, implement))));
                 }
 
-                foreach (var messageAndResponse in messageAndResponses)
+                foreach (var key in keys)
                 {
                     var handlerWrapper = new HandlerWrapper(handlerType, messageType, responseType);
 
-                    if (HandlerDispatchers.ContainsKey(messageAndResponse))
+                    if (HandlerMappings.ContainsKey(key))
                     {
-                        if (!HandlerDispatchers[messageAndResponse].Contains(handlerWrapper))
-                            HandlerDispatchers[messageAndResponse].Add(handlerWrapper);
+                        if (!HandlerMappings[key].Contains(handlerWrapper))
+                            HandlerMappings[key].Add(handlerWrapper);
                     }
                     else
                     {
-                        HandlerDispatchers.TryAdd(messageAndResponse, new List<HandlerWrapper> {handlerWrapper});
+                        HandlerMappings.TryAdd(key, new List<HandlerWrapper> {handlerWrapper});
                     }
                 }
             }
@@ -113,15 +113,15 @@ public class MediatorHandlerConfiguration
         };
     }
     
-    private class MessageAndResponse : IEquatable<MessageAndResponse>
+    private class HandlerKey : IEquatable<HandlerKey>
     {
-        public MessageAndResponse(Type messageType, Type responseType)
+        public HandlerKey(Type messageType, Type responseType)
         {
             MessageType = messageType;
             ResponseType = responseType;
         }
 
-        public bool Equals(MessageAndResponse other)
+        public bool Equals(HandlerKey other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -134,7 +134,7 @@ public class MediatorHandlerConfiguration
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             
-            return obj.GetType() == GetType() && Equals((MessageAndResponse)obj);
+            return obj.GetType() == GetType() && Equals((HandlerKey)obj);
         }
 
         public override int GetHashCode()
@@ -145,12 +145,12 @@ public class MediatorHandlerConfiguration
             }
         }
 
-        public static bool operator ==(MessageAndResponse left, MessageAndResponse right)
+        public static bool operator ==(HandlerKey left, HandlerKey right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(MessageAndResponse left, MessageAndResponse right)
+        public static bool operator !=(HandlerKey left, HandlerKey right)
         {
             return !Equals(left, right);
         }

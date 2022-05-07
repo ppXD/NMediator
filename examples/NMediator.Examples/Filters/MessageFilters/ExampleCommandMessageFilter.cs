@@ -1,4 +1,3 @@
-using NMediator.Context;
 using NMediator.Examples.Base;
 using NMediator.Examples.Messages.Commands;
 using NMediator.Examples.Services;
@@ -16,16 +15,16 @@ public class ExampleCommandMessageFilter : IMessageFilter<ExampleCommand>
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnExecuting(IMessageContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ExampleCommand> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(ExampleCommandMessageFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(ExampleCommandMessageFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IMessageContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ExampleCommand> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(ExampleCommandMessageFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(ExampleCommandMessageFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

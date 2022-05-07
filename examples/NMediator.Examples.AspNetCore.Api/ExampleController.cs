@@ -7,7 +7,6 @@ using NMediator.Examples.Filters.RequestFilters;
 using NMediator.Examples.Messages.Commands;
 using NMediator.Examples.Messages.Events;
 using NMediator.Examples.Messages.Requests;
-using NMediator.Examples.Middlewares;
 
 namespace NMediator.Examples.AspNetCore.Api;
 
@@ -32,19 +31,15 @@ public class ExampleController : ControllerBase
 
         var equals = _logger.Messages.SequenceEqual(new[]
         {
-            $"{nameof(ExampleMiddleware1)} {nameof(ExampleMiddleware1.OnExecuting)}",
-            $"{nameof(ExampleMiddleware2)} {nameof(ExampleMiddleware2.OnExecuting)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
-            $"{nameof(ExampleCommandMessageFilter)} {nameof(ExampleCommandMessageFilter.OnExecuting)}",
-            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuting)}",
-            $"{nameof(ExampleCommandFilter)} {nameof(ExampleCommandFilter.OnExecuting)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuting)}",
+            $"{nameof(ExampleCommandMessageFilter)} {nameof(ExampleCommandMessageFilter.OnHandlerExecuting)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnHandlerExecuting)}",
+            $"{nameof(ExampleCommandFilter)} {nameof(ExampleCommandFilter.OnHandlerExecuting)}",
             $"{nameof(ExampleCommand)}",
-            $"{nameof(ExampleCommandFilter)} {nameof(ExampleCommandFilter.OnExecuted)}",
-            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuted)}",
-            $"{nameof(ExampleCommandMessageFilter)} {nameof(ExampleCommandMessageFilter.OnExecuted)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}",
-            $"{nameof(ExampleMiddleware2)} {nameof(ExampleMiddleware2.OnExecuted)}",
-            $"{nameof(ExampleMiddleware1)} {nameof(ExampleMiddleware1.OnExecuted)}"
+            $"{nameof(ExampleCommandFilter)} {nameof(ExampleCommandFilter.OnHandlerExecuted)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnHandlerExecuted)}",
+            $"{nameof(ExampleCommandMessageFilter)} {nameof(ExampleCommandMessageFilter.OnHandlerExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuted)}"
         });
 
         _logger.Messages.Clear();
@@ -61,17 +56,13 @@ public class ExampleController : ControllerBase
 
         var equals = _logger.Messages.SequenceEqual(new[]
         {
-            $"{nameof(ExampleMiddleware1)} {nameof(ExampleMiddleware1.OnExecuting)}",
-            $"{nameof(ExampleMiddleware2)} {nameof(ExampleMiddleware2.OnExecuting)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
-            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnExecuting)}",
-            $"{nameof(ExampleEventFilter)} {nameof(ExampleEventFilter.OnExecuting)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuting)}",
+            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnHandlerExecuting)}",
+            $"{nameof(ExampleEventFilter)} {nameof(ExampleEventFilter.OnHandlerExecuting)}",
             $"{nameof(ExampleEvent)}",
-            $"{nameof(ExampleEventFilter)} {nameof(ExampleEventFilter.OnExecuted)}",
-            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnExecuted)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}",
-            $"{nameof(ExampleMiddleware2)} {nameof(ExampleMiddleware2.OnExecuted)}",
-            $"{nameof(ExampleMiddleware1)} {nameof(ExampleMiddleware1.OnExecuted)}"
+            $"{nameof(ExampleEventFilter)} {nameof(ExampleEventFilter.OnHandlerExecuted)}",
+            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnHandlerExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuted)}"
         });
 
         _logger.Messages.Clear();
@@ -88,17 +79,13 @@ public class ExampleController : ControllerBase
 
         var equals = _logger.Messages.SequenceEqual(new[]
         {
-            $"{nameof(ExampleMiddleware1)} {nameof(ExampleMiddleware1.OnExecuting)}",
-            $"{nameof(ExampleMiddleware2)} {nameof(ExampleMiddleware2.OnExecuting)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
-            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnExecuting)}",
-            $"{nameof(ExampleRequestFilter)} {nameof(ExampleRequestFilter.OnExecuting)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuting)}",
+            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnHandlerExecuting)}",
+            $"{nameof(ExampleRequestFilter)} {nameof(ExampleRequestFilter.OnHandlerExecuting)}",
             $"{nameof(ExampleRequest)}",
-            $"{nameof(ExampleRequestFilter)} {nameof(ExampleRequestFilter.OnExecuted)}",
-            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnExecuted)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}",
-            $"{nameof(ExampleMiddleware2)} {nameof(ExampleMiddleware2.OnExecuted)}",
-            $"{nameof(ExampleMiddleware1)} {nameof(ExampleMiddleware1.OnExecuted)}"
+            $"{nameof(ExampleRequestFilter)} {nameof(ExampleRequestFilter.OnHandlerExecuted)}",
+            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnHandlerExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuted)}"
         });
 
         _logger.Messages.Clear();

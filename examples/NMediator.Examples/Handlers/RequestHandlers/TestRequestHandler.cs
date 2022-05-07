@@ -1,4 +1,3 @@
-using NMediator.Context;
 using NMediator.Examples.Messages.Requests;
 using NMediator.Examples.Services;
 
@@ -15,7 +14,7 @@ public class ExampleRequestHandler : IRequestHandler<ExampleRequest, ExampleResp
         _doNothingService = doNothingService;
     }
     
-    public async Task<ExampleResponse> Handle(IRequestContext<ExampleRequest> context, CancellationToken cancellationToken = default)
+    public async Task<ExampleResponse> Handle(ExampleRequest request, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(ExampleRequest)}", cancellationToken).ConfigureAwait(false);
         return new ExampleResponse();

@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Extensions.DependencyInjection.Test.Base;
 using NMediator.Extensions.DependencyInjection.Test.Services;
 using NMediator.Filters;
@@ -17,8 +16,8 @@ public class ExceptionFilter : IExceptionFilter
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnException(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
+
+    public Task OnException(IExceptionContext<IMessage> context, CancellationToken cancellationToken = default)
     {
         _logger.Messages.Add($"{nameof(ExceptionFilter)} {nameof(OnException)}");
         context.ExceptionHandled = true;

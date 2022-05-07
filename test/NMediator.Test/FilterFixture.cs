@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NMediator.Test.TestData;
@@ -10,7 +11,6 @@ using NMediator.Test.TestData.Filters.EventFilters;
 using NMediator.Test.TestData.Filters.ExceptionFilters;
 using NMediator.Test.TestData.Filters.MessageFilters;
 using NMediator.Test.TestData.Filters.RequestFilters;
-using NMediator.Test.TestData.Middlewares;
 using NMediator.Test.TestData.RequestHandlers;
 using NMediator.Test.TestData.Requests;
 using NMediator.Test.TestData.Responses;
@@ -82,24 +82,24 @@ public class FilterFixture : TestBase
         
         await mediator.SendAsync(testCommand);
         TestStore.Stores.Count.ShouldBe(11);
-        TestStore.Stores.Any(x => x.Equals($"{nameof(TestCommandFilter)} {nameof(TestCommandFilter.OnExecuting)}")).ShouldBeTrue();
+        TestStore.Stores.Any(x => x.Equals($"{nameof(TestCommandFilter)} {nameof(TestCommandFilter.OnHandlerExecuting)}")).ShouldBeTrue();
         TestStore.Stores.Clear();
         
         await mediator.SendAsync(otherCommand);
         TestStore.Stores.Count.ShouldBe(11);
-        TestStore.Stores.Any(x => x.Equals($"{nameof(TestOtherCommandFilter)} {nameof(TestOtherCommandFilter.OnExecuting)}")).ShouldBeTrue();
+        TestStore.Stores.Any(x => x.Equals($"{nameof(TestOtherCommandFilter)} {nameof(TestOtherCommandFilter.OnHandlerExecuting)}")).ShouldBeTrue();
         TestStore.Stores.Clear();
 
         var response = await mediator.RequestAsync<TestResponse>(new TestRequest());
         response.ShouldNotBeNull();
         TestStore.Stores.Count.ShouldBe(9);
-        TestStore.Stores.Any(x => x.Equals($"{nameof(TestRequestFilter)} {nameof(TestRequestFilter.OnExecuting)}")).ShouldBeTrue();
+        TestStore.Stores.Any(x => x.Equals($"{nameof(TestRequestFilter)} {nameof(TestRequestFilter.OnHandlerExecuting)}")).ShouldBeTrue();
         TestStore.Stores.Clear();
 
         await mediator.PublishAsync(new TestEvent());
         TestStore.Stores.Count.ShouldBe(9);
-        TestStore.Stores.Any(x => x.Equals($"{nameof(AllEventsFilter1)} {nameof(AllEventsFilter1.OnExecuting)}")).ShouldBeTrue();
-        TestStore.Stores.Any(x => x.Equals($"{nameof(AllEventsFilter2)} {nameof(AllEventsFilter2.OnExecuting)}")).ShouldBeTrue();
+        TestStore.Stores.Any(x => x.Equals($"{nameof(AllEventsFilter1)} {nameof(AllEventsFilter1.OnHandlerExecuting)}")).ShouldBeTrue();
+        TestStore.Stores.Any(x => x.Equals($"{nameof(AllEventsFilter2)} {nameof(AllEventsFilter2.OnHandlerExecuting)}")).ShouldBeTrue();
         TestStore.Stores.Clear();
     }
     
@@ -108,35 +108,26 @@ public class FilterFixture : TestBase
     {
         var mediator = new MediatorConfiguration()
             .RegisterHandler<TestCommandHandler>()
-            .UseMiddleware<TestFirstMiddleware>()
             .UseFilter<AllMessagesFilter2>()
-            .UseMiddleware<TestSecondMiddleware>()
             .UseFilter<AllCommandsFilter1>()
             .UseFilter<AllMessagesFilter1>()
             .UseFilter<AllCommandsFilter2>()
-            .UseMiddleware<TestThirdMiddleware>()
             .CreateMediator();
 
         var command = new TestCommand();
         
         await mediator.SendAsync(command);
         
-        TestStore.Stores.Count.ShouldBe(15);
-        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
-        TestStore.Stores[1].ShouldBe($"{nameof(TestSecondMiddleware)} {nameof(TestSecondMiddleware.OnExecuting)}");
-        TestStore.Stores[2].ShouldBe($"{nameof(TestThirdMiddleware)} {nameof(TestThirdMiddleware.OnExecuting)}");
-        TestStore.Stores[3].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuting)}");
-        TestStore.Stores[4].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
-        TestStore.Stores[5].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuting)}");
-        TestStore.Stores[6].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnExecuting)}");
-        TestStore.Stores[7].ShouldBe(command);
-        TestStore.Stores[8].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnExecuted)}");
-        TestStore.Stores[9].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuted)}");
-        TestStore.Stores[10].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
-        TestStore.Stores[11].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuted)}");
-        TestStore.Stores[12].ShouldBe($"{nameof(TestThirdMiddleware)} {nameof(TestThirdMiddleware.OnExecuted)}");
-        TestStore.Stores[13].ShouldBe($"{nameof(TestSecondMiddleware)} {nameof(TestSecondMiddleware.OnExecuted)}");
-        TestStore.Stores[14].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuted)}");
+        TestStore.Stores.Count.ShouldBe(9);
+        TestStore.Stores[0].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnHandlerExecuting)}");
+        TestStore.Stores[4].ShouldBe(command);
+        TestStore.Stores[5].ShouldBe($"{nameof(AllCommandsFilter2)} {nameof(AllCommandsFilter2.OnHandlerExecuted)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[8].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuted)}");
     }
 
     [Fact]
@@ -144,10 +135,8 @@ public class FilterFixture : TestBase
     {
         var mediator1 = new MediatorConfiguration()
             .RegisterHandler<TestExceptionCommandHandler>()
-            .UseMiddleware<TestFirstMiddleware>()
             .UseFilter<AllMessagesFilter2>()
             .UseFilter<AllCommandsFilter1>()
-            .UseMiddleware<TestThirdMiddleware>()
             .UseFilter<ExceptionHandledFilter1>()
             .CreateMediator();
 
@@ -155,25 +144,19 @@ public class FilterFixture : TestBase
         
         await mediator1.SendAsync(command);
         
-        TestStore.Stores.Count.ShouldBe(10);
-        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
-        TestStore.Stores[1].ShouldBe($"{nameof(TestThirdMiddleware)} {nameof(TestThirdMiddleware.OnExecuting)}");
-        TestStore.Stores[2].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuting)}");
-        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
-        TestStore.Stores[4].ShouldBe(command);
-        TestStore.Stores[5].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
-        TestStore.Stores[6].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuted)}");
-        TestStore.Stores[7].ShouldBe($"{nameof(ExceptionHandledFilter1)} {nameof(ExceptionHandledFilter1.OnException)}");
-        TestStore.Stores[8].ShouldBe($"{nameof(TestThirdMiddleware)} {nameof(TestThirdMiddleware.OnExecuted)}");
-        TestStore.Stores[9].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuted)}");
+        TestStore.Stores.Count.ShouldBe(6);
+        TestStore.Stores[0].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe(command);
+        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuted)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(ExceptionHandledFilter1)} {nameof(ExceptionHandledFilter1.OnException)}");
         TestStore.Stores.Clear();
 
         var mediator2 =  new MediatorConfiguration()
             .RegisterHandler<TestExceptionCommandHandler>()
-            .UseMiddleware<TestFirstMiddleware>()
             .UseFilter<AllMessagesFilter2>()
             .UseFilter<AllCommandsFilter1>()
-            .UseMiddleware<TestThirdMiddleware>()
             .UseFilter<ExceptionUnHandledFilter1>()
             .CreateMediator();
 
@@ -186,15 +169,13 @@ public class FilterFixture : TestBase
             // ignored
         }
         
-        TestStore.Stores.Count.ShouldBe(8);
-        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
-        TestStore.Stores[1].ShouldBe($"{nameof(TestThirdMiddleware)} {nameof(TestThirdMiddleware.OnExecuting)}");
-        TestStore.Stores[2].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuting)}");
-        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
-        TestStore.Stores[4].ShouldBe(command);
-        TestStore.Stores[5].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
-        TestStore.Stores[6].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnExecuted)}");
-        TestStore.Stores[7].ShouldBe($"{nameof(ExceptionUnHandledFilter1)} {nameof(ExceptionUnHandledFilter1.OnException)}");
+        TestStore.Stores.Count.ShouldBe(6);
+        TestStore.Stores[0].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe(command);
+        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(AllMessagesFilter2)} {nameof(AllMessagesFilter2.OnHandlerExecuted)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(ExceptionUnHandledFilter1)} {nameof(ExceptionUnHandledFilter1.OnException)}");
     }
 
     [Fact]
@@ -204,7 +185,6 @@ public class FilterFixture : TestBase
 
         var mediator1 = new MediatorConfiguration()
             .RegisterHandler<TestCommandHandler>()
-            .UseMiddleware<TestFirstMiddleware>()
             .UseFilter<AllMessagesFilter1>()
             .UseFilter<AllCommandsFilter1>()
             .UseFilter<TestCommandOnExecutingThrowExceptionFilter>()
@@ -213,20 +193,17 @@ public class FilterFixture : TestBase
         
         await mediator1.SendAsync(command);
         
-        TestStore.Stores.Count.ShouldBe(8);
-        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
-        TestStore.Stores[1].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuting)}");
-        TestStore.Stores[2].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
-        TestStore.Stores[3].ShouldBe($"{nameof(TestCommandOnExecutingThrowExceptionFilter)} {nameof(TestCommandOnExecutingThrowExceptionFilter.OnExecuting)}");
-        TestStore.Stores[4].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
-        TestStore.Stores[5].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuted)}");
-        TestStore.Stores[6].ShouldBe($"{nameof(ExceptionHandledFilter1)} {nameof(ExceptionHandledFilter1.OnException)}");
-        TestStore.Stores[7].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuted)}");
+        TestStore.Stores.Count.ShouldBe(6);
+        TestStore.Stores[0].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestCommandOnExecutingThrowExceptionFilter)} {nameof(TestCommandOnExecutingThrowExceptionFilter.OnHandlerExecuting)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(ExceptionHandledFilter1)} {nameof(ExceptionHandledFilter1.OnException)}");
         TestStore.Stores.Clear();
         
         var mediator2 = new MediatorConfiguration()
             .RegisterHandler<TestCommandHandler>()
-            .UseMiddleware<TestFirstMiddleware>()
             .UseFilter<AllMessagesFilter1>()
             .UseFilter<AllCommandsFilter1>()
             .UseFilter<TestCommandOnExecutedThrowExceptionFilter>()
@@ -242,16 +219,15 @@ public class FilterFixture : TestBase
             // ignored
         }
         
-        TestStore.Stores.Count.ShouldBe(9);
-        TestStore.Stores[0].ShouldBe($"{nameof(TestFirstMiddleware)} {nameof(TestFirstMiddleware.OnExecuting)}");
-        TestStore.Stores[1].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuting)}");
-        TestStore.Stores[2].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuting)}");
-        TestStore.Stores[3].ShouldBe($"{nameof(TestCommandOnExecutedThrowExceptionFilter)} {nameof(TestCommandOnExecutedThrowExceptionFilter.OnExecuting)}");
-        TestStore.Stores[4].ShouldBe(command);
-        TestStore.Stores[5].ShouldBe($"{nameof(TestCommandOnExecutedThrowExceptionFilter)} {nameof(TestCommandOnExecutedThrowExceptionFilter.OnExecuted)}");
-        TestStore.Stores[6].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnExecuted)}");
-        TestStore.Stores[7].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnExecuted)}");
-        TestStore.Stores[8].ShouldBe($"{nameof(ExceptionUnHandledFilter1)} {nameof(ExceptionUnHandledFilter1.OnException)}");
+        TestStore.Stores.Count.ShouldBe(8);
+        TestStore.Stores[0].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestCommandOnExecutedThrowExceptionFilter)} {nameof(TestCommandOnExecutedThrowExceptionFilter.OnHandlerExecuting)}");
+        TestStore.Stores[3].ShouldBe(command);
+        TestStore.Stores[4].ShouldBe($"{nameof(TestCommandOnExecutedThrowExceptionFilter)} {nameof(TestCommandOnExecutedThrowExceptionFilter.OnHandlerExecuted)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(AllCommandsFilter1)} {nameof(AllCommandsFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(AllMessagesFilter1)} {nameof(AllMessagesFilter1.OnHandlerExecuted)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(ExceptionUnHandledFilter1)} {nameof(ExceptionUnHandledFilter1.OnException)}");
     }
     
     [Fact]
@@ -285,9 +261,9 @@ public class FilterFixture : TestBase
     [Fact]
     public void CannotUseNotAssignableFromIFilterInterface()
     {
-        var config = new MediatorConfiguration()
+        var configureFunc = () => new MediatorConfiguration()
             .UseFilter(typeof(TestCommandHandler));
 
-        config.PipelineConfiguration.Filters.Count.ShouldBe(0);
+        configureFunc.ShouldThrow<Exception>();
     }
 }

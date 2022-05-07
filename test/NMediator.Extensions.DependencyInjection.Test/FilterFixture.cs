@@ -41,15 +41,15 @@ public class FilterFixture : TestFixtureBase
         Logger.Messages.Count.ShouldBe(9);
         Logger.Messages.ShouldBe(new []
         {
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
-            $"{nameof(TestCommandMessageFilter)} {nameof(TestCommandMessageFilter.OnExecuting)}",
-            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuting)}",
-            $"{nameof(TestCommandFilter)} {nameof(TestCommandFilter.OnExecuting)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuting)}",
+            $"{nameof(TestCommandMessageFilter)} {nameof(TestCommandMessageFilter.OnHandlerExecuting)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnHandlerExecuting)}",
+            $"{nameof(TestCommandFilter)} {nameof(TestCommandFilter.OnHandlerExecuting)}",
             $"{nameof(TestCommand)}",
-            $"{nameof(TestCommandFilter)} {nameof(TestCommandFilter.OnExecuted)}",
-            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuted)}",
-            $"{nameof(TestCommandMessageFilter)} {nameof(TestCommandMessageFilter.OnExecuted)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}"
+            $"{nameof(TestCommandFilter)} {nameof(TestCommandFilter.OnHandlerExecuted)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnHandlerExecuted)}",
+            $"{nameof(TestCommandMessageFilter)} {nameof(TestCommandMessageFilter.OnHandlerExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuted)}"
         });
         Logger.Messages.Clear();
         
@@ -59,13 +59,13 @@ public class FilterFixture : TestFixtureBase
         Logger.Messages.Count.ShouldBe(7);
         Logger.Messages.ShouldBe(new []
         {
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
-            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnExecuting)}",
-            $"{nameof(TestRequestFilter)} {nameof(TestRequestFilter.OnExecuting)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuting)}",
+            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnHandlerExecuting)}",
+            $"{nameof(TestRequestFilter)} {nameof(TestRequestFilter.OnHandlerExecuting)}",
             $"{nameof(TestRequest)}",
-            $"{nameof(TestRequestFilter)} {nameof(TestRequestFilter.OnExecuted)}",
-            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnExecuted)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}"
+            $"{nameof(TestRequestFilter)} {nameof(TestRequestFilter.OnHandlerExecuted)}",
+            $"{nameof(AllRequestsFilter)} {nameof(AllRequestsFilter.OnHandlerExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuted)}"
         });
         Logger.Messages.Clear();
         
@@ -74,13 +74,13 @@ public class FilterFixture : TestFixtureBase
         Logger.Messages.Count.ShouldBe(7);
         Logger.Messages.ShouldBe(new []
         {
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
-            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnExecuting)}",
-            $"{nameof(TestEventFilter)} {nameof(TestEventFilter.OnExecuting)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuting)}",
+            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnHandlerExecuting)}",
+            $"{nameof(TestEventFilter)} {nameof(TestEventFilter.OnHandlerExecuting)}",
             $"{nameof(TestEvent)}",
-            $"{nameof(TestEventFilter)} {nameof(TestEventFilter.OnExecuted)}",
-            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnExecuted)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}"
+            $"{nameof(TestEventFilter)} {nameof(TestEventFilter.OnHandlerExecuted)}",
+            $"{nameof(AllEventsFilter)} {nameof(AllEventsFilter.OnHandlerExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuted)}"
         });
         Logger.Messages.Clear();
         
@@ -89,11 +89,11 @@ public class FilterFixture : TestFixtureBase
         Logger.Messages.Count.ShouldBe(6);
         Logger.Messages.ShouldBe(new []
         {
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuting)}",
-            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuting)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuting)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnHandlerExecuting)}",
             $"{nameof(ThrowExceptionCommand)}",
-            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnExecuted)}",
-            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnExecuted)}",
+            $"{nameof(AllCommandsFilter)} {nameof(AllCommandsFilter.OnHandlerExecuted)}",
+            $"{nameof(AllMessagesFilter)} {nameof(AllMessagesFilter.OnHandlerExecuted)}",
             $"{nameof(ExceptionFilter)} {nameof(ExceptionFilter.OnException)}"
         });
     }

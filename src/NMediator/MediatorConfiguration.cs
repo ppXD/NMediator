@@ -2,8 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NMediator.Filters;
-using NMediator.Infrastructure;
-using NMediator.Middlewares;
+using NMediator.Internal;
 
 namespace NMediator;
 
@@ -15,14 +14,9 @@ public class MediatorConfiguration
     
     public IDependencyScope Resolver => _resolver ??= new DefaultDependencyScope();
 
+    public MediatorFilterConfiguration FilterConfiguration { get; } = new();
+
     public MediatorHandlerConfiguration HandlerConfiguration { get; } = new();
-
-    public MediatorPipelineConfiguration PipelineConfiguration { get; } = new();
-
-    public MediatorConfiguration()
-    {
-        UseMiddleware<InvokeFilterPipelineMiddleware>();
-    }
     
     public MediatorConfiguration UseDependencyScope(IDependencyScope scope)
     {
@@ -50,28 +44,23 @@ public class MediatorConfiguration
         HandlerConfiguration.RegisterHandlers(handlerTypes);
         return this;
     }
-
-    public MediatorConfiguration UseMiddleware<TMiddleware>()
-        where TMiddleware : class, IMiddleware
-    {
-        return UseMiddleware(typeof(TMiddleware));
-    }
-
-    public MediatorConfiguration UseMiddleware(Type middleware)
-    {
-        PipelineConfiguration.UseMiddleware(middleware);
-        return this;
-    }
     
     public MediatorConfiguration UseFilter<TFilter>()
         where TFilter : class, IFilter
     {
-        return UseFilter(typeof(TFilter));
+        FilterConfiguration.UseFilter<TFilter>();
+        return this;
     }
 
     public MediatorConfiguration UseFilter(Type filter)
     {
-        PipelineConfiguration.UseFilter(filter);
+        FilterConfiguration.UseFilter(filter);
+        return this;
+    }
+    
+    public MediatorConfiguration UseFilter(IFilter filter)
+    {
+        FilterConfiguration.UseFilter(filter);
         return this;
     }
     

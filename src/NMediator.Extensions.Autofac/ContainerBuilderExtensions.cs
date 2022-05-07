@@ -1,5 +1,6 @@
 using Autofac;
 using System.Reflection;
+using TypeFilter = NMediator.Filters.TypeFilter;
 
 namespace NMediator.Extensions.Autofac;
 
@@ -28,9 +29,16 @@ public static class ContainerBuilderExtensions
         
         builder.RegisterType<Mediator>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
         
-        config.HandlerConfiguration.GetHandlers().ToList().ForEach(f => builder.RegisterType(f));
-        config.PipelineConfiguration.Filters.ForEach(h => builder.RegisterType(h));
-        config.PipelineConfiguration.Middlewares.ForEach(m => builder.RegisterType(m));
+        foreach (var handler in config.HandlerConfiguration.GetHandlers())
+        {
+            builder.RegisterType(handler);
+        }
+
+        foreach (var filter in config.FilterConfiguration.Filters)
+        {
+            if (filter is TypeFilter typeFilter)
+                builder.RegisterType(typeFilter.ImplementationType);
+        }
 
         return builder;
     }

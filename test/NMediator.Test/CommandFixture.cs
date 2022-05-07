@@ -130,7 +130,7 @@ public class CommandFixture : TestBase
         response4.ShouldNotBeNull();
         response5.ShouldThrow<Exception>();
         response6.ShouldNotBeNull();
-        TestStore.Stores.Count.ShouldBe(4);
+        TestStore.Stores.Count.ShouldBe(5);
     }
     
     [Theory]

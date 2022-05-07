@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using NMediator.Context;
 using NMediator.Filters;
 using NMediator.Test.TestData.Commands;
 
@@ -8,15 +7,15 @@ namespace NMediator.Test.TestData.Filters.MessageFilters;
 
 public class TestCommandMessageFilter : IMessageFilter<TestCommand>
 {
-    public Task OnExecuting(IMessageContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuting(IHandlerExecutingContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnExecuting)}");
+        TestStore.Stores.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IMessageContext<TestCommand> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<TestCommand> context, CancellationToken cancellationToken = default)
     {
-        TestStore.Stores.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnExecuted)}");
+        TestStore.Stores.Add($"{nameof(TestCommandMessageFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }
