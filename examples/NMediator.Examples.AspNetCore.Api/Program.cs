@@ -1,6 +1,5 @@
 using NMediator.Examples.Base;
 using NMediator.Examples.Services;
-using NMediator.Examples.Middlewares;
 using NMediator.Examples.Filters.CommandFilters;
 using NMediator.Examples.Filters.EventFilters;
 using NMediator.Examples.Filters.ExceptionFilters;
@@ -20,8 +19,6 @@ builder.Services.AddScoped<IDoNothingService, DoNothingService>();
 builder.Services.AddNMediator(config =>
 {
     config
-        .UseMiddleware<ExampleMiddleware1>()
-        .UseMiddleware<ExampleMiddleware2>()
         .UseFilter<AllMessagesFilter>()
         .UseFilter<ExampleCommandMessageFilter>()
         .UseFilter<AllCommandsFilter>()

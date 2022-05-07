@@ -15,16 +15,16 @@ public class ExampleEventFilter : IEventFilter<ExampleEvent>
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnExecuting(IEventContext<ExampleEvent> context, CancellationToken cancellationToken = default)
+
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ExampleEvent> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(ExampleEventFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(ExampleEventFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(IEventContext<ExampleEvent> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ExampleEvent> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(ExampleEventFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(ExampleEventFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

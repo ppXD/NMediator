@@ -15,16 +15,16 @@ public class ExampleCommandFilter : ICommandFilter<ExampleCommand>
         _logger = logger;
         _doNothingService = doNothingService;
     }
-    
-    public Task OnExecuting(ICommandContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ExampleCommand> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(ExampleCommandFilter)} {nameof(OnExecuting)}");
+        _logger.Messages.Add($"{nameof(ExampleCommandFilter)} {nameof(OnHandlerExecuting)}");
         return Task.CompletedTask;
     }
 
-    public Task OnExecuted(ICommandContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ExampleCommand> context, CancellationToken cancellationToken = default)
     {
-        _logger.Messages.Add($"{nameof(ExampleCommandFilter)} {nameof(OnExecuted)}");
+        _logger.Messages.Add($"{nameof(ExampleCommandFilter)} {nameof(OnHandlerExecuted)}");
         return Task.CompletedTask;
     }
 }

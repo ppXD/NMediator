@@ -28,13 +28,17 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<Mediator>();
         services.AddTransient<IMediator, Mediator>();
-        
-        config.HandlerConfiguration.GetHandlers().ToList().ForEach(h => services.AddTransient(h));
-        config.FilterConfiguration.Filters.ToList().ForEach(f =>
+
+        foreach (var handler in config.HandlerConfiguration.GetHandlers())
         {
-            if (f is TypeFilter typeFilter)
+            services.AddTransient(handler);
+        }
+
+        foreach (var filter in config.FilterConfiguration.Filters)
+        {
+            if (filter is TypeFilter typeFilter)
                 services.AddTransient(typeFilter.ImplementationType);
-        });
+        }
         
         return services;
     }

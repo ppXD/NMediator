@@ -14,7 +14,7 @@ public class ExampleCommandHandler : ICommandHandler<ExampleCommand, ExampleComm
         _doNothingService = doNothingService;
     }
 
-    public async Task<ExampleCommandResponse> Handle(ICommandContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+    public async Task<ExampleCommandResponse> Handle(ExampleCommand command, CancellationToken cancellationToken = default)
     {
         await _logService.LogMessage($"{nameof(ExampleCommand)}", cancellationToken).ConfigureAwait(false);
         return new ExampleCommandResponse();

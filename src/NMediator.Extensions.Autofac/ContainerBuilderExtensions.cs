@@ -29,12 +29,16 @@ public static class ContainerBuilderExtensions
         
         builder.RegisterType<Mediator>().AsSelf().AsImplementedInterfaces().InstancePerLifetimeScope();
         
-        config.HandlerConfiguration.GetHandlers().ToList().ForEach(h => builder.RegisterType(h));
-        config.FilterConfiguration.Filters.ToList().ForEach(f =>
+        foreach (var handler in config.HandlerConfiguration.GetHandlers())
         {
-            if (f is TypeFilter typeFilter)
+            builder.RegisterType(handler);
+        }
+
+        foreach (var filter in config.FilterConfiguration.Filters)
+        {
+            if (filter is TypeFilter typeFilter)
                 builder.RegisterType(typeFilter.ImplementationType);
-        });
+        }
 
         return builder;
     }
