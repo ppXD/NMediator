@@ -91,17 +91,17 @@ Each message contract has a corresponding handler interface.
 ```csharp
 public class ExampleCommandHandler : ICommandHandler<ExampleCommand> 
 {
-    public Task Handle(ICommandContext<TestCommand> context, CancellationToken cancellationToken)
+    public Task Handle(TestCommand command, CancellationToken cancellationToken)
     {
-        Debug.WriteLine($"Command is {context.Message}");
+        Debug.WriteLine($"Command is {command}");
         return Task.CompletedTask;
     }
 }
 public class ExampleHasResponseCommandHandler : ICommandHandler<ExampleHasResponseCommand, ExampleResponse>
 {
-    public Task<ExampleResponse> Handle(ICommandContext<ExampleHasResponseCommand> context, CancellationToken cancellationToken)
+    public Task<ExampleResponse> Handle(ExampleHasResponseCommand command, CancellationToken cancellationToken)
     {
-        Debug.WriteLine($"Command is {context.Message}");
+        Debug.WriteLine($"Command is {command}");
         return Task.FromResult(new ExampleResponse());
     }
 }
@@ -110,9 +110,9 @@ public class ExampleHasResponseCommandHandler : ICommandHandler<ExampleHasRespon
 ```csharp
 public class ExampleRequestHandler : IRequestHandler<ExampleRequest, ExampleResponse>
 {
-    public Task<ExampleResponse> Handle(IRequestContext<ExampleRequest> context, CancellationToken cancellationToken)
+    public Task<ExampleResponse> Handle(ExampleRequest request, CancellationToken cancellationToken)
     {
-        Debug.WriteLine($"Request is {context.Message}");
+        Debug.WriteLine($"Request is {request}");
         return Task.FromResult(new ExampleResponse());
     }
 }
@@ -121,17 +121,17 @@ public class ExampleRequestHandler : IRequestHandler<ExampleRequest, ExampleResp
 ```csharp
 public class ExampleEventHandler1 : IEventHandler<ExampleEvent> 
 {
-    public Task Handle(IEventContext<ExampleEvent> context, CancellationToken cancellationToken)
+    public Task Handle(ExampleEvent @event, CancellationToken cancellationToken)
     {
-        Debug.WriteLine($"Event is {context.Message}");
+        Debug.WriteLine($"Event is {@event}");
         return Task.CompletedTask;
     }
 }
 public class ExampleEventHandler2 : IEventHandler<ExampleEvent> 
 {
-    public Task Handle(IEventContext<ExampleEvent> context, CancellationToken cancellationToken)
+    public Task Handle(ExampleEvent @event, CancellationToken cancellationToken)
     {
-        Debug.WriteLine($"Event is {context.Message}");
+        Debug.WriteLine($"Event is {@event}");
         return Task.CompletedTask;
     }
 }
