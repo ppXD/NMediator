@@ -29,7 +29,7 @@ NMediator is a **simple and easy to use** mediator for .NET applications.
 - In-process messaging
 - Each message processing per scope
 - Full coverage tests to ensure stability
-- Pipeline behaviors similar to ASP.NET Core
+- Filter pipeline behaviors similar to ASP.NET Core
 - Built-in filters can be created to handle cross-cutting concerns
 - Built-in dependency injection extensions include ASP.NET Core, Autofac, etc.
 
@@ -45,7 +45,6 @@ using NMediator;
 
 var mediator = new MediatorConfiguration()
     .RegisterHandlers(typeof(ExampleCommand).Assembly)
-    .UseMiddleware<ExampleMiddleware>()
     .UseFilter<ExampleFilter>()
     .CreateMediator();
 
