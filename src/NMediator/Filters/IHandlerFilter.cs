@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace NMediator.Filters;
 
+public interface IHandlerFilter : IHandlerFilter<IMessage>
+{
+}
+
 public interface IHandlerFilter<in TMessage> : IFilter
     where TMessage : class, IMessage
 {
