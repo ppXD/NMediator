@@ -1,10 +1,10 @@
 namespace NMediator.Filters;
 
-public interface IRequestFilter : IHandlerFilter<IRequest>
+public interface IRequestFilter : IMessageFilter<IRequest>
 {
 }
 
-public interface IRequestFilter<TRequest> : IHandlerFilter<TRequest>
+public interface IRequestFilter<in TRequest> : IMessageFilter<TRequest>
     where TRequest : class, IRequest
 {
 }
