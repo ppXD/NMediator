@@ -263,9 +263,9 @@ public void ConfigureServices(IServiceCollection services)
     services.AddNMediator(config => 
     {
         config.UseFilter<ExampleFilter>();
-        config.UseHandler<ExampleCommandHandler>();
-        config.UseHandlers(typeof(ExampleCommandHandler));
-        config.UseHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
+        config.RegisterHandler<ExampleCommandHandler>();
+        config.RegisterHandlers(typeof(ExampleCommandHandler));
+        config.RegisterHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
     });
     
     services.AddNMediator(config => 
@@ -284,9 +284,9 @@ public void ConfigureContainer(ContainerBuilder builder)
     builder.RegisterNMediator(config => 
     {
         config.UseFilter<ExampleFilter>();
-        config.UseHandler<ExampleCommandHandler>();
-        config.UseHandlers(typeof(ExampleCommandHandler));
-        config.UseHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
+        config.RegisterHandler<ExampleCommandHandler>();
+        config.RegisterHandlers(typeof(ExampleCommandHandler));
+        config.RegisterHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
     });
     
     builder.RegisterNMediator(config => 
