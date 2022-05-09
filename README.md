@@ -137,58 +137,111 @@ public class ExampleEventHandler2 : IEventHandler<ExampleEvent>
 }
 ```
 
-## Middleware
+## Filter
 
-NMediator middleware is assembled into pipeline to handle messages and responses.
-- Automatically pass the message to the next component in the pipeline.
-- Can perform work before and after the next component in the pipeline.
+Filters in NMediator allow code to run before or after specific stages in the [message](#contract) processing pipeline.
+It represents a similar pattern to filters in ASP.NET Core.
 
-The NMediator pipeline consists of a sequence of middlewares, called one after the other. 
-The [Overview](#overview) diagram demonstrates the concept.
+Custom filters can be created to handle cross-cutting concerns. Examples of cross-cutting concerns include error handling, caching, configuration, authorization, and logging.
 
-To assemble the middleware into the pipeline you need to implement the `IMiddleware` interface.
-The `IMiddleware` interface is defined as:
+**Filter types**
+
+- `IHandlerFilter<in TMessage>`
+- `IExceptionFilter`
+
+**Handler filters**
+
+NMediator provides various built-in handler filters:
+- `IMessageFilter`, `IMessageFilter<in TMessage>`
+- `ICommandFilter`, `ICommandFilter<in TCommand>`
+- `IRequestFilter`, `IRequestFilter<in TRequest>`
+- `IEventFilter`, `IEventFilter<in TEvent>`
+
+Handler filters:
+- Run immediately before and after a handler is called.
+- Can change the arguments passed into a handler.
+- Can change the result returned from the handler.
+
+The following code shows a sample handler filters:
 ```csharp
-public interface IMiddleware
+public class GlobalMessagesFilter : IMessageFilter
 {
-    Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken);
-    Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken);
+    public Task OnHandlerExecuting(IHandlerExecutingContext<IMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<IMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
+}
+
+public class SpecifiedMessageFilter : IMessageFilter<ExampleMessage>
+{
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ExampleMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ExampleMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
 }
 ```
-`UseMiddleware<TMiddleware>` is the generic method to configure the middleware.
+
 ```csharp
-var configuration = new MediatorConfiguration();
-configuration.UseMiddleware<DiagnosticsMiddleware>();
+public class GlobalCommandsFilter : ICommandFilter
+{
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ICommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the command handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ICommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the command handler executes.
+    }
+}
+
+public class SpecifiedCommandFilter : ICommandFilter<ExampleCommand>
+{
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the example command handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the example handler handler executes.
+    }
+}
 ```
 
-The following `DiagnosticsMiddleware` example shows how to log elapsed time of each message:
+**Exception filters**
+
+- Implement `IExceptionFilter`.
+- Can be used to implement common error handling policies.
+- Handle unhandled exceptions that occur in handler filters, or handle methods.
+
+The following sample exception filter shows how to log the exception message:
 ```csharp
-public class DiagnosticsMiddleware : IMiddleware
+public class SampleExceptionFilter : IExceptionFilter
 {
-    private readonly ILogger<LoggingMiddleware> _logger;
-    private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+    private readonly ILogger<ExceptionFilter> _logger;
     
-    public DiagnosticsMiddleware(ILogger<LoggingMiddleware> logger)
+    public SampleExceptionFilter(ILogger<ExceptionFilter> logger)
     {
         _logger = logger;
     }
-
-    public Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
+    
+    public Task OnException(IExceptionContext<IMessage> context, CancellationToken cancellationToken = default)
     {
-        _stopwatch.Start();
-        _logger.LogInformation("Message starting");
-        return Task.CompletedTask;
-    }
-
-    public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation($"Message finished in {_stopwatch.ElapsedMilliseconds}ms");
+        _logger.LogError(context.Exception.ToString());
+        context.ExceptionHandled = true;
         return Task.CompletedTask;
     }
 }
 ```
 
-## Filter
+To handle an exception, set the `ExceptionHandled` property to true or assign the `Result` property. This stops propagation of the exception.
 
 ## IoC Container
 
@@ -201,7 +254,51 @@ No dependencies will use `DefaultDependencyScope` by default when `MediatorConfi
 [![NuGet](https://img.shields.io/badge/NMediator.Extensions-Autofac-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Autofac)  
 [![NuGet](https://img.shields.io/badge/NMediator.Extensions-Microsoft.DependencyInjection-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Microsoft.DependencyInjection)
 
-[Complete examples][project-examples]
+**ASP.NET Core (or Microsoft dependency injection)**
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddNMediator(typeof(Startup).Assembly);
+    
+    services.AddNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+        config.UseHandler<ExampleCommandHandler>();
+        config.UseHandlers(typeof(ExampleCommandHandler));
+        config.UseHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
+    });
+    
+    services.AddNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+    }, typeof(Startup).Assembly, typeof(ExampleCommand).Assembly);
+}
+```
+
+**Autofac**
+```csharp
+public void ConfigureContainer(ContainerBuilder builder)
+{
+    builder.RegisterNMediator(typeof(Startup).Assembly);
+    
+    builder.RegisterNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+        config.UseHandler<ExampleCommandHandler>();
+        config.UseHandlers(typeof(ExampleCommandHandler));
+        config.UseHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
+    });
+    
+    builder.RegisterNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+    }, typeof(Startup).Assembly, typeof(ExampleCommand).Assembly);
+}
+```
+
+**Other**
+
+For more examples, check out the [complete examples][project-examples].
 
 ## License
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
