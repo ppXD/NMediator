@@ -254,7 +254,52 @@ No dependencies will use `DefaultDependencyScope` by default when `MediatorConfi
 [![NuGet](https://img.shields.io/badge/NMediator.Extensions-Autofac-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Autofac)  
 [![NuGet](https://img.shields.io/badge/NMediator.Extensions-Microsoft.DependencyInjection-brightgreen)](https://www.nuget.org/packages/NMediator.Extensions.Microsoft.DependencyInjection)
 
-[Complete examples][project-examples]
+**ASP.NET Core (or Microsoft dependency injection)**
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddNMediator(typeof(Startup).Assembly);
+    
+    services.AddNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+        config.UseHandler<ExampleCommandHandler>();
+        config.UseHandlers(typeof(ExampleCommandHandler));
+        config.UseHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
+    });
+    
+    services.AddNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+    }, typeof(Startup).Assembly, typeof(ExampleCommand).Assembly);
+}
+```
+
+**Autofac**
+```csharp
+public void ConfigureContainer(ContainerBuilder builder)
+{
+    builder.RegisterNMediator(typeof(Startup).Assembly);
+    
+    builder.RegisterNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+        config.UseHandler<ExampleCommandHandler>();
+        config.UseHandlers(typeof(ExampleCommandHandler));
+        config.UseHandlers(typeof(Startup).Assembly, typeof(ExampleCommandHandler).Assembly);
+    });
+    
+    builder.RegisterNMediator(config => 
+    {
+        config.UseFilter<ExampleFilter>();
+    }, typeof(Startup).Assembly, typeof(ExampleCommand).Assembly);
+}
+```
+
+**Other**
+
+For more examples, check out the [complete examples][project-examples].
+
 
 ## License
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
