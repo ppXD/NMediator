@@ -146,18 +146,74 @@ Custom filters can be created to handle cross-cutting concerns. Examples of cros
 
 **Filter types**
 
-- `IMessageFilter`,`IMessageFilter<in TMessage>`
-- `ICommandFilter`,`ICommandFilter<in TCommand>`
-- `IRequestFilter`,`IRequestFilter<in TRequest>`
-- `IEventFilter`,`IEventFilter<in TEvent>`
+- `IHandlerFilter<in TMessage>`
 - `IExceptionFilter`
 
 **Handler filters**
 
-- Run immediately before and after a handler is called.
-- Provides non-generic and generic filters to xxx globally or specified
+NMediator provides various built-in handler filters:
+- `IMessageFilter`, `IMessageFilter<in TMessage>`
+- `ICommandFilter`, `ICommandFilter<in TCommand>`
+- `IRequestFilter`, `IRequestFilter<in TRequest>`
+- `IEventFilter`, `IEventFilter<in TEvent>`
 
-The following code shows a sample handler filter:
+Handler filters:
+- Run immediately before and after a handler is called.
+- Can change the arguments passed into a handler.
+- Can change the result returned from the handler.
+
+The following code shows a sample handler filters:
+```csharp
+public class GlobalMessagesFilter : IMessageFilter
+{
+    public Task OnHandlerExecuting(IHandlerExecutingContext<IMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<IMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
+}
+
+public class SpecifiedMessageFilter : IMessageFilter<ExampleMessage>
+{
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ExampleMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ExampleMessage> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the handler executes.
+    }
+}
+```
+
+```csharp
+public class GlobalCommandsFilter : ICommandFilter
+{
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ICommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the command handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ICommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the command handler executes.
+    }
+}
+
+public class SpecifiedCommandFilter : ICommandFilter<ExampleCommand>
+{
+    public Task OnHandlerExecuting(IHandlerExecutingContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the example command handler executes.
+    }
+    public Task OnHandlerExecuted(IHandlerExecutedContext<ExampleCommand> context, CancellationToken cancellationToken = default)
+    {
+        // Do something before the example handler handler executes.
+    }
+}
+```
 
 **Exception filters**
 
