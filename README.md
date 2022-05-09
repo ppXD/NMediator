@@ -137,58 +137,55 @@ public class ExampleEventHandler2 : IEventHandler<ExampleEvent>
 }
 ```
 
-## Middleware
+## Filter
 
-NMediator middleware is assembled into pipeline to handle messages and responses.
-- Automatically pass the message to the next component in the pipeline.
-- Can perform work before and after the next component in the pipeline.
+Filters in NMediator allow code to run before or after specific stages in the [message](#contract) processing pipeline.
 
-The NMediator pipeline consists of a sequence of middlewares, called one after the other. 
-The [Overview](#overview) diagram demonstrates the concept.
+Custom filters can be created to handle cross-cutting concerns. Examples of cross-cutting concerns include error handling, caching, configuration, authorization, and logging.
 
-To assemble the middleware into the pipeline you need to implement the `IMiddleware` interface.
-The `IMiddleware` interface is defined as:
+**Filter types**
+
+- `IMessageFilter`,`IMessageFilter<in TMessage>`
+- `ICommandFilter`,`ICommandFilter<in TCommand>`
+- `IRequestFilter`,`IRequestFilter<in TRequest>`
+- `IEventFilter`,`IEventFilter<in TEvent>`
+- `IExceptionFilter`
+
+**Handler filters**
+
+Handler filters run immediately before and after a handler is called.
+
+**Exception filters**
+
+- Implement `IExceptionFilter`.
+- Can be used to implement common error handling policies.
+
+The following sample exception filter shows how to log the exception message:
 ```csharp
-public interface IMiddleware
+public class SampleExceptionFilter : IExceptionFilter
 {
-    Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken);
-    Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken);
-}
-```
-`UseMiddleware<TMiddleware>` is the generic method to configure the middleware.
-```csharp
-var configuration = new MediatorConfiguration();
-configuration.UseMiddleware<DiagnosticsMiddleware>();
-```
-
-The following `DiagnosticsMiddleware` example shows how to log elapsed time of each message:
-```csharp
-public class DiagnosticsMiddleware : IMiddleware
-{
-    private readonly ILogger<LoggingMiddleware> _logger;
-    private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+    private readonly ILogger<ExceptionFilter> _logger;
     
-    public DiagnosticsMiddleware(ILogger<LoggingMiddleware> logger)
+    public SampleExceptionFilter(ILogger<ExceptionFilter> logger)
     {
         _logger = logger;
     }
-
-    public Task OnExecuting(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
+    
+    public Task OnException(IExceptionContext<IMessage> context, CancellationToken cancellationToken = default)
     {
-        _stopwatch.Start();
-        _logger.LogInformation("Message starting");
-        return Task.CompletedTask;
-    }
-
-    public Task OnExecuted(IMessageContext<IMessage> context, CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation($"Message finished in {_stopwatch.ElapsedMilliseconds}ms");
+        _logger.LogError(context.Exception.ToString());
+        context.ExceptionHandled = true;
         return Task.CompletedTask;
     }
 }
 ```
+Exception filters:
 
-## Filter
+- Implement OnException
+- Don't have before and after events.
+- Handle unhandled exceptions that occur in handler filters, or handle methods.
+
+To handle an exception, set the `ExceptionHandled` property to true or assign the `Result` property. This stops propagation of the exception.
 
 ## IoC Container
 
