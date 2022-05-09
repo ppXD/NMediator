@@ -140,6 +140,7 @@ public class ExampleEventHandler2 : IEventHandler<ExampleEvent>
 ## Filter
 
 Filters in NMediator allow code to run before or after specific stages in the [message](#contract) processing pipeline.
+It represents a similar pattern to filters in ASP.NET Core.
 
 Custom filters can be created to handle cross-cutting concerns. Examples of cross-cutting concerns include error handling, caching, configuration, authorization, and logging.
 
@@ -153,12 +154,16 @@ Custom filters can be created to handle cross-cutting concerns. Examples of cros
 
 **Handler filters**
 
-Handler filters run immediately before and after a handler is called.
+- Run immediately before and after a handler is called.
+- Provides non-generic and generic filters to xxx globally or specified
+
+The following code shows a sample handler filter:
 
 **Exception filters**
 
 - Implement `IExceptionFilter`.
 - Can be used to implement common error handling policies.
+- Handle unhandled exceptions that occur in handler filters, or handle methods.
 
 The following sample exception filter shows how to log the exception message:
 ```csharp
@@ -179,11 +184,6 @@ public class SampleExceptionFilter : IExceptionFilter
     }
 }
 ```
-Exception filters:
-
-- Implement OnException
-- Don't have before and after events.
-- Handle unhandled exceptions that occur in handler filters, or handle methods.
 
 To handle an exception, set the `ExceptionHandled` property to true or assign the `Result` property. This stops propagation of the exception.
 
