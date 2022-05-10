@@ -257,6 +257,99 @@ public class FilterFixture : TestBase
         requestResponse.Result.ShouldBe("Test response");
         commandResponse.Result.ShouldBe("Test command response");
     }
+
+    [Fact]
+    public async Task ShouldInheritMessageFilterWork()
+    {
+        var cmdMediator1 = new MediatorConfiguration()
+            .UseFilter<ITestCommandFilter>()
+            .RegisterHandler<ITestCommandHandler>()
+            .CreateMediator();
+        
+        var cmdMediator2 = new MediatorConfiguration()
+            .UseFilter<ITestCommandFilter>()
+            .UseFilter<TestCommandAllWayCommandFilter>()
+            .RegisterHandler<ITestCommandHandler>()
+            .CreateMediator();
+        
+        var reqMediator1 = new MediatorConfiguration()
+            .UseFilter<ITestRequestFilter>()
+            .RegisterHandler<ITestRequestHandler>()
+            .CreateMediator();
+        
+        var reqMediator2 = new MediatorConfiguration()
+            .UseFilter<ITestRequestFilter>()
+            .UseFilter<TestAllWayRequestFilter>()
+            .RegisterHandler<ITestRequestHandler>()
+            .CreateMediator();
+        
+        await cmdMediator1.SendAsync(new TestCommandOneWayCommand());
+        await reqMediator1.RequestAsync<TestResponse>(new TestInterfaceRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestCommandHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuted)}");
+        
+        TestStore.Stores[3].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuted)}");
+        TestStore.Stores.Clear();
+
+        await cmdMediator2.SendAsync(new TestInheritAllWayCommand());
+        await reqMediator2.RequestAsync<TestResponse>(new TestInheritAllWayRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestCommandAllWayCommandFilter)} {nameof(TestCommandAllWayCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandHandler)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestCommandAllWayCommandFilter)} {nameof(TestCommandAllWayCommandFilter.OnHandlerExecuted)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuted)}");
+        
+        TestStore.Stores[5].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(TestAllWayRequestFilter)} {nameof(TestAllWayRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[8].ShouldBe($"{nameof(TestAllWayRequestFilter)} {nameof(TestAllWayRequestFilter.OnHandlerExecuted)}");
+        TestStore.Stores[9].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuted)}");
+        TestStore.Stores.Clear();
+
+        await cmdMediator2.SendAsync(new TestParentInheritCommand());
+        await reqMediator2.RequestAsync<TestResponse>(new TestParentInheritRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestCommandAllWayCommandFilter)} {nameof(TestCommandAllWayCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandHandler)}");
+        TestStore.Stores[3].ShouldBe($"{nameof(TestCommandAllWayCommandFilter)} {nameof(TestCommandAllWayCommandFilter.OnHandlerExecuted)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuted)}");
+        
+        TestStore.Stores[5].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[6].ShouldBe($"{nameof(TestAllWayRequestFilter)} {nameof(TestAllWayRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[7].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[8].ShouldBe($"{nameof(TestAllWayRequestFilter)} {nameof(TestAllWayRequestFilter.OnHandlerExecuted)}");
+        TestStore.Stores[9].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuted)}");
+        TestStore.Stores.Clear();
+        
+        await cmdMediator2.SendAsync(new TestCommandOneWayCommand());
+        await reqMediator2.RequestAsync<TestResponse>(new TestOneWayRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestCommandHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuted)}");
+        
+        TestStore.Stores[3].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuted)}");
+        TestStore.Stores.Clear();
+        
+        await cmdMediator2.SendAsync(new TestCommandTwoWayCommand());
+        await reqMediator2.RequestAsync<TestResponse>(new TestTwoWayRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(ITestCommandHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(ITestCommandFilter)} {nameof(ITestCommandFilter.OnHandlerExecuted)}");
+        
+        TestStore.Stores[3].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[4].ShouldBe($"{nameof(ITestRequestHandler)}");
+        TestStore.Stores[5].ShouldBe($"{nameof(ITestRequestFilter)} {nameof(ITestRequestFilter.OnHandlerExecuted)}");
+    }
     
     [Fact]
     public void CannotUseNotAssignableFromIFilterInterface()

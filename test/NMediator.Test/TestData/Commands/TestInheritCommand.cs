@@ -27,3 +27,7 @@ public class TestCommandAllWayCommand : ITestCommandOneWayCommand, ITestCommandT
 public class TestInheritAllWayCommand : TestCommandAllWayCommand
 {
 }
+
+public class TestParentInheritCommand : TestInheritAllWayCommand
+{
+}

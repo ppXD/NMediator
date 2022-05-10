@@ -27,34 +27,26 @@ public class MediatorFilterConfiguration
     protected internal IList<IFilter> FindFilters(IMessage message)
     {
         var messageType = message.GetType();
-
-        var matchedFilterTypes = new List<Type>
-        {
-            typeof(IMessageFilter), typeof(IMessageFilter<>).MakeGenericType(messageType), typeof(IExceptionFilter)
-        };
-        
-        switch (messageType)
-        {
-            case not null when typeof(ICommand).IsAssignableFrom(messageType):
-                matchedFilterTypes.AddRange(new[] { typeof(ICommandFilter), typeof(ICommandFilter<>).MakeGenericType(messageType) });
-                break;
-            case not null when typeof(IRequest).IsAssignableFrom(messageType):
-                matchedFilterTypes.AddRange(new[] { typeof(IRequestFilter), typeof(IRequestFilter<>).MakeGenericType(messageType) });
-                break;
-            case not null when typeof(IEvent).IsAssignableFrom(messageType):
-                matchedFilterTypes.AddRange(new[] { typeof(IEventFilter), typeof(IEventFilter<>).MakeGenericType(messageType) });
-                break;
-        }
         
         return Filters.Where(filter =>
         {
             var filterType = filter switch
             {
-                TypeFilter typeFilter => typeFilter.ImplementationType,
-                _ => filter.GetType()
+                TypeFilter typeFilter => typeFilter.ImplementationType, _ => filter.GetType()
             };
-            return filterType.GetInterfaces().Any(i =>
-                matchedFilterTypes.Any(m => i == m || i.IsGenericType && i.GetGenericTypeDefinition() == m));
+            return MatchHandlerFilter(filterType, messageType) || MatchExceptionFilter(filterType);
         }).ToList();
+    }
+
+    private static bool MatchHandlerFilter(Type filterType, Type messageType)
+    {
+        return filterType.GetInterfaces()
+            .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IHandlerFilter<>) &&
+                (x.GetGenericArguments()[0] == messageType || x.GetGenericArguments()[0].IsAssignableFrom(messageType)));
+    }
+
+    private static bool MatchExceptionFilter(Type filterType)
+    {
+        return filterType.GetInterfaces().Any(x => x == typeof(IExceptionFilter));
     }
 }

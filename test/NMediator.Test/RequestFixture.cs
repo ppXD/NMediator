@@ -127,7 +127,7 @@ public class RequestFixture : TestBase
     }
     
     [Fact]
-    public async Task ShouldInterfaceHandlerBeWork()
+    public async Task ShouldInheritHandlerBeWork()
     {
         var mediator1 = new MediatorConfiguration()
             .RegisterHandler<ITestRequestHandler>()
