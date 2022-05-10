@@ -215,6 +215,14 @@ public class SpecifiedCommandFilter : ICommandFilter<ExampleCommand>
 }
 ```
 
+The `IHandlerExecutingContext<>` provides the following properties:
+- Message - sent by mediator.
+- Result - setting `Result` short-circuits execution of the handler and subsequent handler filters.
+- Scope - dependency scope.
+
+The `IHandlerExecutedContext<>` provides `Scope` and `Result` plus the following properties:
+- Exception - Non-null if the handler or a previously filter threw an exception.
+
 **Exception filters**
 
 - Implement `IExceptionFilter`.
