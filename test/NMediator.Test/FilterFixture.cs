@@ -301,6 +301,39 @@ public class FilterFixture : TestBase
     }
     
     [Fact]
+    public async Task ShouldAbstractMessageFilterWork()
+    {
+        var mediator = new MediatorConfiguration()
+            .UseFilter<TestAbstractCommandFilter>()
+            .UseFilter<TestAbstractRequestFilter>()
+            .UseFilter<TestAbstractEventFilter>()
+            .RegisterHandler<TestAbstractCommandHandler>()
+            .RegisterHandler<TestAbstractEventHandler>()
+            .RegisterHandler<TestAbstractRequestAsDerivedResponseHandler>()
+            .CreateMediator();
+
+        await mediator.SendAsync(new TestAbstractCommand());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractCommandFilter)} {nameof(TestAbstractCommandFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestAbstractCommandHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestAbstractCommandFilter)} {nameof(TestAbstractCommandFilter.OnHandlerExecuted)}");
+        TestStore.Stores.Clear();
+
+        await mediator.RequestAsync<TestDerivedResponse>(new TestAbstractRequest());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractRequestFilter)} {nameof(TestAbstractRequestFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestAbstractRequestAsDerivedResponseHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestAbstractRequestFilter)} {nameof(TestAbstractRequestFilter.OnHandlerExecuted)}");
+        TestStore.Stores.Clear();
+
+        await mediator.PublishAsync(new TestAbstractEvent());
+        
+        TestStore.Stores[0].ShouldBe($"{nameof(TestAbstractEventFilter)} {nameof(TestAbstractEventFilter.OnHandlerExecuting)}");
+        TestStore.Stores[1].ShouldBe($"{nameof(TestAbstractEventHandler)}");
+        TestStore.Stores[2].ShouldBe($"{nameof(TestAbstractEventFilter)} {nameof(TestAbstractEventFilter.OnHandlerExecuted)}");
+    }
+    
+    [Fact]
     public async Task ShouldInheritMessageFilterWork()
     {
         var cmdMediator1 = new MediatorConfiguration()
