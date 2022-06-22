@@ -27,3 +27,7 @@ public class TestAllWayRequest : ITestOneWayRequest, ITestTwoWayRequest
 public class TestInheritAllWayRequest : TestAllWayRequest
 {
 }
+
+public class TestParentInheritRequest : TestInheritAllWayRequest
+{
+}
